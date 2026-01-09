@@ -1,0 +1,26 @@
+{
+    "home": {
+        "title": "CFT.live - Web3 智能合约中心",
+        "Connect_Wallet": "连接钱包",
+        "intro": "CFT.live 致力于提供一个安全、透明的环境，用于探索和与经过验证的智能合约进行交互——赋能用户理解 Web3 协议、掌控自己的资产并消除中介。",
+        "LIVE": "实时",
+        "COMING_SOON": "即将推出",
+        "Tools": "工具",
+        "Games": "协议",
+        "Sandbox": "沙盒",
+        "Sandbox_Description": "在安全的环境中测试和与任何智能合约交互。自由实验。",
+        "Prediction_Market": "预测市场",
+        "Prediction_Market_Description": "预测资产价格走势。在涨/跌市场中创建投注。胜者获得全部奖池。",
+        "EXECUTE_PROTOCOL": "执行协议",
+        "Hash_Roulette": "哈希轮盘",
+        "Hash_Roulette_Description": "加密货币版俄罗斯轮盘。高风险，高回报，可验证的公平随机性。",
+        "Lotto_Pool": "彩票奖池",
+        "Lotto_Pool_Description": "幸运彩票奖池。一名获胜者赢得全部。简单且透明。",
+        "Asteroid_Dash": "小行星冲刺",
+        "Asteroid_Dash_Description": "选择你的星球并躲避小行星。幸存者分享奖金池。",
+        "Legal_Disclaimer": "法律免责声明",
+        "Legal_Disclaimer_Text": "在与本平台上的任何智能合约和协议交互之前，您有责任自行确认这些活动符合您所在司法管辖区的法律法规。基于区块链的活动在某些国家或地区可能受到限制或被禁止。",
+        "Legal_Disclaimer_Text_2": "通过访问和使用这些服务，您确认已查阅适用的当地法律，并确认您的参与行为是合法的。您需自行承担因使用本平台而产生的任何法律后果。CFT.live 不提供法律建议，亦不对因您参与本平台而产生的任何损失或法律问题承担责任。",
+        "SYSTEM_ONLINE": "系统在线"
+    }
+}

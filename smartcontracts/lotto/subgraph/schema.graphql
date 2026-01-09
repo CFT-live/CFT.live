@@ -1,0 +1,80 @@
+# User entity to track all user activities
+type User @entity(immutable: false) {
+  id: ID!                    # User address (lowercase)
+  totalTicketsBought: BigInt!
+  totalAmountSpent: BigInt!
+  totalWinnings: BigInt!
+  totalRefunds: BigInt!
+  ticketPurchases: [TicketPurchase!]! @derivedFrom(field: "user")
+  claims: [Claim!]! @derivedFrom(field: "user")
+  refunds: [Refund!]! @derivedFrom(field: "user")
+  createdAt: BigInt!
+  lastActivityAt: BigInt!
+}
+
+# TicketPurchase entity - tracks individual ticket buys
+type TicketPurchase @entity(immutable: false) {
+  id: ID!                    # drawId-user-txHash for uniqueness
+  user: User!
+  draw: Draw!
+  amount: BigInt!           # number of tickets bought
+  totalCost: BigInt!        # total USDC spent
+  createdAt: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+# Draw entity - tracks lottery draws
+type Draw @entity(immutable: false) {
+  id: ID!                   # drawId from contract as string
+  startTime: BigInt!
+  ticketPrice: BigInt!     # in USDC (6 decimals)
+  potSize: BigInt!         # total USDC collected
+  ticketCount: BigInt!
+  open: Boolean!
+  winnerChosen: Boolean!
+  winner: Bytes            # winner address, null if cancelled
+  claimed: Boolean!
+  closeTime: BigInt        # when draw was closed
+  requestId: BigInt        # VRF request ID
+  ticketPurchases: [TicketPurchase!]! @derivedFrom(field: "draw")
+  claims: [Claim!]! @derivedFrom(field: "draw")
+  refunds: [Refund!]! @derivedFrom(field: "draw")
+}
+
+# Claim entity - tracks winnings claimed
+type Claim @entity(immutable: false) {
+  id: ID!                   # drawId-user-txHash
+  user: User!
+  draw: Draw!
+  amount: BigInt!          # amount claimed
+  createdAt: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+# Refund entity - tracks refunds claimed
+type Refund @entity(immutable: false) {
+  id: ID!                   # drawId-user-txHash
+  user: User!
+  draw: Draw!
+  amount: BigInt!          # amount refunded
+  createdAt: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+# Global statistics
+type GlobalStats @entity(immutable: false) {
+  id: ID!                   # Always "global"
+  totalUsers: Int!
+  totalDraws: Int!
+  totalTickets: BigInt!
+  totalVolume: BigInt!
+  totalWinnings: BigInt!
+  totalRefunds: BigInt!
+  openDraws: Int!
+  closedDraws: Int!
+  cancelledDraws: Int!
+  lastUpdated: BigInt!
+}

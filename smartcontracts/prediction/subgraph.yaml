@@ -1,0 +1,46 @@
+specVersion: 0.0.5
+schema:
+  file: ./subgraph/schema.graphql
+
+dataSources:
+  - kind: ethereum
+    name: CFTPredictionMarket
+    network: arbitrum-one
+    source:
+      address: "0x99efABC9Ff3B414daC01Bc9cD3b6c27E42D330B9"
+      abi: CFTPredictionMarket
+      startBlock: 394030494
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Bet
+        - Round
+        - DailyStats
+        - GlobalStats
+        - Transaction
+        - UserRound
+        - UserDailyStats
+      abis:
+        - name: CFTPredictionMarket
+          file: ./artifacts/contracts/PredictionMarket.sol/CFTPredictionMarket.json
+      eventHandlers:
+        - event: RoundCreated(indexed uint128,uint64,uint64,uint8)
+          handler: handleRoundCreated
+        - event: BetPlaced(indexed uint128,indexed uint128,indexed address,uint8,uint128)
+          handler: handleBetPlaced
+        - event: RoundStarted(indexed uint128,int256)
+          handler: handleRoundStarted
+        - event: RoundClosed(indexed uint128,int256,uint8)
+          handler: handleRoundClosed
+        - event: RoundCancelled(indexed uint128)
+          handler: handleRoundCancelled
+        - event: BetClaimed(indexed uint128,indexed address,uint128)
+          handler: handleBetClaimed
+        - event: BetRefunded(indexed uint128,indexed address,uint128)
+          handler: handleBetRefunded
+        - event: PayoutsCalculated(indexed uint128,uint128,uint128)
+          handler: handlePayoutsCalculated
+      file: ./subgraph/mapping.ts

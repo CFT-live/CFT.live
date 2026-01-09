@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "Le service est actuellement indisponible.",
+        "title": "Marché_de_Prévision",
+        "description": "Pariez sur les mouvements de prix des actifs avec d’autres utilisateurs.",
+        "intro": {
+            "part1": "Ajoutez des fonds au contrat via la section Dépôt. Cela est nécessaire pour offrir une expérience de jeu fluide et sécurisée à tous et réduire les coûts de transaction. Les fonds peuvent être retirés à tout moment.",
+            "part2": "Créez un nouveau tour de prédiction en définissant l’heure de début, l’heure de clôture, l’actif et la position (HAUSSE ou BAISSE), puis placez votre pari.",
+            "part3": "D’autres utilisateurs peuvent rejoindre votre tour en plaçant leurs paris sur la même position ou sur la position opposée.",
+            "part4": "Une fois l’heure de début atteinte, le tour passe EN DIRECT et plus aucun pari ne peut être placé. Le prix de départ est verrouillé à partir du flux de prix.",
+            "part5": "À l’heure de clôture, le prix final est récupéré depuis le flux de prix. La position ayant la bonne prédiction gagne.",
+            "part6": "N’oubliez pas de réclamer vos gains dans la section Paris Utilisateur après la clôture du tour.",
+            "part7": "Utilisez le bouton Retirer pour retirer votre solde disponible du contrat à tout moment."
+        },
+        "loading": "Chargement...",
+        "metadata": "Métadonnées du Contrat",
+        "metadata_not_available": "Métadonnées non disponibles.",
+        "metadata_description": "Configuration et paramètres du contrat du marché de prédiction",
+        "contract_metadata": {
+            "contract_address": "Adresse du Contrat",
+            "min_max_bet_amount_usdc": "Montant de Pari Min / Max (USDC)",
+            "fee_bps_percentage": "Pourcentage des Frais en BPS",
+            "status": "Statut",
+            "status_paused": "En pause",
+            "status_active": "Actif",
+            "show_additional_details": "Afficher les détails supplémentaires",
+            "hide_additional_details": "Masquer les détails supplémentaires",
+            "owner_address": "Adresse du Propriétaire",
+            "payment_token_address": "Adresse du Jeton de Paiement",
+            "fee_collector_address": "Adresse du Collecteur de Frais",
+            "bet_lock_buffer_seconds": "Délai de Verrouillage des Paris (secondes)",
+            "data_wait_window_seconds": "Fenêtre d’Attente des Données (secondes)",
+            "max_open_rounds_per_user": "Nombre Max de Tours Ouverts par Utilisateur",
+            "min_open_time_seconds": "Temps Min d’Ouverture (secondes)",
+            "min_lock_time_seconds": "Temps Min de Verrouillage (secondes)",
+            "advance_cooldown_seconds": "Délai de Refroidissement Avancé (secondes)",
+            "price_max_age_seconds": "Âge Max du Prix (secondes)",
+            "price_feed_oracles": "Oracles de Flux de Prix",
+            "price_feed_oracles_description": "Données de prix fournies par les oracles du réseau Pyth"
+        },
+        "contract_balance": {
+            "title": "Solde du Contrat",
+            "description": "Gérez vos fonds",
+            "available": "Disponible",
+            "fetched_contract_balance": "Solde du contrat récupéré :",
+            "Amount_to_deposit": "Montant à déposer",
+            "Deposit": "Déposer",
+            "Depositing": "Dépôt en cours...",
+            "Deposit_success": "Dépôt réussi !",
+            "Withdraw_All": "Tout Retirer",
+            "Withdrawing": "Retrait en cours...",
+            "Withdraw_success": "Retrait réussi !"
+        },
+        "create_round": {
+            "title": "Créer un Tour",
+            "description": "Démarrer un nouveau tour de prédiction",
+            "steps": {
+                "step_1": "Étape 1 : Définir la Plage de Temps",
+                "step_2": "Étape 2 : Choisir votre Marché",
+                "step_3": "Étape 3 : Définir votre Pari"
+            },
+            "units": {
+                "minutes_abbrev": "min"
+            },
+            "timing": {
+                "round_starts_in": "Le tour commence dans",
+                "round_starts_in_help": "Moment où les paris s’ouvrent pour ce tour (minutes à partir de maintenant)",
+                "round_duration": "Durée du tour",
+                "round_duration_help": "Durée pendant laquelle le tour reste ouvert après le démarrage (minutes)"
+            },
+            "market": {
+                "select_asset": "Sélectionner un Actif",
+                "select_asset_help": "Quelle cryptomonnaie prédire",
+                "your_prediction": "Votre Prédiction",
+                "your_prediction_help": "Le prix va-t-il monter ou baisser ?",
+                "position_up_label": "HAUSSE - Le prix va augmenter",
+                "position_down_label": "BAISSE - Le prix va baisser"
+            },
+            "amount": {
+                "bet_amount": "Montant du Pari",
+                "enter_amount": "Entrer le montant",
+                "min_label": "Min : {amount}",
+                "max_label": "Max : {amount}"
+            },
+            "warnings": {
+                "short_timeframe": "Les durées courtes (moins de 5 minutes) peuvent ne pas laisser suffisamment de temps aux autres pour rejoindre le tour. Si aucun autre utilisateur ne rejoint le tour, celui-ci sera annulé et votre pari remboursé."
+            },
+            "actions": {
+                "create_round": "Créer le Tour",
+                "creating": "Création en cours…"
+            },
+            "success": {
+                "round_created": "Tour créé avec succès !"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "Les minutes de verrouillage et de clôture doivent être des nombres valides.",
+                "minutes_greater_than_zero": "Les minutes doivent être supérieures à 0.",
+                "open_minutes_at_least_seconds": "Les minutes d’ouverture doivent être d’au moins {seconds} secondes.",
+                "lock_minutes_at_least_seconds": "Les minutes de verrouillage doivent être d’au moins {seconds} secondes.",
+                "close_minutes_cannot_exceed": "Les minutes de clôture ne peuvent pas dépasser {minutes} minutes.",
+                "lock_minutes_cannot_exceed": "Les minutes de verrouillage ne peuvent pas dépasser {minutes} minutes.",
+                "amount_required": "Le montant est requis.",
+                "amount_must_be_integer": "Le montant doit être un entier (sans décimales).",
+                "amount_invalid": "Montant invalide. Utilisez une valeur entière."
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "Tours Ouverts",
+                "live": "Tours en Direct",
+                "closed": "Tours Fermés",
+                "closed_with_count": "Tours Fermés ({count})"
+            },
+            "descriptions": {
+                "open": "Tours actifs acceptant des paris",
+                "live": "Tours actuellement en cours",
+                "closed": "Derniers tours de prédiction terminés"
+            },
+            "loading": {
+                "open": "Chargement des données des tours ouverts...",
+                "live": "Chargement des données des tours en direct...",
+                "closed": "Chargement des données des tours fermés...",
+                "error_loading_data": "Erreur lors du chargement des données"
+            },
+            "empty": {
+                "open_title": "Aucun Tour Ouvert",
+                "open_message": "Aucun tour ouvert disponible pour les paris pour le moment. Créez-en un ci-dessus !",
+                "live_title": "Aucun Tour en Direct",
+                "live_message": "Aucun tour n’est actuellement en direct. Revenez lorsque de nouveaux tours commenceront.",
+                "closed_title": "Aucun Tour Fermé",
+                "closed_message": "Aucun tour fermé ou annulé trouvé pour le moment."
+            },
+            "errors": {
+                "unknown_error": "Erreur inconnue",
+                "graphql_error": "Erreur GraphQL : {message}",
+                "open_request_failed": "La requête des tours ouverts a échoué :",
+                "live_request_failed": "La requête des tours en direct a échoué :",
+                "closed_request_failed": "La requête des tours fermés a échoué :",
+                "open_title": "Erreur de Chargement des Tours Ouverts",
+                "live_title": "Erreur de Chargement des Tours en Direct",
+                "closed_title": "Erreur de Chargement des Tours Fermés",
+                "open_details": "Impossible de récupérer les données des tours ouverts. Veuillez vérifier votre connexion ou réessayer plus tard.",
+                "live_details": "Impossible de récupérer les données des tours en direct. Veuillez vérifier votre connexion ou réessayer plus tard.",
+                "closed_details": "Impossible de récupérer les données des tours fermés. Veuillez vérifier votre connexion ou réessayer plus tard."
+            },
+            "pagination": {
+                "previous": "← Précédent",
+                "next": "Suivant →",
+                "page": "Page {page} ({count} tours)",
+                "showing_open": "Affichage des tours ouverts {from} à {to}.",
+                "showing_live": "Affichage des tours en direct {from} à {to}.",
+                "showing_closed": "Affichage des tours fermés {from} à {to}."
+            },
+            "notes": {
+                "live_betting_closed": "Les paris sont fermés pour les tours en direct. Résultats en attente.",
+                "open_bet_before_lock": "Placez vos paris avant l’expiration du temps de verrouillage."
+            },
+            "bet_dialog": {
+                "title": "Placer un Pari - {position}",
+                "description_up": "Vous pariez que le prix va MONTER.",
+                "description_down": "Vous pariez que le prix va BAISSER.",
+                "round_id": "ID du Tour : {roundId}",
+                "amount_label": "Montant (USDC)",
+                "amount_placeholder": "Entrez le montant en USDC",
+                "position_label": "Position",
+                "cancel": "Annuler",
+                "confirm": "Confirmer le Pari",
+                "processing": "Traitement...",
+                "processing_title": "Traitement de la Transaction",
+                "processing_description": "Veuillez confirmer la transaction dans votre portefeuille et attendre la confirmation..."
+            },
+            "status": {
+                "open": "OUVERT",
+                "live": "EN DIRECT",
+                "closed": "FERMÉ",
+                "cancelled": "ANNULÉ"
+            },
+            "positions": {
+                "up": "HAUSSE",
+                "down": "BAISSE",
+                "equal": "ÉGAL",
+                "pending": "EN ATTENTE",
+                "up_with_arrow": "↑ HAUSSE",
+                "down_with_arrow": "↓ BAISSE"
+            },
+            "round_card": {
+                "volume_abbrev": "vol",
+                "bets_count": "{count} paris",
+                "lock": "Verrouillage",
+                "close": "Clôture",
+                "up_wins": "↑ Hausse gagne",
+                "down_wins": "↓ Baisse gagne",
+                "lock_price_label": "Verrouillage :",
+                "close_price_label": "Clôture :",
+                "now_price_label": "Maintenant :",
+                "result": "Résultat",
+                "trend": "Tendance"
+            },
+            "time": {
+                "days_short": "j",
+                "hours_short": "h",
+                "minutes_short": "m",
+                "seconds_short": "s"
+            }
+        }
+    }
+}

@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "الخدمة غير متاحة حاليا.",
+        "title": "سوق_التوقعات",
+        "description": "راهن على تحركات أسعار الأصول مع مستخدمين آخرين.",
+        "intro": {
+            "part1": "أضف أموالا إلى العقد باستخدام قسم الإيداع. هذا مطلوب لتوفير تجربة لعب سلسة وآمنة للجميع وتقليل تكاليف المعاملات. يمكن سحب الأموال في أي وقت.",
+            "part2": "أنشئ جولة توقع جديدة من خلال تحديد وقت البدء ووقت الإغلاق والأصل والمركز (صعود أو هبوط) ووضع رهانك.",
+            "part3": "يمكن لمستخدمين آخرين الانضمام إلى جولتك بوضع رهاناتهم على نفس المركز أو المركز المعاكس.",
+            "part4": "عند الوصول إلى وقت البدء، تصبح الجولة مباشرة ولا يمكن وضع أي رهانات إضافية. يتم تثبيت سعر البدء من موجز الأسعار.",
+            "part5": "عند وقت الإغلاق، يتم جلب السعر النهائي من موجز الأسعار. المركز ذو التوقع الصحيح يفوز.",
+            "part6": "تذكر المطالبة بأرباحك من قسم رهانات المستخدم بعد إغلاق الجولة.",
+            "part7": "استخدم زر السحب لسحب رصيدك المتاح من العقد في أي وقت."
+        },
+        "loading": "جار التحميل...",
+        "metadata": "بيانات العقد",
+        "metadata_not_available": "البيانات غير متاحة.",
+        "metadata_description": "الإعدادات والتكوينات الخاصة بعقد سوق التوقعات",
+        "contract_metadata": {
+            "contract_address": "عنوان العقد",
+            "min_max_bet_amount_usdc": "الحد الأدنى / الأقصى لمبلغ الرهان (USDC)",
+            "fee_bps_percentage": "نسبة الرسوم BPS",
+            "status": "الحالة",
+            "status_paused": "متوقف",
+            "status_active": "نشط",
+            "show_additional_details": "عرض تفاصيل إضافية",
+            "hide_additional_details": "إخفاء التفاصيل الإضافية",
+            "owner_address": "عنوان المالك",
+            "payment_token_address": "عنوان رمز الدفع",
+            "fee_collector_address": "عنوان جامع الرسوم",
+            "bet_lock_buffer_seconds": "مهلة قفل الرهان (ثوان)",
+            "data_wait_window_seconds": "نافذة انتظار البيانات (ثوان)",
+            "max_open_rounds_per_user": "الحد الأقصى للجولات المفتوحة لكل مستخدم",
+            "min_open_time_seconds": "الحد الأدنى لوقت الفتح (ثوان)",
+            "min_lock_time_seconds": "الحد الأدنى لوقت القفل (ثوان)",
+            "advance_cooldown_seconds": "مدة التهدئة المسبقة (ثوان)",
+            "price_max_age_seconds": "الحد الأقصى لعمر السعر (ثوان)",
+            "price_feed_oracles": "أوراكل موجز الأسعار",
+            "price_feed_oracles_description": "بيانات الأسعار مقدمة من أوراكل شبكة Pyth"
+        },
+        "contract_balance": {
+            "title": "رصيد العقد",
+            "description": "إدارة أموالك",
+            "available": "المتاح",
+            "fetched_contract_balance": "رصيد العقد الذي تم جلبه:",
+            "Amount_to_deposit": "المبلغ المراد إيداعه",
+            "Deposit": "إيداع",
+            "Depositing": "جار الإيداع...",
+            "Deposit_success": "تم الإيداع بنجاح!",
+            "Withdraw_All": "سحب الكل",
+            "Withdrawing": "جار السحب...",
+            "Withdraw_success": "تم السحب بنجاح!"
+        },
+        "create_round": {
+            "title": "إنشاء جولة",
+            "description": "ابدأ جولة توقع جديدة",
+            "steps": {
+                "step_1": "الخطوة 1: تحديد النطاق الزمني",
+                "step_2": "الخطوة 2: اختيار السوق",
+                "step_3": "الخطوة 3: تحديد الرهان"
+            },
+            "units": {
+                "minutes_abbrev": "د"
+            },
+            "timing": {
+                "round_starts_in": "تبدأ الجولة خلال",
+                "round_starts_in_help": "موعد فتح الرهان لهذه الجولة (بالدقائق من الآن)",
+                "round_duration": "مدة الجولة",
+                "round_duration_help": "مدة بقاء الجولة مفتوحة بعد البدء (بالدقائق)"
+            },
+            "market": {
+                "select_asset": "اختيار الأصل",
+                "select_asset_help": "أي عملة رقمية تريد التنبؤ بها",
+                "your_prediction": "توقعك",
+                "your_prediction_help": "هل سيرتفع السعر أم سينخفض؟",
+                "position_up_label": "صعود - السعر سيرتفع",
+                "position_down_label": "هبوط - السعر سينخفض"
+            },
+            "amount": {
+                "bet_amount": "مبلغ الرهان",
+                "enter_amount": "أدخل المبلغ",
+                "min_label": "الحد الأدنى: {amount}",
+                "max_label": "الحد الأقصى: {amount}"
+            },
+            "warnings": {
+                "short_timeframe": "الأطر الزمنية القصيرة (أقل من 5 دقائق) قد لا تمنح الآخرين وقتا كافيا للانضمام. إذا لم ينضم مستخدمون آخرون، سيتم إلغاء الجولة واسترداد رهانك."
+            },
+            "actions": {
+                "create_round": "إنشاء جولة",
+                "creating": "جار الإنشاء..."
+            },
+            "success": {
+                "round_created": "تم إنشاء الجولة بنجاح!"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "يجب أن تكون دقائق القفل والإغلاق أرقاما صحيحة.",
+                "minutes_greater_than_zero": "يجب أن تكون الدقائق أكبر من 0.",
+                "open_minutes_at_least_seconds": "يجب أن تكون دقائق الفتح على الأقل {seconds} ثانية.",
+                "lock_minutes_at_least_seconds": "يجب أن تكون دقائق القفل على الأقل {seconds} ثانية.",
+                "close_minutes_cannot_exceed": "لا يمكن أن تتجاوز دقائق الإغلاق {minutes} دقيقة.",
+                "lock_minutes_cannot_exceed": "لا يمكن أن تتجاوز دقائق القفل {minutes} دقيقة.",
+                "amount_required": "المبلغ مطلوب.",
+                "amount_must_be_integer": "يجب أن يكون المبلغ عددا صحيحا دون كسور.",
+                "amount_invalid": "مبلغ غير صالح. استخدم قيمة عدد صحيح."
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "جولات مفتوحة",
+                "live": "جولات مباشرة",
+                "closed": "جولات مغلقة",
+                "closed_with_count": "جولات مغلقة ({count})"
+            },
+            "descriptions": {
+                "open": "جولات نشطة تقبل الرهانات",
+                "live": "جولات جارية حاليا",
+                "closed": "أحدث جولات التوقع المنتهية"
+            },
+            "loading": {
+                "open": "جار تحميل بيانات الجولات المفتوحة...",
+                "live": "جار تحميل بيانات الجولات المباشرة...",
+                "closed": "جار تحميل بيانات الجولات المغلقة...",
+                "error_loading_data": "خطأ في تحميل البيانات"
+            },
+            "empty": {
+                "open_title": "لا توجد جولات مفتوحة",
+                "open_message": "لا توجد جولات مفتوحة للمراهنة حاليا. أنشئ واحدة أعلاه.",
+                "live_title": "لا توجد جولات مباشرة",
+                "live_message": "لا توجد جولات مباشرة حاليا. تحقق لاحقا عند بدء جولات جديدة.",
+                "closed_title": "لا توجد جولات مغلقة",
+                "closed_message": "لم يتم العثور على جولات مغلقة أو ملغاة حاليا."
+            },
+            "errors": {
+                "unknown_error": "خطأ غير معروف",
+                "graphql_error": "خطأ GraphQL: {message}",
+                "open_request_failed": "فشل طلب الجولات المفتوحة:",
+                "live_request_failed": "فشل طلب الجولات المباشرة:",
+                "closed_request_failed": "فشل طلب الجولات المغلقة:",
+                "open_title": "خطأ في تحميل الجولات المفتوحة",
+                "live_title": "خطأ في تحميل الجولات المباشرة",
+                "closed_title": "خطأ في تحميل الجولات المغلقة",
+                "open_details": "تعذر جلب بيانات الجولات المفتوحة. يرجى التحقق من الاتصال أو المحاولة لاحقا.",
+                "live_details": "تعذر جلب بيانات الجولات المباشرة. يرجى التحقق من الاتصال أو المحاولة لاحقا.",
+                "closed_details": "تعذر جلب بيانات الجولات المغلقة. يرجى التحقق من الاتصال أو المحاولة لاحقا."
+            },
+            "pagination": {
+                "previous": "السابق",
+                "next": "التالي",
+                "page": "الصفحة {page} ({count} جولة)",
+                "showing_open": "عرض الجولات المفتوحة من {from} إلى {to}.",
+                "showing_live": "عرض الجولات المباشرة من {from} إلى {to}.",
+                "showing_closed": "عرض الجولات المغلقة من {from} إلى {to}."
+            },
+            "notes": {
+                "live_betting_closed": "تم إغلاق المراهنة للجولات المباشرة والنتائج قيد الانتظار.",
+                "open_bet_before_lock": "ضع رهاناتك قبل انتهاء وقت القفل."
+            },
+            "bet_dialog": {
+                "title": "وضع رهان - {position}",
+                "description_up": "أنت تراهن على أن السعر سيرتفع.",
+                "description_down": "أنت تراهن على أن السعر سينخفض.",
+                "round_id": "معرف الجولة: {roundId}",
+                "amount_label": "المبلغ (USDC)",
+                "amount_placeholder": "أدخل المبلغ بالـ USDC",
+                "position_label": "المركز",
+                "cancel": "إلغاء",
+                "confirm": "تأكيد الرهان",
+                "processing": "جار المعالجة...",
+                "processing_title": "جار معالجة المعاملة",
+                "processing_description": "يرجى تأكيد المعاملة في محفظتك والانتظار حتى يتم التأكيد..."
+            },
+            "status": {
+                "open": "مفتوح",
+                "live": "مباشر",
+                "closed": "مغلق",
+                "cancelled": "ملغى"
+            },
+            "positions": {
+                "up": "صعود",
+                "down": "هبوط",
+                "equal": "متساو",
+                "pending": "قيد الانتظار",
+                "up_with_arrow": "↑ صعود",
+                "down_with_arrow": "↓ هبوط"
+            },
+            "round_card": {
+                "volume_abbrev": "حجم",
+                "bets_count": "{count} رهانات",
+                "lock": "قفل",
+                "close": "إغلاق",
+                "up_wins": "↑ فوز الصعود",
+                "down_wins": "↓ فوز الهبوط",
+                "lock_price_label": "قفل:",
+                "close_price_label": "إغلاق:",
+                "now_price_label": "الآن:",
+                "result": "النتيجة",
+                "trend": "الاتجاه"
+            },
+            "time": {
+                "days_short": "ي",
+                "hours_short": "س",
+                "minutes_short": "د",
+                "seconds_short": "ث"
+            }
+        }
+    }
+}

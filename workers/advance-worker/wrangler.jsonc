@@ -1,0 +1,68 @@
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "cft-advance-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-03-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	/**
+	 * Cron Triggers
+	 * https://developers.cloudflare.com/workers/configuration/cron-triggers/
+	 * 
+	 * The cron runs every minute as a fallback mechanism to ensure
+	 * the Durable Object scheduler is always active. The actual precise
+	 * scheduling is handled by the Durable Object Alarm.
+	 */
+	"triggers": {
+		"crons": [
+			"* * * * *"
+		]
+	},
+	/**
+	 * Environment Variables
+	 * Note: ADVANCE_API_KEY should be set as a secret, not here.
+	 * Use: wrangler secret put ADVANCE_API_KEY --config workers/advance-worker/wrangler.jsonc
+	 */
+	"vars": {
+		"API_BASE_URL": "https://www.cft.live"
+	},
+	"observability": {
+		"enabled": false,
+		"head_sampling_rate": 1,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"persist": true,
+			"invocation_logs": true
+		},
+		"traces": {
+			"enabled": false,
+			"persist": true,
+			"head_sampling_rate": 1
+		}
+	},
+	/**
+	 * Durable Objects for precise alarm-based scheduling
+	 * The AdvanceScheduler DO maintains state and uses setAlarm()
+	 * to wake up at exact millisecond timestamps.
+	 */
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "ADVANCE_SCHEDULER",
+				"class_name": "AdvanceScheduler"
+			}
+		]
+	},
+	/**
+	 * Migrations for Durable Objects
+	 * Required when adding new Durable Object classes
+	 */
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["AdvanceScheduler"]
+		}
+	]
+}

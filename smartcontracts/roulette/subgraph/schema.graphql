@@ -1,0 +1,120 @@
+# User entity to track all user activities across tables
+type User @entity(immutable: false) {
+  id: ID!                          # User address (lowercase)
+  tablesJoined: Int!               # Number of tables joined
+  tablesWon: Int!                  # Number of tables won
+  totalBetAmount: BigInt!          # Total USDC bet across all tables
+  totalWinnings: BigInt!           # Total winnings claimed
+  totalRefunds: BigInt!            # Total refunds claimed
+  tableParticipations: [TablePlayer!]! @derivedFrom(field: "user")
+  turns: [Turn!]! @derivedFrom(field: "player")
+  payouts: [Payout!]! @derivedFrom(field: "user")
+  createdAt: BigInt!
+  lastActivityAt: BigInt!
+}
+
+# Table entity - tracks roulette tables
+type Table @entity(immutable: false) {
+  id: ID!                          # tableId from contract as string
+  creator: User!                   # Table creator
+  status: TableStatus!             # Open, InProgress, WaitingRandom, Finished, Cancelled
+  initialBetAmount: BigInt!        # Initial minimum bet
+  currentBetAmount: BigInt!        # Current minimum bet (increases during game)
+  maxIncrement: BigInt!            # Maximum bet increase allowed per turn
+  maxPlayers: Int!                 # Maximum players allowed
+  totalPool: BigInt!               # Total USDC in pot
+  currentPlayerIndex: Int!         # Current player's turn index
+  playerCount: Int!                # Current number of players in table
+  alivePlayerCount: Int!           # Number of players still alive (not eliminated)
+  turnStartTime: BigInt            # When current turn started (for timeout tracking)
+  winner: Bytes                    # Winner address (null if cancelled or all died)
+  payoutClaimed: Boolean!          # Whether payout has been claimed
+  requestId: BigInt                # VRF request ID
+  createdAt: BigInt!
+  startedAt: BigInt                # When game started (all players ready)
+  finishedAt: BigInt               # When game finished
+  cancelReason: String             # Reason if cancelled
+  players: [TablePlayer!]! @derivedFrom(field: "table")
+  turns: [Turn!]! @derivedFrom(field: "table")
+  payouts: [Payout!]! @derivedFrom(field: "table")
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+enum TableStatus {
+  Open
+  InProgress
+  WaitingRandom
+  Finished
+  Cancelled
+}
+
+# TablePlayer entity - tracks individual player participation in a table
+type TablePlayer @entity(immutable: false) {
+  id: ID!                          # tableId-playerAddress
+  table: Table!
+  user: User!
+  position: Int!                   # Position in turn order
+  status: PlayerStatus!            # Waiting, Playing, Dead
+  totalBetAmount: BigInt!          # Total USDC bet by this player in this table
+  turnsPlayed: Int!                # Number of turns played
+  isReady: Boolean!                # Whether player marked ready
+  eliminated: Boolean!             # Whether player was eliminated
+  eliminatedAt: BigInt             # When player was eliminated
+  joinedAt: BigInt!
+  leftAt: BigInt                   # When player left (if applicable)
+  turns: [Turn!]! @derivedFrom(field: "tablePlayer")
+}
+
+enum PlayerStatus {
+  Waiting
+  Playing
+  Dead
+}
+
+# Turn entity - tracks individual turn plays
+type Turn @entity(immutable: false) {
+  id: ID!                          # tableId-turnNumber-txHash for uniqueness
+  table: Table!
+  tablePlayer: TablePlayer!
+  player: User!
+  turnNumber: Int!                 # Sequential turn number in the table
+  betAmount: BigInt!               # Amount bet on this turn
+  playerRandom: BigInt!            # Player's random number (0-9)
+  serverRandom: BigInt             # VRF random number (0-9), null until fulfilled
+  eliminated: Boolean!             # Whether player was eliminated this turn
+  requestId: BigInt                # VRF request ID
+  randomFulfilled: Boolean!        # Whether VRF callback completed
+  createdAt: BigInt!
+  fulfilledAt: BigInt              # When random was fulfilled
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+# Payout entity - tracks winnings and refunds claimed
+type Payout @entity(immutable: false) {
+  id: ID!                          # tableId-user-txHash
+  table: Table!
+  user: User!
+  amount: BigInt!                  # Amount claimed
+  isRefund: Boolean!               # True if refund, false if winnings
+  createdAt: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+# Global statistics
+type GlobalStats @entity(immutable: false) {
+  id: ID!                          # Always "global"
+  totalUsers: Int!
+  totalTables: Int!
+  totalTurns: Int!
+  totalVolume: BigInt!             # Total USDC wagered
+  totalWinnings: BigInt!           # Total winnings paid out
+  totalRefunds: BigInt!            # Total refunds paid out
+  openTables: Int!
+  inProgressTables: Int!
+  finishedTables: Int!
+  cancelledTables: Int!
+  lastUpdated: BigInt!
+}

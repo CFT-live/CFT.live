@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "Layanan saat ini tidak tersedia.",
+        "title": "Pasar_Prediksi",
+        "description": "Pasang taruhan pada pergerakan harga aset bersama pengguna lain.",
+        "intro": {
+            "part1": "Tambahkan dana ke kontrak menggunakan bagian Deposit. Ini diperlukan untuk memberikan pengalaman bermain yang lancar dan aman bagi semua orang serta mengurangi biaya transaksi. Dana dapat ditarik kapan saja.",
+            "part2": "Buat putaran prediksi baru dengan menentukan waktu mulai, waktu tutup, aset, dan posisi (NAIK atau TURUN) lalu pasang taruhan Anda.",
+            "part3": "Pengguna lain dapat bergabung ke putaran Anda dengan memasang taruhan pada posisi yang sama atau berlawanan.",
+            "part4": "Setelah waktu mulai tercapai, putaran menjadi LIVE dan tidak ada taruhan tambahan yang dapat dipasang. Harga awal dikunci dari price feed.",
+            "part5": "Pada waktu penutupan, harga akhir diambil dari price feed. Posisi dengan prediksi yang benar akan menang.",
+            "part6": "Jangan lupa untuk mengklaim kemenangan Anda dari bagian Taruhan Pengguna setelah putaran ditutup.",
+            "part7": "Gunakan tombol Withdraw untuk menarik saldo yang tersedia dari kontrak kapan saja."
+        },
+        "loading": "Memuat...",
+        "metadata": "Metadata Kontrak",
+        "metadata_not_available": "Metadata tidak tersedia.",
+        "metadata_description": "Konfigurasi dan pengaturan untuk kontrak pasar prediksi",
+        "contract_metadata": {
+            "contract_address": "Alamat Kontrak",
+            "min_max_bet_amount_usdc": "Taruhan Min / Maks (USDC)",
+            "fee_bps_percentage": "Persentase Biaya BPS",
+            "status": "Status",
+            "status_paused": "Dijeda",
+            "status_active": "Aktif",
+            "show_additional_details": "Tampilkan detail tambahan",
+            "hide_additional_details": "Sembunyikan detail tambahan",
+            "owner_address": "Alamat Pemilik",
+            "payment_token_address": "Alamat Token Pembayaran",
+            "fee_collector_address": "Alamat Pengumpul Biaya",
+            "bet_lock_buffer_seconds": "Buffer Penguncian Taruhan (detik)",
+            "data_wait_window_seconds": "Jendela Tunggu Data (detik)",
+            "max_open_rounds_per_user": "Maks Putaran Terbuka per Pengguna",
+            "min_open_time_seconds": "Waktu Buka Minimum (detik)",
+            "min_lock_time_seconds": "Waktu Kunci Minimum (detik)",
+            "advance_cooldown_seconds": "Cooldown Lanjutan (detik)",
+            "price_max_age_seconds": "Usia Maks Harga (detik)",
+            "price_feed_oracles": "Oracle Price Feed",
+            "price_feed_oracles_description": "Data harga disediakan oleh oracle Pyth Network"
+        },
+        "contract_balance": {
+            "title": "Saldo Kontrak",
+            "description": "Kelola dana Anda",
+            "available": "Tersedia",
+            "fetched_contract_balance": "Saldo kontrak diambil:",
+            "Amount_to_deposit": "Jumlah untuk disetor",
+            "Deposit": "Deposit",
+            "Depositing": "Menyetor...",
+            "Deposit_success": "Deposit berhasil!",
+            "Withdraw_All": "Tarik Semua",
+            "Withdrawing": "Menarik...",
+            "Withdraw_success": "Penarikan berhasil!"
+        },
+        "create_round": {
+            "title": "Buat Putaran",
+            "description": "Mulai putaran prediksi baru",
+            "steps": {
+                "step_1": "Langkah 1: Atur Rentang Waktu",
+                "step_2": "Langkah 2: Pilih Pasar Anda",
+                "step_3": "Langkah 3: Atur Taruhan Anda"
+            },
+            "units": {
+                "minutes_abbrev": "mnt"
+            },
+            "timing": {
+                "round_starts_in": "Putaran dimulai dalam",
+                "round_starts_in_help": "Waktu saat taruhan dibuka untuk putaran ini (menit dari sekarang)",
+                "round_duration": "Durasi putaran",
+                "round_duration_help": "Berapa lama putaran tetap terbuka setelah dimulai (menit)"
+            },
+            "market": {
+                "select_asset": "Pilih Aset",
+                "select_asset_help": "Kripto yang akan diprediksi",
+                "your_prediction": "Prediksi Anda",
+                "your_prediction_help": "Apakah harga akan naik atau turun?",
+                "position_up_label": "NAIK - Harga akan naik",
+                "position_down_label": "TURUN - Harga akan turun"
+            },
+            "amount": {
+                "bet_amount": "Jumlah Taruhan",
+                "enter_amount": "Masukkan jumlah",
+                "min_label": "Min: {amount}",
+                "max_label": "Maks: {amount}"
+            },
+            "warnings": {
+                "short_timeframe": "Rentang waktu yang singkat (kurang dari 5 menit) mungkin tidak memberi cukup waktu bagi pengguna lain untuk bergabung. Jika tidak ada pengguna lain yang bergabung, putaran akan dibatalkan dan taruhan Anda dikembalikan."
+            },
+            "actions": {
+                "create_round": "Buat Putaran",
+                "creating": "Membuat..."
+            },
+            "success": {
+                "round_created": "Putaran berhasil dibuat!"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "Menit kunci dan tutup harus berupa angka yang valid.",
+                "minutes_greater_than_zero": "Menit harus lebih besar dari 0.",
+                "open_minutes_at_least_seconds": "Menit buka minimal {seconds} detik.",
+                "lock_minutes_at_least_seconds": "Menit kunci minimal {seconds} detik.",
+                "close_minutes_cannot_exceed": "Menit tutup tidak boleh melebihi {minutes} menit.",
+                "lock_minutes_cannot_exceed": "Menit kunci tidak boleh melebihi {minutes} menit.",
+                "amount_required": "Jumlah wajib diisi.",
+                "amount_must_be_integer": "Jumlah harus berupa bilangan bulat (tanpa desimal).",
+                "amount_invalid": "Jumlah tidak valid. Gunakan nilai bilangan bulat."
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "Putaran Terbuka",
+                "live": "Putaran Live",
+                "closed": "Putaran Ditutup",
+                "closed_with_count": "Putaran Ditutup ({count})"
+            },
+            "descriptions": {
+                "open": "Putaran aktif yang menerima taruhan",
+                "live": "Putaran yang sedang berlangsung",
+                "closed": "Putaran prediksi terbaru yang telah selesai"
+            },
+            "loading": {
+                "open": "Memuat data putaran terbuka...",
+                "live": "Memuat data putaran live...",
+                "closed": "Memuat data putaran ditutup...",
+                "error_loading_data": "Gagal memuat data"
+            },
+            "empty": {
+                "open_title": "Tidak Ada Putaran Terbuka",
+                "open_message": "Tidak ada putaran terbuka untuk taruhan saat ini. Buat satu di atas.",
+                "live_title": "Tidak Ada Putaran Live",
+                "live_message": "Tidak ada putaran yang sedang live. Periksa kembali saat putaran baru dimulai.",
+                "closed_title": "Tidak Ada Putaran Ditutup",
+                "closed_message": "Tidak ditemukan putaran yang ditutup atau dibatalkan saat ini."
+            },
+            "errors": {
+                "unknown_error": "Kesalahan tidak diketahui",
+                "graphql_error": "Kesalahan GraphQL: {message}",
+                "open_request_failed": "Permintaan putaran terbuka gagal:",
+                "live_request_failed": "Permintaan putaran live gagal:",
+                "closed_request_failed": "Permintaan putaran ditutup gagal:",
+                "open_title": "Gagal Memuat Putaran Terbuka",
+                "live_title": "Gagal Memuat Putaran Live",
+                "closed_title": "Gagal Memuat Putaran Ditutup",
+                "open_details": "Tidak dapat mengambil data putaran terbuka. Silakan periksa koneksi Anda atau coba lagi nanti.",
+                "live_details": "Tidak dapat mengambil data putaran live. Silakan periksa koneksi Anda atau coba lagi nanti.",
+                "closed_details": "Tidak dapat mengambil data putaran ditutup. Silakan periksa koneksi Anda atau coba lagi nanti."
+            },
+            "pagination": {
+                "previous": "← Sebelumnya",
+                "next": "Berikutnya →",
+                "page": "Halaman {page} ({count} putaran)",
+                "showing_open": "Menampilkan {from} hingga {to} putaran terbuka.",
+                "showing_live": "Menampilkan {from} hingga {to} putaran live.",
+                "showing_closed": "Menampilkan {from} hingga {to} putaran ditutup."
+            },
+            "notes": {
+                "live_betting_closed": "Taruhan ditutup untuk putaran live. Menunggu hasil.",
+                "open_bet_before_lock": "Pasang taruhan Anda sebelum waktu kunci berakhir."
+            },
+            "bet_dialog": {
+                "title": "Pasang Taruhan - {position}",
+                "description_up": "Anda bertaruh bahwa harga akan NAIK.",
+                "description_down": "Anda bertaruh bahwa harga akan TURUN.",
+                "round_id": "ID Putaran: {roundId}",
+                "amount_label": "Jumlah (USDC)",
+                "amount_placeholder": "Masukkan jumlah dalam USDC",
+                "position_label": "Posisi",
+                "cancel": "Batal",
+                "confirm": "Konfirmasi Taruhan",
+                "processing": "Memproses...",
+                "processing_title": "Memproses Transaksi",
+                "processing_description": "Silakan konfirmasi transaksi di dompet Anda dan tunggu konfirmasi..."
+            },
+            "status": {
+                "open": "TERBUKA",
+                "live": "LIVE",
+                "closed": "DITUTUP",
+                "cancelled": "DIBATALKAN"
+            },
+            "positions": {
+                "up": "NAIK",
+                "down": "TURUN",
+                "equal": "SAMA",
+                "pending": "MENUNGGU",
+                "up_with_arrow": "↑ NAIK",
+                "down_with_arrow": "↓ TURUN"
+            },
+            "round_card": {
+                "volume_abbrev": "vol",
+                "bets_count": "{count} taruhan",
+                "lock": "Kunci",
+                "close": "Tutup",
+                "up_wins": "↑ NAIK menang",
+                "down_wins": "↓ TURUN menang",
+                "lock_price_label": "Kunci:",
+                "close_price_label": "Tutup:",
+                "now_price_label": "Sekarang:",
+                "result": "Hasil",
+                "trend": "Tren"
+            },
+            "time": {
+                "days_short": "h",
+                "hours_short": "j",
+                "minutes_short": "m",
+                "seconds_short": "d"
+            }
+        }
+    }
+}

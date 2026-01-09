@@ -1,0 +1,26 @@
+{
+    "home": {
+        "title": "CFT.live - Hub Kontrak Pintar Web3",
+        "Connect_Wallet": "Hubungkan Dompet",
+        "intro": "CFT.live hadir untuk menyediakan lingkungan yang aman dan transparan untuk menjelajahi dan berinteraksi dengan kontrak pintar yang terverifikasi—memberdayakan pengguna untuk memahami protokol Web3, mengontrol aset mereka, dan menghilangkan perantara.",
+        "LIVE": "LIVE",
+        "COMING_SOON": "SEGERA HADIR",
+        "Tools": "Alat",
+        "Games": "Protokol",
+        "Sandbox": "Sandbox",
+        "Sandbox_Description": "Uji dan berinteraksi dengan smart contract apa pun dalam lingkungan yang aman. Bereksperimen dengan bebas.",
+        "Prediction_Market": "Pasar Prediksi",
+        "Prediction_Market_Description": "Prediksi pergerakan harga aset. Buat taruhan pada pasar NAIK/TURUN. Pemenang mengambil seluruh pot.",
+        "EXECUTE_PROTOCOL": "JALANKAN PROTOKOL",
+        "Hash_Roulette": "Hash Roulette",
+        "Hash_Roulette_Description": "Russian Roulette dengan kripto. Taruhan tinggi dengan keacakan yang terbukti adil.",
+        "Lotto_Pool": "Kolam Lotto",
+        "Lotto_Pool_Description": "Satu pot lotere keberuntungan. Satu pemenang mengambil semuanya. Sederhana dan transparan.",
+        "Asteroid_Dash": "Balapan Asteroid",
+        "Asteroid_Dash_Description": "Pilih planetmu dan hindari asteroid. Para penyintas membagi kumpulan hadiah.",
+        "Legal_Disclaimer": "Penafian Hukum",
+        "Legal_Disclaimer_Text": "Sebelum berinteraksi dengan kontrak pintar dan protokol apa pun di platform ini, Anda sepenuhnya bertanggung jawab untuk memastikan bahwa aktivitas tersebut mematuhi hukum dan peraturan di yurisdiksi Anda. Aktivitas berbasis blockchain dapat dibatasi atau dilarang di negara atau wilayah tertentu.",
+        "Legal_Disclaimer_Text_2": "Dengan mengakses dan menggunakan layanan ini, Anda menyatakan bahwa Anda telah meninjau hukum lokal yang berlaku dan mengonfirmasi bahwa partisipasi Anda adalah legal. Anda menanggung tanggung jawab penuh atas segala konsekuensi hukum yang timbul dari penggunaan platform ini. CFT.live tidak memberikan nasihat hukum dan tidak bertanggung jawab atas kerugian atau masalah hukum apa pun yang diakibatkan oleh partisipasi Anda.",
+        "SYSTEM_ONLINE": "SISTEM ONLINE"
+    }
+}

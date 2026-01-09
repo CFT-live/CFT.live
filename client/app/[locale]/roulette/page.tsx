@@ -1,0 +1,241 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { request } from "graphql-request";
+import type { Metadata } from "next";
+
+import { DEFAULT_HEADERS } from "@/app/queries/headers";
+import {
+  getOpenTablesQuery,
+  getInProgressTablesQuery,
+  getGlobalStatsQuery,
+  getTableByIdQuery,
+} from "@/app/queries/roulette";
+import { getMetadata } from "@/app/lib/api/actions.roulette";
+import { ContractMetadata } from "@/app/components/roulette/RouletteMetadata";
+import { OpenTables } from "@/app/components/roulette/OpenTables";
+import { ActiveTables } from "@/app/components/roulette/ActiveTables";
+import { RouletteAdminCard } from "@/app/components/roulette/RouletteAdminCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { REFRESH_INTERVAL_MILLIS } from "@/app/helpers";
+import {
+  ROULETTE_OPEN_TABLES_QUERY_KEY,
+  ROULETTE_IN_PROGRESS_TABLES_QUERY_KEY,
+  ROULETTE_CONTRACT_METADATA_QUERY_KEY,
+  ROULETTE_GLOBAL_STATS_QUERY_KEY,
+  ROULETTE_TABLE_DETAIL_QUERY_KEY,
+} from "@/app/queries/keys";
+import { Instructions } from "../../components/Instructions";
+import { RouletteGame } from "@/app/components/roulette/game/RouletteGame";
+import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("roulette");
+
+  return {
+    title: t("meta_title"),
+    description: t("meta_description"),
+  };
+}
+
+interface RoulettePageProps {
+  searchParams: Promise<{ tableId?: string }>;
+}
+
+export default async function RoulettePage({
+  searchParams,
+}: Readonly<RoulettePageProps>) {
+  const t = await getTranslations("roulette");
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: t("meta_title"),
+    applicationCategory: "GameApplication",
+    operatingSystem: "Any",
+    description: t("meta_description"),
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "ETH",
+    },
+  };
+
+  const { tableId } = await searchParams;
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: REFRESH_INTERVAL_MILLIS.medium,
+      },
+    },
+  });
+
+  // Build prefetch queries array
+  const prefetchQueries = [
+    // Prefetch open tables
+    queryClient.prefetchQuery({
+      queryKey: [ROULETTE_OPEN_TABLES_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_ROULETTE_THE_GRAPH_API_URL!,
+          getOpenTablesQuery,
+          { first: 20, skip: 0 },
+          DEFAULT_HEADERS
+        );
+      },
+    }),
+    // Prefetch in-progress tables
+    queryClient.prefetchQuery({
+      queryKey: [ROULETTE_IN_PROGRESS_TABLES_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_ROULETTE_THE_GRAPH_API_URL!,
+          getInProgressTablesQuery,
+          { first: 20, skip: 0 },
+          DEFAULT_HEADERS
+        );
+      },
+    }),
+    // Prefetch global stats
+    queryClient.prefetchQuery({
+      queryKey: [ROULETTE_GLOBAL_STATS_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_ROULETTE_THE_GRAPH_API_URL!,
+          getGlobalStatsQuery,
+          {},
+          DEFAULT_HEADERS
+        );
+      },
+    }),
+    // Prefetch contract metadata
+    queryClient.prefetchQuery({
+      queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
+      queryFn: getMetadata,
+    }),
+  ];
+
+  // If a table is selected, prefetch its data
+  if (tableId) {
+    prefetchQueries.push(
+      queryClient.prefetchQuery({
+        queryKey: [ROULETTE_TABLE_DETAIL_QUERY_KEY, tableId],
+        async queryFn() {
+          return await request(
+            process.env.NEXT_PUBLIC_ROULETTE_THE_GRAPH_API_URL!,
+            getTableByIdQuery,
+            { tableId },
+            DEFAULT_HEADERS
+          );
+        },
+        staleTime: REFRESH_INTERVAL_MILLIS.medium,
+      })
+    );
+  }
+
+  // Prefetch all data
+  await Promise.all(prefetchQueries);
+
+  // Get the prefetched data from cache
+  const contractMetadata = queryClient.getQueryData<
+    Awaited<ReturnType<typeof getMetadata>>
+  >([ROULETTE_CONTRACT_METADATA_QUERY_KEY]);
+
+  if (!contractMetadata) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card>
+          <CardContent>
+            <p className="text-center text-muted-foreground">
+              {t("service_unavailable")}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        {/* Header */}
+        <div className="text-center mb-6 sm:mb-8 border-b border-border pb-6 sm:pb-8">
+          <div className="inline-flex items-center justify-center mb-3 sm:mb-4">
+            <div className="text-primary">
+              <svg
+                className="w-10 h-10 sm:w-12 sm:h-12 mx-auto"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth="1"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M12 2 L12 5 M12 19 L12 22 M22 12 L19 12 M5 12 L2 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3 uppercase tracking-wider">
+            {t("title")}
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 max-w-2xl mx-auto uppercase tracking-wide px-2">
+            {t("tagline")}
+          </p>
+          <Instructions
+            title={t("instructions_title")}
+            instructions={[
+              t("instructions_step_create_or_join"),
+              t("instructions_step_mark_ready"),
+              t("instructions_step_your_turn"),
+              t("instructions_step_next_player"),
+              t("instructions_step_until_one_left"),
+              t("instructions_step_claim_winnings"),
+            ]}
+          />
+        </div>
+
+        {/* Contract Metadata */}
+        <ContractMetadata />
+
+        {/* Global Stats
+        <GlobalStats />
+        */}
+        {/* Tables Display */}
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <div className="space-y-4 sm:space-y-6">
+            <ActiveTables />
+            <OpenTables />
+          </div>
+        </HydrationBoundary>
+
+        {/* Selected Table Display */}
+        {tableId && (
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <div className="mt-6 sm:mt-8">
+              <RouletteGame tableId={tableId} />
+            </div>
+          </HydrationBoundary>
+        )}
+
+        {/* Admin section */}
+        <RouletteAdminCard contractOwnerAddress={contractMetadata.ownerAddress} />
+      </div>
+    </div>
+  );
+}

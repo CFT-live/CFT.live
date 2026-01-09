@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "現在サービスは利用できません。",
+        "title": "予測マーケット",
+        "description": "他のユーザーと資産価格の動きにベットします。",
+        "intro": {
+            "part1": "入金セクションを使用してコントラクトに資金を追加してください。これは、全員にとって安全で円滑なゲーム体験を提供し、トランザクションコストを削減するために必要です。資金はいつでも引き出すことができます。",
+            "part2": "開始時間、終了時間、資産、ポジション（UP または DOWN）を指定し、ベットを行うことで新しい予測ラウンドを作成します。",
+            "part3": "他のユーザーは、同じポジションまたは反対のポジションにベットすることで、あなたのラウンドに参加できます。",
+            "part4": "開始時間に達するとラウンドはLIVEになり、それ以降ベットはできません。開始価格は価格フィードから確定されます。",
+            "part5": "終了時間に、最終価格が価格フィードから取得されます。正しい予測をしたポジションが勝利します。",
+            "part6": "ラウンド終了後は、ユーザーベットセクションから賞金を請求することを忘れないでください。",
+            "part7": "Withdrawボタンを使用して、いつでも利用可能な残高をコントラクトから引き出すことができます。"
+        },
+        "loading": "読み込み中...",
+        "metadata": "コントラクトメタデータ",
+        "metadata_not_available": "メタデータは利用できません。",
+        "metadata_description": "予測マーケットコントラクトの設定と構成",
+        "contract_metadata": {
+            "contract_address": "コントラクトアドレス",
+            "min_max_bet_amount_usdc": "最小 / 最大ベット額（USDC）",
+            "fee_bps_percentage": "手数料BPS割合",
+            "status": "ステータス",
+            "status_paused": "一時停止",
+            "status_active": "有効",
+            "show_additional_details": "追加の詳細を表示",
+            "hide_additional_details": "追加の詳細を非表示",
+            "owner_address": "オーナーアドレス",
+            "payment_token_address": "支払いトークンアドレス",
+            "fee_collector_address": "手数料受取アドレス",
+            "bet_lock_buffer_seconds": "ベットロックバッファ（秒）",
+            "data_wait_window_seconds": "データ待機ウィンドウ（秒）",
+            "max_open_rounds_per_user": "ユーザーあたりの最大オープンラウンド数",
+            "min_open_time_seconds": "最小オープン時間（秒）",
+            "min_lock_time_seconds": "最小ロック時間（秒）",
+            "advance_cooldown_seconds": "事前クールダウン（秒）",
+            "price_max_age_seconds": "価格の最大有効期間（秒）",
+            "price_feed_oracles": "価格フィードオラクル",
+            "price_feed_oracles_description": "価格データはPyth Networkのオラクルによって提供されます"
+        },
+        "contract_balance": {
+            "title": "コントラクト残高",
+            "description": "資金を管理",
+            "available": "利用可能",
+            "fetched_contract_balance": "取得したコントラクト残高:",
+            "Amount_to_deposit": "入金額",
+            "Deposit": "入金",
+            "Depositing": "入金中...",
+            "Deposit_success": "入金に成功しました！",
+            "Withdraw_All": "全額引き出し",
+            "Withdrawing": "引き出し中...",
+            "Withdraw_success": "引き出しに成功しました！"
+        },
+        "create_round": {
+            "title": "ラウンドを作成",
+            "description": "新しい予測ラウンドを開始",
+            "steps": {
+                "step_1": "ステップ1: 時間範囲を設定",
+                "step_2": "ステップ2: マーケットを選択",
+                "step_3": "ステップ3: ベットを設定"
+            },
+            "units": {
+                "minutes_abbrev": "分"
+            },
+            "timing": {
+                "round_starts_in": "ラウンド開始まで",
+                "round_starts_in_help": "このラウンドのベット受付開始までの時間（分）",
+                "round_duration": "ラウンド時間",
+                "round_duration_help": "開始後にラウンドが開いている時間（分）"
+            },
+            "market": {
+                "select_asset": "資産を選択",
+                "select_asset_help": "予測する暗号資産",
+                "your_prediction": "あなたの予測",
+                "your_prediction_help": "価格は上がるか下がるか？",
+                "position_up_label": "UP 価格が上昇",
+                "position_down_label": "DOWN 価格が下落"
+            },
+            "amount": {
+                "bet_amount": "ベット額",
+                "enter_amount": "金額を入力",
+                "min_label": "最小: {amount}",
+                "max_label": "最大: {amount}"
+            },
+            "warnings": {
+                "short_timeframe": "短い時間枠（5分未満）は、他のユーザーが参加する時間が不足する可能性があります。他のユーザーが参加しなかった場合、ラウンドはキャンセルされ、ベットは返金されます。"
+            },
+            "actions": {
+                "create_round": "ラウンドを作成",
+                "creating": "作成中..."
+            },
+            "success": {
+                "round_created": "ラウンドが正常に作成されました！"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "ロック時間と終了時間は有効な数値である必要があります。",
+                "minutes_greater_than_zero": "分は0より大きい必要があります。",
+                "open_minutes_at_least_seconds": "オープン時間は最低 {seconds} 秒必要です。",
+                "lock_minutes_at_least_seconds": "ロック時間は最低 {seconds} 秒必要です。",
+                "close_minutes_cannot_exceed": "終了時間は {minutes} 分を超えることはできません。",
+                "lock_minutes_cannot_exceed": "ロック時間は {minutes} 分を超えることはできません。",
+                "amount_required": "金額の入力が必要です。",
+                "amount_must_be_integer": "金額は整数である必要があります（小数不可）。",
+                "amount_invalid": "無効な金額です。整数値を使用してください。"
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "オープンラウンド",
+                "live": "進行中のラウンド",
+                "closed": "終了したラウンド",
+                "closed_with_count": "終了したラウンド（{count}）"
+            },
+            "descriptions": {
+                "open": "ベット受付中のアクティブなラウンド",
+                "live": "現在進行中のラウンド",
+                "closed": "最新の終了した予測ラウンド"
+            },
+            "loading": {
+                "open": "オープンラウンドを読み込み中...",
+                "live": "進行中ラウンドを読み込み中...",
+                "closed": "終了したラウンドを読み込み中...",
+                "error_loading_data": "データ読み込みエラー"
+            },
+            "empty": {
+                "open_title": "オープンラウンドなし",
+                "open_message": "現在ベット可能なラウンドはありません。上で作成してください。",
+                "live_title": "進行中のラウンドなし",
+                "live_message": "現在進行中のラウンドはありません。新しいラウンド開始時に確認してください。",
+                "closed_title": "終了したラウンドなし",
+                "closed_message": "現在、終了またはキャンセルされたラウンドはありません。"
+            },
+            "errors": {
+                "unknown_error": "不明なエラー",
+                "graphql_error": "GraphQLエラー: {message}",
+                "open_request_failed": "オープンラウンドの取得に失敗:",
+                "live_request_failed": "進行中ラウンドの取得に失敗:",
+                "closed_request_failed": "終了ラウンドの取得に失敗:",
+                "open_title": "オープンラウンド読み込みエラー",
+                "live_title": "進行中ラウンド読み込みエラー",
+                "closed_title": "終了ラウンド読み込みエラー",
+                "open_details": "オープンラウンドのデータを取得できません。接続を確認するか、後でもう一度お試しください。",
+                "live_details": "進行中ラウンドのデータを取得できません。接続を確認するか、後でもう一度お試しください。",
+                "closed_details": "終了ラウンドのデータを取得できません。接続を確認するか、後でもう一度お試しください。"
+            },
+            "pagination": {
+                "previous": "← 前へ",
+                "next": "次へ →",
+                "page": "{page} ページ（{count} ラウンド）",
+                "showing_open": "オープンラウンド {from} から {to} を表示。",
+                "showing_live": "進行中ラウンド {from} から {to} を表示。",
+                "showing_closed": "終了ラウンド {from} から {to} を表示。"
+            },
+            "notes": {
+                "live_betting_closed": "進行中ラウンドではベットは締め切られています。結果待ちです。",
+                "open_bet_before_lock": "ロック時間が終了する前にベットしてください。"
+            },
+            "bet_dialog": {
+                "title": "ベットする - {position}",
+                "description_up": "価格が上昇すると予測してベットします。",
+                "description_down": "価格が下落すると予測してベットします。",
+                "round_id": "ラウンドID: {roundId}",
+                "amount_label": "金額（USDC）",
+                "amount_placeholder": "USDC金額を入力",
+                "position_label": "ポジション",
+                "cancel": "キャンセル",
+                "confirm": "ベットを確定",
+                "processing": "処理中...",
+                "processing_title": "トランザクション処理中",
+                "processing_description": "ウォレットでトランザクションを確認し、承認されるまでお待ちください..."
+            },
+            "status": {
+                "open": "OPEN",
+                "live": "LIVE",
+                "closed": "CLOSED",
+                "cancelled": "CANCELLED"
+            },
+            "positions": {
+                "up": "UP",
+                "down": "DOWN",
+                "equal": "EQUAL",
+                "pending": "PENDING",
+                "up_with_arrow": "↑ UP",
+                "down_with_arrow": "↓ DOWN"
+            },
+            "round_card": {
+                "volume_abbrev": "出来高",
+                "bets_count": "{count} ベット",
+                "lock": "ロック",
+                "close": "終了",
+                "up_wins": "↑ UP 勝利",
+                "down_wins": "↓ DOWN 勝利",
+                "lock_price_label": "ロック:",
+                "close_price_label": "終了:",
+                "now_price_label": "現在:",
+                "result": "結果",
+                "trend": "トレンド"
+            },
+            "time": {
+                "days_short": "日",
+                "hours_short": "時",
+                "minutes_short": "分",
+                "seconds_short": "秒"
+            }
+        }
+    }
+}

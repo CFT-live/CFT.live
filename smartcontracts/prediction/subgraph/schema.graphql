@@ -1,0 +1,221 @@
+# User entity to track all user activities
+type User @entity(immutable: false) {
+  id: ID!                    # User address (lowercase)
+  totalBets: BigInt!
+  totalAmount: BigInt!
+  totalWinnings: BigInt! 
+  totalLosses: BigInt!
+  totalClaimed: BigInt!
+  winRate: BigDecimal!       # percentage of winning bets
+  profitLoss: BigInt!        # total profit/loss amount
+  bets: [Bet!]! @derivedFrom(field: "user")
+  createdAt: BigInt!
+  lastActivityAt: BigInt!
+  
+  # Statistics
+  upBets: Int!
+  downBets: Int!
+  wonBets: Int!
+  lostBets: Int!
+  refundedBets: Int!
+  
+  # Recent activity for quick queries
+  lastBetTime: BigInt!
+  lastClaimTime: BigInt!
+  
+  # Balance tracking
+  currentBalance: BigInt!    # Current balance in the contract
+}
+
+# Individual bet entity - optimized for UI queries
+type Bet @entity(immutable: false) {
+  id: ID!                    # user-roundId-txHash for uniqueness
+  user: User!
+  round: Round!
+  position: Position!        # UP, DOWN, UNSET
+  amount: BigInt!
+  claimedAmount: BigInt!
+  claimed: Boolean!
+  createdAt: BigInt!
+  claimedAt: BigInt
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+  
+  # Calculated fields (updated when round resolves)
+  isWinner: Boolean!
+  isRefund: Boolean!
+  payout: BigInt!
+  profit: BigInt!            # payout - amount (can be negative)
+  
+  # Composite keys for efficient queries
+  userRoundId: String!       # user-roundId for querying user bets in specific round
+  userTimestamp: String!     # user-timestamp for sorting user bets
+}
+
+# Round entity - optimized for UI state queries
+type Round @entity(immutable: false) {
+  id: ID!                   # roundId from contract as string  
+  creator: String          # optional creator address (may not be emitted by events)
+  asset: Asset             # ETH or ARB (from contract)
+  status: RoundStatus!      # OPEN, LIVE, CLOSED, CANCELLED
+  lockPrice: BigInt!        # Price when round goes live (64-bit scaled)
+  closePrice: BigInt!       # Price when round closes (64-bit scaled)
+  upAmount: BigInt!         # Total amount bet on UP
+  downAmount: BigInt!       # Total amount bet on DOWN
+  createdAt: BigInt!        # Block timestamp when round was created
+  lockAt: BigInt!           # Scheduled lock timestamp
+  liveAt: BigInt            # Actual timestamp when round went live
+  closeAt: BigInt!          # Scheduled close timestamp
+  finalPosition: Position!  # UP, DOWN, UNSET
+  
+  # Oracle status tracking
+  waitingForStart: Boolean! # True if waiting for start price
+  waitingForEnd: Boolean!   # True if waiting for end price
+  
+  # Relations
+  bets: [Bet!]! @derivedFrom(field: "round")
+  
+  # Calculated fields
+  totalAmount: BigInt!      # upAmount + downAmount
+  upBetsCount: Int!
+  downBetsCount: Int!
+  totalBetsCount: Int!
+  
+  # Price change (calculated when round closes)
+  priceChange: BigInt!      # closePrice - lockPrice
+  priceChangePercent: BigDecimal!  # percentage change
+  
+  # Payout multipliers (scaled by 1e18, updated when bets are placed)
+  payoutUp: BigInt!         # Payout multiplier for UP position
+  payoutDown: BigInt!       # Payout multiplier for DOWN position
+}
+
+# Daily statistics aggregation
+type DailyStats @entity(immutable: false) {
+  id: ID!                   # Date in YYYY-MM-DD format
+  date: String!
+  totalBets: Int!
+  totalVolume: BigInt!
+  uniqueUsers: Int!
+  roundsCreated: Int!
+  roundsClosed: Int!
+  
+  # Volume by position
+  upVolume: BigInt!
+  downVolume: BigInt!
+  
+  # User activity
+  newUsers: Int!
+  activeUsers: Int!
+  
+  # Payouts and claims
+  totalClaimed: BigInt!
+  totalRefunded: BigInt!
+}
+
+# Global statistics
+type GlobalStats @entity(immutable: false) {
+  id: ID!                   # Always "global"
+  totalUsers: Int!
+  totalBets: Int!
+  totalVolume: BigInt!
+  totalRounds: Int!
+  totalClaimed: BigInt!
+  totalRefunded: BigInt!
+  
+  # Round statistics
+  openRounds: Int!
+  liveRounds: Int!
+  closedRounds: Int!
+  cancelledRounds: Int!
+  
+  # Position statistics
+  upBets: Int!
+  downBets: Int!
+  upVolume: BigInt!
+  downVolume: BigInt!
+  
+  lastUpdated: BigInt!
+}
+
+# Track user daily activity
+type UserDailyStats @entity(immutable: false) {
+  id: ID!                   # user-YYYY-MM-DD
+  user: User!
+  date: String!
+  bets: Int!
+  volume: BigInt!
+  profit: BigInt!
+  
+  upBets: Int!
+  downBets: Int!
+  wonBets: Int!
+  lostBets: Int!
+}
+
+# User-Round relationship for efficient queries
+type UserRound @entity(immutable: false) {
+  id: ID!                   # user-roundId
+  user: User!
+  round: Round!
+  totalAmount: BigInt!      # total amount bet by user in this round
+  betCount: Int!            # number of bets placed by user in this round
+  upAmount: BigInt!         # amount bet on UP
+  downAmount: BigInt!       # amount bet on DOWN
+  claimed: Boolean!         # true if all bets claimed
+  totalPayout: BigInt!      # total payout from all bets
+  totalProfit: BigInt!      # total profit/loss
+  createdAt: BigInt!        # first bet timestamp
+  lastBetAt: BigInt!        # last bet timestamp
+}
+
+# Position enum - matches contract enum Position { Unset, Up, Down }
+enum Position {
+  UNSET   # 0
+  UP      # 1  
+  DOWN    # 2
+}
+
+# Round status enum - matches contract enum RoundStatus { Open, Live, Closed, Cancelled }
+enum RoundStatus {
+  OPEN      # 0
+  LIVE      # 1
+  CLOSED    # 2
+  CANCELLED # 3
+}
+
+# Asset enum - matches contract enum Asset { Eth, Arb, Aave, Btc, Sol, Xrp, Bnb, Doge, Pepe, Shib }
+enum Asset {
+  ETH
+  ARB
+  AAVE
+  BTC
+  SOL
+  XRP
+  BNB
+  DOGE
+  PEPE
+  SHIB
+}
+
+# Transaction entity to track all user interactions
+type Transaction @entity(immutable: true) {
+  id: ID!                   # transaction hash
+  user: User!
+  type: TransactionType!
+  amount: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  
+  # Optional references
+  bet: Bet
+  round: Round
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAW
+  BET_PLACED
+  BET_CLAIMED
+  BET_REFUNDED
+}

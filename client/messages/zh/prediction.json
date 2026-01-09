@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "服务当前不可用。",
+        "title": "预测市场",
+        "description": "与其他用户一起押注资产价格走势。",
+        "intro": {
+            "part1": "使用存款部分向合约中添加资金。这是为了为所有人提供顺畅且安全的游戏体验，并降低交易成本。资金可随时提取。",
+            "part2": "通过设置开始时间、结束时间、资产和方向（上涨或下跌）并下注来创建新的预测轮次。",
+            "part3": "其他用户可以在相同或相反的方向上下注，加入你的轮次。",
+            "part4": "一旦达到开始时间，轮次将进入实时状态，无法再下注。起始价格将从价格预言机中锁定。",
+            "part5": "在结束时间，将从价格预言机获取最终价格。预测正确的一方获胜。",
+            "part6": "轮次结束后，请记得在用户下注部分领取你的奖励！",
+            "part7": "你可以随时使用提取按钮从合约中提取可用余额。"
+        },
+        "loading": "加载中...",
+        "metadata": "合约元数据",
+        "metadata_not_available": "元数据不可用。",
+        "metadata_description": "预测市场合约的配置与设置",
+        "contract_metadata": {
+            "contract_address": "合约地址",
+            "min_max_bet_amount_usdc": "最小 / 最大下注金额（USDC）",
+            "fee_bps_percentage": "手续费 BPS 百分比",
+            "status": "状态",
+            "status_paused": "已暂停",
+            "status_active": "运行中",
+            "show_additional_details": "显示更多详情",
+            "hide_additional_details": "隐藏更多详情",
+            "owner_address": "所有者地址",
+            "payment_token_address": "支付代币地址",
+            "fee_collector_address": "手续费接收地址",
+            "bet_lock_buffer_seconds": "下注锁定缓冲（秒）",
+            "data_wait_window_seconds": "数据等待窗口（秒）",
+            "max_open_rounds_per_user": "每位用户最多开放轮次数",
+            "min_open_time_seconds": "最短开放时间（秒）",
+            "min_lock_time_seconds": "最短锁定时间（秒）",
+            "advance_cooldown_seconds": "提前冷却时间（秒）",
+            "price_max_age_seconds": "价格最大有效期（秒）",
+            "price_feed_oracles": "价格预言机",
+            "price_feed_oracles_description": "价格数据由 Pyth Network 预言机提供"
+        },
+        "contract_balance": {
+            "title": "合约余额",
+            "description": "管理你的资金",
+            "available": "可用",
+            "fetched_contract_balance": "已获取的合约余额：",
+            "Amount_to_deposit": "存入金额",
+            "Deposit": "存款",
+            "Depositing": "存款中...",
+            "Deposit_success": "存款成功！",
+            "Withdraw_All": "全部提取",
+            "Withdrawing": "提取中...",
+            "Withdraw_success": "提取成功！"
+        },
+        "create_round": {
+            "title": "创建轮次",
+            "description": "开启新的预测轮次",
+            "steps": {
+                "step_1": "步骤 1：设置时间范围",
+                "step_2": "步骤 2：选择市场",
+                "step_3": "步骤 3：设置下注金额"
+            },
+            "units": {
+                "minutes_abbrev": "分钟"
+            },
+            "timing": {
+                "round_starts_in": "轮次开始于",
+                "round_starts_in_help": "该轮次何时开放下注（从现在起的分钟数）",
+                "round_duration": "轮次持续时间",
+                "round_duration_help": "轮次开始后保持开放的时间（分钟）"
+            },
+            "market": {
+                "select_asset": "选择资产",
+                "select_asset_help": "选择要预测的加密货币",
+                "your_prediction": "你的预测",
+                "your_prediction_help": "价格会上涨还是下跌？",
+                "position_up_label": "上涨：价格将上涨",
+                "position_down_label": "下跌：价格将下跌"
+            },
+            "amount": {
+                "bet_amount": "下注金额",
+                "enter_amount": "输入金额",
+                "min_label": "最小：{amount}",
+                "max_label": "最大：{amount}"
+            },
+            "warnings": {
+                "short_timeframe": "较短的时间范围（少于 5 分钟）可能不足以让其他用户加入轮次。如果没有其他用户加入，该轮次将被取消，且你的下注将被退款。"
+            },
+            "actions": {
+                "create_round": "创建轮次",
+                "creating": "创建中..."
+            },
+            "success": {
+                "round_created": "轮次创建成功！"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "锁定和结束时间必须是有效数字。",
+                "minutes_greater_than_zero": "分钟数必须大于 0。",
+                "open_minutes_at_least_seconds": "开放时间必须至少为 {seconds} 秒。",
+                "lock_minutes_at_least_seconds": "锁定时间必须至少为 {seconds} 秒。",
+                "close_minutes_cannot_exceed": "结束时间不能超过 {minutes} 分钟。",
+                "lock_minutes_cannot_exceed": "锁定时间不能超过 {minutes} 分钟。",
+                "amount_required": "必须填写金额。",
+                "amount_must_be_integer": "金额必须为整数（不支持小数）。",
+                "amount_invalid": "无效金额。请使用整数值。"
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "开放轮次",
+                "live": "进行中轮次",
+                "closed": "已结束轮次",
+                "closed_with_count": "已结束轮次（{count}）"
+            },
+            "descriptions": {
+                "open": "正在接受下注的轮次",
+                "live": "当前正在进行的轮次",
+                "closed": "最新完成的预测轮次"
+            },
+            "loading": {
+                "open": "正在加载开放轮次数据...",
+                "live": "正在加载进行中轮次数据...",
+                "closed": "正在加载已结束轮次数据...",
+                "error_loading_data": "加载数据时出错"
+            },
+            "empty": {
+                "open_title": "暂无开放轮次",
+                "open_message": "当前没有可下注的开放轮次。可在上方创建一个！",
+                "live_title": "暂无进行中轮次",
+                "live_message": "当前没有正在进行的轮次。请在新轮次开始时再来查看。",
+                "closed_title": "暂无已结束轮次",
+                "closed_message": "当前未找到已结束或已取消的轮次。"
+            },
+            "errors": {
+                "unknown_error": "未知错误",
+                "graphql_error": "GraphQL 错误：{message}",
+                "open_request_failed": "获取开放轮次失败：",
+                "live_request_failed": "获取进行中轮次失败：",
+                "closed_request_failed": "获取已结束轮次失败：",
+                "open_title": "加载开放轮次时出错",
+                "live_title": "加载进行中轮次时出错",
+                "closed_title": "加载已结束轮次时出错",
+                "open_details": "无法获取开放轮次数据。请检查网络连接或稍后重试。",
+                "live_details": "无法获取进行中轮次数据。请检查网络连接或稍后重试。",
+                "closed_details": "无法获取已结束轮次数据。请检查网络连接或稍后重试。"
+            },
+            "pagination": {
+                "previous": "← 上一页",
+                "next": "下一页 →",
+                "page": "第 {page} 页（{count} 个轮次）",
+                "showing_open": "显示第 {from} 到 {to} 个开放轮次。",
+                "showing_live": "显示第 {from} 到 {to} 个进行中轮次。",
+                "showing_closed": "显示第 {from} 到 {to} 个已结束轮次。"
+            },
+            "notes": {
+                "live_betting_closed": "进行中轮次已关闭下注，结果待定。",
+                "open_bet_before_lock": "请在锁定时间到期前下注。"
+            },
+            "bet_dialog": {
+                "title": "下注 - {position}",
+                "description_up": "你正在押注价格将上涨。",
+                "description_down": "你正在押注价格将下跌。",
+                "round_id": "轮次 ID：{roundId}",
+                "amount_label": "金额（USDC）",
+                "amount_placeholder": "输入 USDC 金额",
+                "position_label": "方向",
+                "cancel": "取消",
+                "confirm": "确认下注",
+                "processing": "处理中...",
+                "processing_title": "交易处理中",
+                "processing_description": "请在钱包中确认交易并等待确认..."
+            },
+            "status": {
+                "open": "开放",
+                "live": "进行中",
+                "closed": "已结束",
+                "cancelled": "已取消"
+            },
+            "positions": {
+                "up": "上涨",
+                "down": "下跌",
+                "equal": "持平",
+                "pending": "待定",
+                "up_with_arrow": "↑ 上涨",
+                "down_with_arrow": "↓ 下跌"
+            },
+            "round_card": {
+                "volume_abbrev": "成交量",
+                "bets_count": "{count} 次下注",
+                "lock": "锁定",
+                "close": "结束",
+                "up_wins": "↑ 上涨获胜",
+                "down_wins": "↓ 下跌获胜",
+                "lock_price_label": "锁定价：",
+                "close_price_label": "结束价：",
+                "now_price_label": "当前价：",
+                "result": "结果",
+                "trend": "趋势"
+            },
+            "time": {
+                "days_short": "天",
+                "hours_short": "小时",
+                "minutes_short": "分",
+                "seconds_short": "秒"
+            }
+        }
+    }
+}

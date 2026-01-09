@@ -1,0 +1,24 @@
+/**
+ * Development-only Wrangler configuration
+ * This config excludes Durable Objects to prevent noisy warnings during local development.
+ * For production, use wrangler.jsonc instead.
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cft",
+	"main": "./custom-worker.ts",
+	"compatibility_date": "2025-03-01",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	"observability": {
+		"enabled": true
+	}
+	// Note: Durable Objects are intentionally excluded for local dev
+	// The API routes have fallbacks that handle this gracefully
+}

@@ -1,0 +1,34 @@
+{
+	"name": "cft-cloudflare",
+	"version": "0.1.0",
+	"private": true,
+	"packageManager": "pnpm@10.12.4",
+	"type": "module",
+	"scripts": {
+		"contract:build": "npx hardhat build contracts/lotto.sol",
+		"contract:test": "npx hardhat test",
+		"contract:exposeabi": "node scripts/exposeAbi.js",
+		"contract:deploy": "npx hardhat ignition deploy ignition/modules/Lotto.ts --network arbitrumOne --verify",
+		"contract:deploy:force": "npx hardhat ignition wipe chain-42161 LottoModule#CFTLotto --network arbitrumOne && npm run contract:deploy",
+		"contract:verify": "npx hardhat ignition --network arbitrumOne verify chain-42161"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@chainlink/contracts": "^1.5.0",
+		"@eslint/eslintrc": "^3",
+		"@graphprotocol/graph-cli": "0.56.0",
+		"@graphprotocol/graph-ts": "0.31.0",
+		"@nomicfoundation/hardhat-ignition": "^3.0.3",
+		"@nomicfoundation/hardhat-toolbox-viem": "^5.0.0",
+		"@nomicfoundation/hardhat-verify": "^3.0.3",
+		"@openzeppelin/contracts": "^5.4.0",
+		"@pythnetwork/pyth-sdk-solidity": "^4.2.0",
+		"@types/node": "^20",
+		"dotenv": "^17.2.3",
+		"eslint": "^9",
+		"forge-std": "github:foundry-rs/forge-std#v1.9.4",
+		"hardhat": "^3.0.6",
+		"matchstick-as": "0.5.0",
+		"typescript": "^5"
+	}
+}

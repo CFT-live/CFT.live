@@ -1,0 +1,9 @@
+onlyBuiltDependencies:
+  - '@arbitrum/nitro-contracts'
+  - esbuild
+  - keccak
+  - protobufjs
+  - secp256k1
+  - sharp
+  - unrs-resolver
+  - workerd

@@ -1,0 +1,58 @@
+specVersion: 0.0.5
+schema:
+  file: ./subgraph/schema.graphql
+
+dataSources:
+  - kind: ethereum
+    name: CFTRoulette
+    network: arbitrum-one
+    source:
+      address: "0x7aF1F0B1A6B69bE36077504c72bD719A0e837363"
+      abi: CFTRoulette
+      startBlock: 406087460
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Table
+        - User
+        - TablePlayer
+        - Turn
+        - Payout
+        - GlobalStats
+      abis:
+        - name: CFTRoulette
+          file: ./artifacts/contracts/Roulette.sol/CFTRoulette.json
+      eventHandlers:
+        - event: TableCreated(indexed uint256,indexed address,uint256,uint256,uint8)
+          handler: handleTableCreated
+        - event: PlayerJoined(indexed uint256,indexed address)
+          handler: handlePlayerJoined
+        - event: PlayerLeft(indexed uint256,indexed address)
+          handler: handlePlayerLeft
+        - event: PlayerKicked(indexed uint256,indexed address,indexed address)
+          handler: handlePlayerKicked
+        - event: PlayerReady(indexed uint256,indexed address)
+          handler: handlePlayerReady
+        - event: GameStarted(indexed uint256)
+          handler: handleGameStarted
+        - event: TurnPlayed(indexed uint256,indexed address,uint256,uint256,uint256)
+          handler: handleTurnPlayed
+        - event: RandomnessRequested(indexed uint256,uint256,uint256)
+          handler: handleRandomnessRequested
+        - event: RandomWordsFulfilled(indexed uint256,uint256,uint256)
+          handler: handleRandomWordsFulfilled
+        - event: PlayerEliminated(indexed uint256,indexed address)
+          handler: handlePlayerEliminated
+        - event: PlayerTurnChanged(indexed uint256,uint8,uint256)
+          handler: handlePlayerTurnChanged
+        - event: PlayerTimedOut(indexed uint256,indexed address,indexed address)
+          handler: handlePlayerTimedOut
+        - event: GameFinished(indexed uint256,address,uint256)
+          handler: handleGameFinished
+        - event: PayoutClaimed(indexed uint256,indexed address,uint256,bool)
+          handler: handlePayoutClaimed
+        - event: TableCancelled(indexed uint256,string)
+          handler: handleTableCancelled
+      file: ./subgraph/mapping.ts

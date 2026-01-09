@@ -1,0 +1,26 @@
+{
+    "home": {
+        "title": "CFT.live - Hub de Contrats Intelligents Web3",
+        "Connect_Wallet": "Connecter le Portefeuille",
+        "intro": "CFT.live existe pour fournir un environnement sûr et transparent pour explorer et interagir avec des contrats intelligents vérifiés—permettant aux utilisateurs de comprendre les protocoles Web3, de contrôler leurs actifs et d'éliminer les intermédiaires.",
+        "LIVE": "EN DIRECT",
+        "COMING_SOON": "BIENTÔT",
+        "Tools": "Outils",
+        "Games": "Protocoles",
+        "Sandbox": "Sandbox",
+        "Sandbox_Description": "Testez et interagissez avec n'importe quel contrat intelligent dans un environnement sécurisé. Expérimentez librement.",
+        "Prediction_Market": "Marché_de_Prévision",
+        "Prediction_Market_Description": "Prédisez les mouvements de prix des actifs. Créez des paris sur des marchés HAUSSE/BAISSE. Le gagnant remporte la cagnotte.",
+        "EXECUTE_PROTOCOL": "EXÉCUTER LE PROTOCOLE",
+        "Hash_Roulette": "Roulette_Hash",
+        "Hash_Roulette_Description": "Roulette russe avec des cryptomonnaies. Enjeux élevés et hasard prouvablement équitable.",
+        "Lotto_Pool": "Cagnotte_Loterie",
+        "Lotto_Pool_Description": "Une cagnotte de loterie basée sur la chance. Un seul gagnant remporte tout. Simple et transparent.",
+        "Asteroid_Dash": "Course d'Astéroïdes",
+        "Asteroid_Dash_Description": "Choisis ta planète et esquive les astéroïdes. Les survivants se partagent le pot de récompenses.",
+        "Legal_Disclaimer": "Avertissement Légal",
+        "Legal_Disclaimer_Text": "Avant d'interagir avec tout contrat intelligent et protocole sur cette plateforme, vous êtes seul responsable de vérifier que ces activités respectent les lois et réglementations de votre juridiction. Les activités basées sur la blockchain peuvent être restreintes ou interdites dans certains pays ou régions.",
+        "Legal_Disclaimer_Text_2": "En accédant et en utilisant ces services, vous reconnaissez avoir examiné les lois locales applicables et confirmez que votre participation est légale. Vous assumez l’entière responsabilité de toute conséquence légale résultant de l’utilisation de cette plateforme. CFT.live ne fournit aucun conseil juridique et ne pourra être tenu responsable de tout dommage ou problème légal découlant de votre participation.",
+        "SYSTEM_ONLINE": "SYSTÈME EN LIGNE"
+    }
+}

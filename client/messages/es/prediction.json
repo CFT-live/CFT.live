@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "El servicio no está disponible actualmente.",
+        "title": "Mercado_De_Predicción",
+        "description": "Apuesta sobre movimientos de precios de activos con otros usuarios.",
+        "intro": {
+            "part1": "Agrega fondos al contrato usando la sección Depósito. Esto es necesario para ofrecer una experiencia de juego fluida y segura para todos y reducir los costos de transacción. Los fondos pueden retirarse en cualquier momento.",
+            "part2": "Crea una nueva ronda de predicción especificando la hora de inicio, la hora de cierre, el activo y la posición (SUBE o BAJA) y realizando tu apuesta.",
+            "part3": "Otros usuarios pueden unirse a tu ronda realizando sus apuestas en la misma posición o en la contraria.",
+            "part4": "Una vez alcanzada la hora de inicio, la ronda pasa a EN VIVO y no se pueden realizar más apuestas. El precio inicial se fija desde el feed de precios.",
+            "part5": "En la hora de cierre, el precio final se obtiene del feed de precios. La posición con la predicción correcta gana.",
+            "part6": "Recuerda reclamar tus ganancias desde la sección Apuestas del Usuario después de que la ronda se cierre.",
+            "part7": "Usa el botón Retirar para retirar tu saldo disponible del contrato en cualquier momento."
+        },
+        "loading": "Cargando...",
+        "metadata": "Metadatos del Contrato",
+        "metadata_not_available": "Metadatos no disponibles.",
+        "metadata_description": "Configuración y ajustes del contrato del mercado de predicción",
+        "contract_metadata": {
+            "contract_address": "Dirección del Contrato",
+            "min_max_bet_amount_usdc": "Monto Mín / Máx de Apuesta (USDC)",
+            "fee_bps_percentage": "Porcentaje de Comisión BPS",
+            "status": "Estado",
+            "status_paused": "Pausado",
+            "status_active": "Activo",
+            "show_additional_details": "Mostrar detalles adicionales",
+            "hide_additional_details": "Ocultar detalles adicionales",
+            "owner_address": "Dirección del Propietario",
+            "payment_token_address": "Dirección del Token de Pago",
+            "fee_collector_address": "Dirección del Recolector de Comisiones",
+            "bet_lock_buffer_seconds": "Buffer de Bloqueo de Apuesta (segundos)",
+            "data_wait_window_seconds": "Ventana de Espera de Datos (segundos)",
+            "max_open_rounds_per_user": "Máx de Rondas Abiertas por Usuario",
+            "min_open_time_seconds": "Tiempo Mín de Apertura (segundos)",
+            "min_lock_time_seconds": "Tiempo Mín de Bloqueo (segundos)",
+            "advance_cooldown_seconds": "Enfriamiento de Avance (segundos)",
+            "price_max_age_seconds": "Antigüedad Máx del Precio (segundos)",
+            "price_feed_oracles": "Oráculos del Feed de Precios",
+            "price_feed_oracles_description": "Datos de precios proporcionados por los oráculos de Pyth Network"
+        },
+        "contract_balance": {
+            "title": "Saldo del Contrato",
+            "description": "Gestiona tus fondos",
+            "available": "Disponible",
+            "fetched_contract_balance": "Saldo del contrato obtenido:",
+            "Amount_to_deposit": "Monto a depositar",
+            "Deposit": "Depositar",
+            "Depositing": "Depositando...",
+            "Deposit_success": "Depósito realizado con éxito",
+            "Withdraw_All": "Retirar Todo",
+            "Withdrawing": "Retirando...",
+            "Withdraw_success": "Retiro realizado con éxito"
+        },
+        "create_round": {
+            "title": "Crear Ronda",
+            "description": "Inicia una nueva ronda de predicción",
+            "steps": {
+                "step_1": "Paso 1: Configurar el Rango de Tiempo",
+                "step_2": "Paso 2: Elegir el Mercado",
+                "step_3": "Paso 3: Definir tu Apuesta"
+            },
+            "units": {
+                "minutes_abbrev": "min"
+            },
+            "timing": {
+                "round_starts_in": "La ronda comienza en",
+                "round_starts_in_help": "Cuándo se abren las apuestas para esta ronda (minutos desde ahora)",
+                "round_duration": "Duración de la ronda",
+                "round_duration_help": "Cuánto tiempo permanece abierta la ronda después de comenzar (minutos)"
+            },
+            "market": {
+                "select_asset": "Seleccionar Activo",
+                "select_asset_help": "Qué criptomoneda predecir",
+                "your_prediction": "Tu Predicción",
+                "your_prediction_help": "¿El precio subirá o bajará?",
+                "position_up_label": "SUBE - El precio subirá",
+                "position_down_label": "BAJA - El precio bajará"
+            },
+            "amount": {
+                "bet_amount": "Monto de la Apuesta",
+                "enter_amount": "Ingresa el monto",
+                "min_label": "Mín: {amount}",
+                "max_label": "Máx: {amount}"
+            },
+            "warnings": {
+                "short_timeframe": "Los intervalos cortos (menos de 5 minutos) pueden no dar tiempo suficiente para que otros se unan a la ronda. Si ningún otro usuario se une, la ronda será cancelada y tu apuesta reembolsada."
+            },
+            "actions": {
+                "create_round": "Crear Ronda",
+                "creating": "Creando..."
+            },
+            "success": {
+                "round_created": "Ronda creada con éxito"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "Los minutos de bloqueo y cierre deben ser números válidos.",
+                "minutes_greater_than_zero": "Los minutos deben ser mayores que 0.",
+                "open_minutes_at_least_seconds": "Los minutos de apertura deben ser al menos {seconds} segundos.",
+                "lock_minutes_at_least_seconds": "Los minutos de bloqueo deben ser al menos {seconds} segundos.",
+                "close_minutes_cannot_exceed": "Los minutos de cierre no pueden exceder {minutes} minutos.",
+                "lock_minutes_cannot_exceed": "Los minutos de bloqueo no pueden exceder {minutes} minutos.",
+                "amount_required": "El monto es obligatorio.",
+                "amount_must_be_integer": "El monto debe ser un número entero (sin decimales).",
+                "amount_invalid": "Monto inválido. Usa un valor entero."
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "Rondas Abiertas",
+                "live": "Rondas en Vivo",
+                "closed": "Rondas Cerradas",
+                "closed_with_count": "Rondas Cerradas ({count})"
+            },
+            "descriptions": {
+                "open": "Rondas activas que aceptan apuestas",
+                "live": "Rondas actualmente en curso",
+                "closed": "Últimas rondas de predicción finalizadas"
+            },
+            "loading": {
+                "open": "Cargando datos de rondas abiertas...",
+                "live": "Cargando datos de rondas en vivo...",
+                "closed": "Cargando datos de rondas cerradas...",
+                "error_loading_data": "Error al cargar los datos"
+            },
+            "empty": {
+                "open_title": "No hay Rondas Abiertas",
+                "open_message": "No hay rondas abiertas disponibles para apostar en este momento. Crea una arriba.",
+                "live_title": "No hay Rondas en Vivo",
+                "live_message": "No hay rondas en vivo actualmente. Vuelve cuando comiencen nuevas rondas.",
+                "closed_title": "No hay Rondas Cerradas",
+                "closed_message": "No se encontraron rondas cerradas o canceladas en este momento."
+            },
+            "errors": {
+                "unknown_error": "Error desconocido",
+                "graphql_error": "Error de GraphQL: {message}",
+                "open_request_failed": "La solicitud de rondas abiertas falló:",
+                "live_request_failed": "La solicitud de rondas en vivo falló:",
+                "closed_request_failed": "La solicitud de rondas cerradas falló:",
+                "open_title": "Error al Cargar Rondas Abiertas",
+                "live_title": "Error al Cargar Rondas en Vivo",
+                "closed_title": "Error al Cargar Rondas Cerradas",
+                "open_details": "No se pudieron obtener los datos de rondas abiertas. Por favor revisa tu conexión o inténtalo más tarde.",
+                "live_details": "No se pudieron obtener los datos de rondas en vivo. Por favor revisa tu conexión o inténtalo más tarde.",
+                "closed_details": "No se pudieron obtener los datos de rondas cerradas. Por favor revisa tu conexión o inténtalo más tarde."
+            },
+            "pagination": {
+                "previous": "← Anterior",
+                "next": "Siguiente →",
+                "page": "Página {page} ({count} rondas)",
+                "showing_open": "Mostrando de {from} a {to} rondas abiertas.",
+                "showing_live": "Mostrando de {from} a {to} rondas en vivo.",
+                "showing_closed": "Mostrando de {from} a {to} rondas cerradas."
+            },
+            "notes": {
+                "live_betting_closed": "Las apuestas están cerradas para rondas en vivo. Resultados pendientes.",
+                "open_bet_before_lock": "Realiza tus apuestas antes de que expire el tiempo de bloqueo."
+            },
+            "bet_dialog": {
+                "title": "Realizar Apuesta - {position}",
+                "description_up": "Estás apostando a que el precio SUBIRÁ.",
+                "description_down": "Estás apostando a que el precio BAJARÁ.",
+                "round_id": "ID de la Ronda: {roundId}",
+                "amount_label": "Monto (USDC)",
+                "amount_placeholder": "Ingresa el monto en USDC",
+                "position_label": "Posición",
+                "cancel": "Cancelar",
+                "confirm": "Confirmar Apuesta",
+                "processing": "Procesando...",
+                "processing_title": "Procesando Transacción",
+                "processing_description": "Por favor confirma la transacción en tu billetera y espera la confirmación."
+            },
+            "status": {
+                "open": "ABIERTO",
+                "live": "EN VIVO",
+                "closed": "CERRADO",
+                "cancelled": "CANCELADO"
+            },
+            "positions": {
+                "up": "SUBE",
+                "down": "BAJA",
+                "equal": "IGUAL",
+                "pending": "PENDIENTE",
+                "up_with_arrow": "↑ SUBE",
+                "down_with_arrow": "↓ BAJA"
+            },
+            "round_card": {
+                "volume_abbrev": "vol",
+                "bets_count": "{count} apuestas",
+                "lock": "Bloqueo",
+                "close": "Cierre",
+                "up_wins": "↑ Gana Sube",
+                "down_wins": "↓ Gana Baja",
+                "lock_price_label": "Bloqueo:",
+                "close_price_label": "Cierre:",
+                "now_price_label": "Ahora:",
+                "result": "Resultado",
+                "trend": "Tendencia"
+            },
+            "time": {
+                "days_short": "d",
+                "hours_short": "h",
+                "minutes_short": "m",
+                "seconds_short": "s"
+            }
+        }
+    }
+}

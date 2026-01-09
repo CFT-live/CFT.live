@@ -1,0 +1,18 @@
+{
+	"name": "cft-advance-worker",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"init-worker": "wrangler kv namespace create ADVANCE_STATE_2",
+		"setup-api-key": "wrangler secret put ADVANCE_API_KEY",
+		"dev": "wrangler dev",
+		"deploy-worker": "wrangler deploy",
+		"tail": "wrangler tail"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20241127.0",
+		"typescript": "^5.0.0",
+		"wrangler": "^4.43.0"
+	}
+}

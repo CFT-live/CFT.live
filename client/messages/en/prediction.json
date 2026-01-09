@@ -1,0 +1,207 @@
+{
+    "prediction": {
+        "service_unavailable": "Service is currently unavailable.",
+        "title": "Prediction_Market",
+        "description": "Bet on asset price movements with other users.",
+        "intro": {
+            "part1": "Add funds to the contract using the Deposit section. This is required to provide a smooth and safe gaming experience for everyone and cut down transaction costs. Funds can be withdrawn at any point.",
+            "part2": "Create a new prediction round by specifying the start time, close time, asset and position (UP or DOWN) and placing your bet.",
+            "part3": "Other users can join your round by placing their bets on the same or opposite position.",
+            "part4": "Once the start time is reached, the round goes LIVE and no further bets can be placed. Start price is locked in from the price feed.",
+            "part5": "At the close time, the final price is fetched from the price feed. The position with the correct prediction wins.",
+            "part6": "Remember to claim your winnings from the User Bets section after the round is closed!",
+            "part7": "Use the Withdraw button to withdraw your available balance from the contract at any time."
+        },
+        "loading": "Loading...",
+        "metadata": "Contract Metadata",
+        "metadata_not_available": "Metadata not available.",
+        "metadata_description": "Configuration and settings for the prediction market contract",
+        "contract_metadata": {
+            "contract_address": "Contract Address",
+            "min_max_bet_amount_usdc": "Min / Max Bet Amount (USDC)",
+            "fee_bps_percentage": "Fee BPS Percentage",
+            "status": "Status",
+            "status_paused": "Paused",
+            "status_active": "Active",
+            "show_additional_details": "Show additional details",
+            "hide_additional_details": "Hide additional details",
+            "owner_address": "Owner Address",
+            "payment_token_address": "Payment Token Address",
+            "fee_collector_address": "Fee Collector Address",
+            "bet_lock_buffer_seconds": "Bet Lock Buffer (seconds)",
+            "data_wait_window_seconds": "Data Wait Window (seconds)",
+            "max_open_rounds_per_user": "Max Open Rounds Per User",
+            "min_open_time_seconds": "Min Open Time (seconds)",
+            "min_lock_time_seconds": "Min Lock Time (seconds)",
+            "advance_cooldown_seconds": "Advance Cooldown (seconds)",
+            "price_max_age_seconds": "Price Max Age (seconds)",
+            "price_feed_oracles": "Price Feed Oracles",
+            "price_feed_oracles_description": "Price data provided by Pyth Network oracles"
+        },
+        "contract_balance": {
+            "title": "Contract Balance",
+            "description": "Manage your funds",
+            "available": "Available",
+            "fetched_contract_balance": "Fetched contract balance:",
+            "Amount_to_deposit": "Amount to deposit",
+            "Deposit": "Deposit",
+            "Depositing": "Depositing...",
+            "Deposit_success": "Deposit succeeded!",
+            "Withdraw_All": "Withdraw All",
+            "Withdrawing": "Withdrawing...",
+            "Withdraw_success": "Withdraw succeeded!"
+        },
+        "create_round": {
+            "title": "Create Round",
+            "description": "Start a new prediction round",
+            "steps": {
+                "step_1": "Step 1: Set Time Range",
+                "step_2": "Step 2: Choose Your Market",
+                "step_3": "Step 3: Set Your Bet"
+            },
+            "units": {
+                "minutes_abbrev": "min"
+            },
+            "timing": {
+                "round_starts_in": "Round starts in",
+                "round_starts_in_help": "When betting opens for this round (minutes from now)",
+                "round_duration": "Round duration",
+                "round_duration_help": "How long the round stays open after starting (minutes)"
+            },
+            "market": {
+                "select_asset": "Select Asset",
+                "select_asset_help": "Which cryptocurrency to predict",
+                "your_prediction": "Your Prediction",
+                "your_prediction_help": "Will the price go up or down?",
+                "position_up_label": "UP - Price will rise",
+                "position_down_label": "DOWN - Price will fall"
+            },
+            "amount": {
+                "bet_amount": "Bet Amount",
+                "enter_amount": "Enter amount",
+                "min_label": "Min: {amount}",
+                "max_label": "Max: {amount}"
+            },
+            "warnings": {
+                "short_timeframe": "Short timeframes (less than 5 minutes) may not give others enough time to join the round. If not other users join the round, the round will be cancelled and your bet refunded."
+            },
+            "actions": {
+                "create_round": "Create Round",
+                "creating": "Creating…"
+            },
+            "success": {
+                "round_created": "Round created successfully!"
+            },
+            "errors": {
+                "lock_close_minutes_valid_numbers": "Lock and close minutes must be valid numbers.",
+                "minutes_greater_than_zero": "Minutes must be greater than 0.",
+                "open_minutes_at_least_seconds": "Open minutes must be at least {seconds} seconds.",
+                "lock_minutes_at_least_seconds": "Lock minutes must be at least {seconds} seconds.",
+                "close_minutes_cannot_exceed": "Close minutes cannot exceed {minutes} minutes.",
+                "lock_minutes_cannot_exceed": "Lock minutes cannot exceed {minutes} minutes.",
+                "amount_required": "Amount is required.",
+                "amount_must_be_integer": "Amount must be an integer (no decimals).",
+                "amount_invalid": "Invalid amount. Use an integer value."
+            }
+        },
+        "rounds": {
+            "titles": {
+                "open": "Open Rounds",
+                "live": "Live Rounds",
+                "closed": "Closed Rounds",
+                "closed_with_count": "Closed Rounds ({count})"
+            },
+            "descriptions": {
+                "open": "Active rounds accepting bets",
+                "live": "Rounds currently in progress",
+                "closed": "Latest finished prediction rounds"
+            },
+            "loading": {
+                "open": "Loading open rounds data...",
+                "live": "Loading live rounds data...",
+                "closed": "Loading closed rounds data...",
+                "error_loading_data": "Error loading data"
+            },
+            "empty": {
+                "open_title": "No Open Rounds",
+                "open_message": "No open rounds available for betting at the moment. Create one above!",
+                "live_title": "No Live Rounds",
+                "live_message": "No rounds are currently live. Check back when new rounds begin.",
+                "closed_title": "No Closed Rounds",
+                "closed_message": "No closed or cancelled rounds found at the moment."
+            },
+            "errors": {
+                "unknown_error": "Unknown error",
+                "graphql_error": "GraphQL Error: {message}",
+                "open_request_failed": "Open rounds request failed:",
+                "live_request_failed": "Live rounds request failed:",
+                "closed_request_failed": "Closed rounds request failed:",
+                "open_title": "Error Loading Open Rounds",
+                "live_title": "Error Loading Live Rounds",
+                "closed_title": "Error Loading Closed Rounds",
+                "open_details": "Unable to fetch open rounds data. Please check your connection or try again later.",
+                "live_details": "Unable to fetch live rounds data. Please check your connection or try again later.",
+                "closed_details": "Unable to fetch closed rounds data. Please check your connection or try again later."
+            },
+            "pagination": {
+                "previous": "← Previous",
+                "next": "Next →",
+                "page": "Page {page} ({count} rounds)",
+                "showing_open": "Showing {from} to {to} open rounds.",
+                "showing_live": "Showing {from} to {to} live rounds.",
+                "showing_closed": "Showing {from} to {to} closed rounds."
+            },
+            "notes": {
+                "live_betting_closed": "Betting is closed for live rounds - results pending.",
+                "open_bet_before_lock": "Place your bets before the lock time expires."
+            },
+            "bet_dialog": {
+                "title": "Place Bet - {position}",
+                "description_up": "You are betting that the price will go UP.",
+                "description_down": "You are betting that the price will go DOWN.",
+                "round_id": "Round ID: {roundId}",
+                "amount_label": "Amount (USDC)",
+                "amount_placeholder": "Enter amount in USDC",
+                "position_label": "Position",
+                "cancel": "Cancel",
+                "confirm": "Confirm Bet",
+                "processing": "Processing...",
+                "processing_title": "Processing Transaction",
+                "processing_description": "Please confirm the transaction in your wallet and wait for confirmation..."
+            },
+            "status": {
+                "open": "OPEN",
+                "live": "LIVE",
+                "closed": "CLOSED",
+                "cancelled": "CANCELLED"
+            },
+            "positions": {
+                "up": "UP",
+                "down": "DOWN",
+                "equal": "EQUAL",
+                "pending": "PENDING",
+                "up_with_arrow": "↑ UP",
+                "down_with_arrow": "↓ DOWN"
+            },
+            "round_card": {
+                "volume_abbrev": "vol",
+                "bets_count": "{count} bets",
+                "lock": "Lock",
+                "close": "Close",
+                "up_wins": "↑ Up wins",
+                "down_wins": "↓ Down wins",
+                "lock_price_label": "Lock:",
+                "close_price_label": "Close:",
+                "now_price_label": "Now:",
+                "result": "Result",
+                "trend": "Trend"
+            },
+            "time": {
+                "days_short": "d",
+                "hours_short": "h",
+                "minutes_short": "m",
+                "seconds_short": "s"
+            }
+        }
+    }
+}

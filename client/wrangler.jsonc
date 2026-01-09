@@ -1,0 +1,59 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cft",
+	"main": "./custom-worker.ts",
+	"compatibility_date": "2025-03-01",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"workers_dev": false,
+	"routes": [
+		{
+			"pattern": "cft.live/*",
+			"zone_name": "cft.live"
+		},
+		{
+			"pattern": "www.cft.live/*",
+			"zone_name": "cft.live"
+		}
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	/**
+	 * Service bindings
+	 * Presence lives in a standalone worker under /workers.
+	 */
+	"services": [
+		{
+			"binding": "PRESENCE_WORKER",
+			"service": "cft-presence-worker"
+		}
+	],
+	/**
+	 * Durable Object migrations
+	 *
+	 * The `cft` worker previously hosted a `UserPresence` Durable Object.
+	 * Presence has been moved to `cft-presence-worker`, so we delete the old class
+	 * here to unblock deployments.
+	 */
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["UserPresence"]
+		},
+		{
+			"tag": "v2",
+			"deleted_classes": ["UserPresence"]
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

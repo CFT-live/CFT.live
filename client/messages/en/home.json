@@ -1,0 +1,26 @@
+{
+    "home": {
+        "title": "CFT.live - Web3 Smart Contract Hub",
+        "Connect_Wallet": "Connect Wallet",
+        "intro": "CFT.live exists to provide a safe, transparent environment for exploring and interacting with verified smart contracts—empowering users to understand Web3 protocols, control their assets, and eliminate intermediaries.",
+        "LIVE": "LIVE",
+        "COMING_SOON": "COMING SOON",
+        "Tools": "Tools",
+        "Games": "Protocols",
+        "Sandbox": "Sandbox",
+        "Sandbox_Description": "Test and interact with any smart contract in a safe environment. Experiment freely.",
+        "Prediction_Market": "Prediction_Market",
+        "Prediction_Market_Description": "Predict asset price movements. Create bets on UP/DOWN markets. Winner takes the pot.",
+        "EXECUTE_PROTOCOL": "EXECUTE PROTOCOL",
+        "Hash_Roulette": "Hash_Roulette",
+        "Hash_Roulette_Description": "Russian Roulette with crypto. High stakes, provably fair randomness.",
+        "Lotto_Pool": "Lotto_Pool",
+        "Lotto_Pool_Description": "A lucky lottery pot. One winner takes it all. Simple and transparent.",
+        "Asteroid_Dash": "Asteroid_Dash",
+        "Asteroid_Dash_Description": "Pick your planet and dodge the asteroids. The survivors share the prize pool.",
+        "Legal_Disclaimer": "Legal Disclaimer",
+        "Legal_Disclaimer_Text": "Before interacting with any smart contracts and protocols on this platform, you are solely responsible for verifying that such activities comply with the laws and regulations of your jurisdiction. Blockchain-based activities may be restricted or prohibited in certain countries or regions.",
+        "Legal_Disclaimer_Text_2": "By accessing and using these services, you acknowledge that you have reviewed applicable local laws and confirm that your participation is legal. You assume full responsibility for any legal consequences arising from your use of this platform. CFT.live does not provide legal advice and shall not be held liable for any damages or legal issues resulting from your participation.",
+        "SYSTEM_ONLINE": "SYSTEM ONLINE"
+    }
+}

@@ -1,0 +1,256 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { request } from "graphql-request";
+import type { Metadata } from "next";
+
+import ClosedRounds from "@/app/components/prediction/ClosedRounds";
+import OpenRounds from "@/app/components/prediction/OpenRounds";
+import LiveRounds from "@/app/components/prediction/LiveRounds";
+import { DEFAULT_HEADERS } from "@/app/queries/headers";
+import {
+  getClosedRoundsQuery,
+  getOpenRoundsQuery,
+  getLiveRoundsQuery,
+} from "@/app/queries/predictionMarket";
+import { UserBets } from "@/app/components/prediction/UserBets";
+import { ContractBalance } from "@/app/components/prediction/ContractBalance";
+import { CreateRound } from "@/app/components/prediction/CreateRound";
+import { getContractMetadata } from "@/app/lib/api/actions";
+import { ContractMetadata } from "@/app/components/prediction/ContractMetadata";
+import { Card, CardContent } from "@/components/ui/card";
+import { REFRESH_INTERVAL_MILLIS } from "@/app/helpers";
+import { AdvanceState } from "@/app/components/prediction/admin/AdvanceState";
+import { FeeCollectorInfo } from "@/app/components/prediction/admin/FeeCollectorInfo";
+import {
+  CLOSED_ROUNDS_QUERY_KEY,
+  CONTRACT_METADATA_QUERY_KEY,
+  LIVE_ROUNDS_QUERY_KEY,
+  OPEN_ROUNDS_QUERY_KEY,
+} from "@/app/queries/keys";
+import { ShowUserBets } from "@/app/components/prediction/admin/ShowUserBets";
+import { PriceData } from "@/app/components/prediction/PriceData";
+import { ShowUserBalance } from "@/app/components/prediction/admin/ShowUserBalance";
+import { SetMinLockTime } from "@/app/components/prediction/admin/SetMinLockTime";
+import { SetMinOpenTime } from "@/app/components/prediction/admin/SetMinOpenTime";
+import { SetBetLimits } from "@/app/components/prediction/admin/SetBetLimits";
+import { SetFeeConfig } from "@/app/components/prediction/admin/SetFeeConfig";
+import { SetPriceFeedETH } from "@/app/components/prediction/admin/SetPriceFeedETH";
+import { SetPriceFeedARB } from "@/app/components/prediction/admin/SetPriceFeedARB";
+import { SetPauseState } from "@/app/components/prediction/admin/SetPauseState";
+import { SetBetLockBuffer } from "@/app/components/prediction/admin/SetBetLockBuffer";
+import { SetDataWaitWindow } from "@/app/components/prediction/admin/SetDataWaitWindow";
+import { SetAdvanceCooldown } from "@/app/components/prediction/admin/SetAdvanceCooldown";
+import { SetPriceMaxAge } from "@/app/components/prediction/admin/SetPriceMaxAge";
+import { SetMaxOpenRoundsPerUser } from "@/app/components/prediction/admin/SetMaxOpenRoundsPerUser";
+import { Instructions } from "@/app/components/Instructions";
+import { getTranslations } from "next-intl/server";
+
+export const metadata: Metadata = {
+  title: "Prediction Market",
+  description: "Bet on asset price movements. Create bets on UP/DOWN markets. Winner takes the pot.",
+};
+
+export default async function PredictionPage() {
+  const t = await getTranslations("prediction");
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Prediction Market',
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Any',
+    description: 'Bet on asset price movements. Create bets on UP/DOWN markets. Winner takes the pot.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'ETH'
+    }
+  }
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Conservative default for server-side prefetching
+        // Client-side components override with their own optimal values
+        staleTime: REFRESH_INTERVAL_MILLIS.medium,
+      },
+    },
+  });
+
+  // Prefetch all rounds data
+  await Promise.all([
+    // Prefetch closed rounds data
+    queryClient.prefetchQuery({
+      queryKey: [CLOSED_ROUNDS_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_THE_GRAPH_API_URL!,
+          getClosedRoundsQuery,
+          { first: 10 },
+          DEFAULT_HEADERS
+        );
+      },
+    }),
+    // Prefetch open rounds data
+    queryClient.prefetchQuery({
+      queryKey: [OPEN_ROUNDS_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_THE_GRAPH_API_URL!,
+          getOpenRoundsQuery,
+          {},
+          DEFAULT_HEADERS
+        );
+      },
+    }),
+    // Prefetch live rounds data
+    queryClient.prefetchQuery({
+      queryKey: [LIVE_ROUNDS_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_THE_GRAPH_API_URL!,
+          getLiveRoundsQuery,
+          {},
+          DEFAULT_HEADERS
+        );
+      },
+    }),
+    // Prefetch contract metadata - IMPORTANT: Keep in cache for client-side invalidations
+    queryClient.prefetchQuery({
+      queryKey: [CONTRACT_METADATA_QUERY_KEY],
+      queryFn: getContractMetadata,
+    }),
+  ]);
+
+  // Get the prefetched data from cache
+  const contractMetadata = queryClient.getQueryData([
+    CONTRACT_METADATA_QUERY_KEY,
+  ]) as Awaited<ReturnType<typeof getContractMetadata>>;
+
+  if (!contractMetadata) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card>
+          <CardContent>
+            <p className="text-center text-muted-foreground">
+              {t("service_unavailable")}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Header */}
+        <div className="text-center mb-8 border-b border-border pb-8">
+          <div className="inline-flex items-center justify-center mb-4">
+            <div className="text-primary">
+              <svg
+                className="w-12 h-12 mx-auto"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                strokeWidth="1"
+              >
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-foreground mb-3 uppercase tracking-wider">
+            {t("title")}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6 max-w-2xl mx-auto uppercase tracking-wide">
+            {t("description")}
+          </p>
+          <Instructions
+            title="PREDICTION_MARKET_MANUAL.TXT"
+            instructions={[
+              t("intro.part1"),
+              t("intro.part2"),
+              t("intro.part3"),
+              t("intro.part4"),
+              t("intro.part5"),
+              t("intro.part6"),
+              t("intro.part7"),
+            ]}
+          />
+        </div>
+        <ContractMetadata />
+        <PriceData />
+        <ContractBalance />
+
+        {/* Create Actions */}
+        <CreateRound
+          minOpenTime={contractMetadata.minOpenTimeInSeconds}
+          minLockTime={contractMetadata.minLockTimeInSeconds}
+          minBetAmount={contractMetadata.minBetAmount}
+          maxBetAmount={contractMetadata.maxBetAmount}
+        />
+
+        {/* Rounds Display */}
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <div className="space-y-6">
+            <OpenRounds />
+            <LiveRounds />
+            <ClosedRounds />
+            <UserBets />
+          </div>
+        </HydrationBoundary>
+
+        {/* Admin section */}
+        <AdvanceState contractOwnerAddress={contractMetadata.ownerAddress} />
+        <FeeCollectorInfo
+          feeCollectorAddress={contractMetadata.feeCollectorAddress}
+          contractOwnerAddress={contractMetadata.ownerAddress}
+        />
+        <ShowUserBets contractOwnerAddress={contractMetadata.ownerAddress} />
+        <ShowUserBalance contractOwnerAddress={contractMetadata.ownerAddress} />
+
+        {/* Admin Configuration Controls */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+          <SetMinLockTime
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetMinOpenTime
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetBetLimits contractOwnerAddress={contractMetadata.ownerAddress} />
+          <SetFeeConfig contractOwnerAddress={contractMetadata.ownerAddress} />
+          <SetPriceFeedETH
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetPriceFeedARB
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetPauseState
+            contractOwnerAddress={contractMetadata.ownerAddress}
+            isPaused={contractMetadata.paused}
+          />
+          <SetBetLockBuffer
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetDataWaitWindow
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetAdvanceCooldown
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetPriceMaxAge
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+          <SetMaxOpenRoundsPerUser
+            contractOwnerAddress={contractMetadata.ownerAddress}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

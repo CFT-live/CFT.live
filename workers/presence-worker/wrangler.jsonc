@@ -1,0 +1,36 @@
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "cft-presence-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-03-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	/**
+	 * Environment Variables
+	 * ALLOWED_ORIGINS: Comma-separated list of allowed origins for CORS
+	 */
+	"vars": {
+		"ALLOWED_ORIGINS": "https://cft.live,https://www.cft.live"
+	},
+	"observability": {
+		"enabled": true
+	},
+	/**
+	 * Durable Objects
+	 */
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "USER_PRESENCE",
+				"class_name": "UserPresence"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["UserPresence"]
+		}
+	]
+}
