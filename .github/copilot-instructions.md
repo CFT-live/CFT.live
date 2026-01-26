@@ -165,6 +165,94 @@ Contract addresses are exported from `client/app/lib/contracts/index.ts`.
 
 6. **Windows Environment**: Use `;` not `&&` in Git Bash commands for chaining.
 
+## Contribution System (CFT Contribute)
+
+This repo includes a transparent, wallet-authenticated contribution system used to coordinate work and distribute CFT token rewards fairly.
+
+### Core Entities
+
+- **Feature**: A project-sized unit of work with a fixed token pool (`total_tokens_reward`). Features contain many Tasks and have a status (`OPEN | IN_PROGRESS | COMPLETED | CANCELLED`).
+- **Task**: A discrete unit of work. Tasks may belong to a Feature via `feature_id`. Tasks can be **claimed** by at most one contributor at a time.
+- **Contribution**: A submission for a task (URL + notes, optional PR number) that can be reviewed by core team. Approved contributions earn **Contribution Points (CP)**.
+- **Distribution (FeatureDistribution)**: A public ledger entry that records how many tokens a contributor should receive for a Feature and the on-chain proof (Arbitrum tx hash + status).
+
+### Identity & Authentication
+
+- **Identity** is a wallet address.
+- Any write (claim, submit, approve, create/update feature, create/update distribution) uses the **signed request headers** pattern:
+  - `x-cft-message` + `x-cft-signature`
+  - The Edge/API route verifies signature and treats the signer address as the `*_id` of the actor (contributor/approver/creator).
+- **Admin / core team** actions are restricted based on contributor roles (existing convention).
+
+### User Flows
+
+**Contributor flow**
+
+1. Browse Features and Tasks.
+2. Claim a Task (exclusive claim).
+3. Submit work (URL + optional notes / PR number).
+4. Wait for review; if approved, CP is awarded and is used for leaderboards and distribution.
+
+**Core team flow**
+
+1. Create a Feature with a fixed token pool.
+2. Create Tasks under that Feature.
+3. Review Contributions for tasks:
+   - APPROVED: set `cp_awarded` + optional `approval_notes`.
+   - CHANGES_REQUESTED / REJECTED: optional notes, no CP.
+4. When a Feature is complete, create Distribution ledger entries proportional to approved CP totals.
+5. Perform manual on-chain transfers on Arbitrum and record the tx hashes publicly in the Distribution ledger.
+
+### CP Guidelines (Public)
+
+The UI includes a shared CP guideline card. Keep these ranges in sync with product expectations:
+
+- **Code Implementation**: 50–200 CP
+- **Code Review**: 30–100 CP
+- **Documentation**: 30–80 CP
+- **Discussion & Planning**: 5–30 CP
+- **Community & Ecosystem**: 20–60 CP
+- **Design & UI/UX**: 40–120 CP
+
+### Key Client Surfaces
+
+- **Task page** includes:
+  - Claim / Unclaim controls
+  - Submit work form
+  - Public list of contributions
+  - Admin review controls (approve/reject/request-changes + CP + notes)
+- **Features pages** include:
+  - Feature list / detail dashboard
+  - Task list per feature
+  - CP leaderboard computed from approved contributions
+  - Distribution ledger and Arbitrum tx hash links
+
+### Proxy API Routing (Client → Edge → Backend)
+
+- The Next.js app uses Edge API routes under `client/app/api/**` as a proxy layer to the backend API.
+- Reads may be public; writes require signature verification.
+- Keep backend payloads minimal and always derive sensitive actor IDs from the signer in the Edge route.
+
+### Claim Semantics
+
+- Only one contributor can claim a task at a time.
+- Claim/unclaim is explicit via an `action` (e.g. `CLAIM | UNCLAIM`).
+- Unclaim is only allowed by the current claimant.
+
+### Distribution Semantics
+
+- Distribution records are a public ledger. Transfers remain manual on Arbitrum.
+- Store:
+  - `tokens_rewarded`
+  - `transaction_hash` (Arbitrum)
+  - `transaction_status` (e.g. pending/confirmed/failed)
+
+### Implementation Conventions
+
+- Prefer extending existing types in `client/app/features/contribute/v1/api/types.ts` when adding fields.
+- Add new API calls in `client/app/features/contribute/v1/api/api.ts` and route them via `client/app/api/**`.
+- Keep contributor-facing transparency: approvals (approver id + notes), CP totals, and distributions should be publicly visible.
+
 ## External Integrations
 
 - **Reown AppKit** (formerly WalletConnect): Wallet connection UI configured in `client/app/config/index.tsx`

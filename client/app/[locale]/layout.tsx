@@ -6,11 +6,11 @@ import { NextIntlClientProvider } from "next-intl";
 
 import { ContextProvider } from "@/app/context";
 import Providers from "@/app/providers/Providers";
-import { UserCounter } from "@/app/components/UserCounter";
-import { ChatContainer } from "@/app/components/chat";
-import ConnectButton from "@/app/components/ConnectButton";
-import LanguageSwitcher from "@/app/components/LanguageSwitcher";
-import { Breadcrumb } from "@/app/components/Breadcrumb";
+import { UserCounter } from "@/app/features/root/v1/components/UserCounter";
+import { ChatContainer } from "@/app/features/root/v1/components/chat";
+import ConnectButton from "@/app/features/root/v1/components/ConnectButton";
+import LanguageSwitcher from "@/app/features/root/v1/components/LanguageSwitcher";
+import { Breadcrumb } from "@/app/features/root/v1/components/Breadcrumb";
 import { Locale, Link } from "@/i18n/routing";
 
 import "@/app/globals.css";
@@ -149,6 +149,12 @@ export default async function RootLayout({
                         >
                           FAQ
                         </Link>
+                        <Link
+                          href={"/contribute"}
+                          className="text-xs font-mono font-medium text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/50 px-2.5 py-1.5 rounded transition-all duration-200"
+                        >
+                          Contribute
+                        </Link>
                         <LanguageSwitcher
                           size="sm"
                           className="text-xs font-mono font-medium tracking-wider"
@@ -175,6 +181,14 @@ export default async function RootLayout({
                           style={{ textDecoration: "none" }}
                         >
                           <span>FAQ</span>
+                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full no-underline" />
+                        </Link>
+                        <Link
+                          href={"/contribute"}
+                          className="text-sm font-mono font-medium uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors relative group py-1"
+                          style={{ textDecoration: "none" }}
+                        >
+                          <span>Contribute</span>
                           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full no-underline" />
                         </Link>
                         <LanguageSwitcher

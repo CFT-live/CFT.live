@@ -16,6 +16,12 @@
 		"binding": "ASSETS",
 		"directory": ".open-next/assets"
 	},
+	"services": [
+		{
+			"binding": "TASKS_WORKER",
+			"service": "cft-tasks-worker"
+		}
+	],
 	"observability": {
 		"enabled": true
 	}

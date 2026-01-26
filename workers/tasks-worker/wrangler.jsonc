@@ -1,0 +1,23 @@
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "cft-tasks-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-03-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"vars": {
+		"ALLOWED_ORIGINS": "https://cft.live,https://www.cft.live"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "cft_tasks",
+			"database_id": "506ffb7f-141a-4d2a-9656-440351faf190",
+			"remote": true
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}
