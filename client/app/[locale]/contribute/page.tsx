@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import FeaturesPage from "@/app/features/contribute/v1/FeaturesPage";
 
-export default function Page({ params }: { params: { locale: string } }) {
-  redirect(`/${params.locale}/contribute/features`);
+export default function Page() {
+  return <FeaturesPage />;
 }

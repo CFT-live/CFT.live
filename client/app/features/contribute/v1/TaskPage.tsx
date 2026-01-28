@@ -1,31 +1,34 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
+import {
+  Loader2,
+  RefreshCw,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Trash2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Link, useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/routing";
 
 import {
   deleteTask,
   getTask,
   patchTask,
-  claimTask,
-  listContributions,
-  approveContribution,
   submitContribution,
 } from "@/app/features/contribute/v1/api/api";
-import type { Contribution, Task, TaskStatus, TaskType } from "@/app/features/contribute/v1/api/types";
+import type {
+  Task,
+  TaskStatus,
+  TaskType,
+} from "@/app/features/contribute/v1/api/types";
 import { useContributorProfile } from "./hooks/useContributorProfile";
+import { EditableTextField, EditableOptionsField } from "./EditableField";
 
 const STATUS_OPTIONS = [
   "OPEN",
@@ -33,7 +36,7 @@ const STATUS_OPTIONS = [
   "IN_REVIEW",
   "CHANGES_REQUESTED",
   "DONE",
-];
+] as const;
 
 const TYPE_OPTIONS = [
   "GENERAL",
@@ -56,41 +59,36 @@ function formatIsoTime(iso: string | null | undefined): string {
 export default function TaskPage({ taskId }: { taskId: string }) {
   const { address } = useAppKitAccount();
   const router = useRouter();
-  const { isAdmin, hasProfile, contributor, isLoading: profileLoading, ensureProfile } = useContributorProfile(address);
-  
+  const {
+    isAdmin,
+    hasProfile,
+    contributor,
+    isLoading: profileLoading,
+    ensureProfile,
+  } = useContributorProfile(address);
+
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const [contributions, setContributions] = useState<Contribution[]>([]);
-  const [contribLoading, setContribLoading] = useState(false);
-  const [contribError, setContribError] = useState<string | null>(null);
-
-  const [reviewCp, setReviewCp] = useState<Record<string, string>>({});
-  const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
-
-  const [editOpen, setEditOpen] = useState(false);
+  const [editingName, setEditingName] = useState(false);
   const [editName, setEditName] = useState("");
+  const [editingDescription, setEditingDescription] = useState(false);
   const [editDescription, setEditDescription] = useState("");
+  const [editingType, setEditingType] = useState(false);
   const [editType, setEditType] = useState<TaskType>("TECH");
+  const [editingStatus, setEditingStatus] = useState(false);
   const [editStatus, setEditStatus] = useState<TaskStatus>("OPEN");
+  const [editingAcceptanceCriteria, setEditingAcceptanceCriteria] = useState(false);
   const [editAcceptanceCriteria, setEditAcceptanceCriteria] = useState("");
+  const [savingField, setSavingField] = useState(false);
 
   const [submitUrl, setSubmitUrl] = useState("");
   const [submitNotes, setSubmitNotes] = useState("");
   const [submitPrNumber, setSubmitPrNumber] = useState<string>("");
 
-  const canSubmit = useMemo(() => {
-    if (!submitUrl.trim()) return false;
-    if (!address) return false;
-    if (!task) return false;
-    const me = address.toLowerCase();
-    // v1 flow: you must claim the task before submitting work.
-    return task.claimed_by_id === me && (task.status === "CLAIMED" || task.status === "CHANGES_REQUESTED");
-  }, [address, submitUrl, task]);
-
-  async function refresh() {
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -107,28 +105,23 @@ export default function TaskPage({ taskId }: { taskId: string }) {
     } finally {
       setLoading(false);
     }
-  }
-
-  async function refreshContributions(taskToUse?: Task | null) {
-    const t = taskToUse ?? task;
-    if (!t) return;
-
-    setContribLoading(true);
-    setContribError(null);
-    try {
-      const res = await listContributions({ task_id: t.id });
-      setContributions(res.contributions);
-    } catch (e) {
-      setContribError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setContribLoading(false);
-    }
-  }
+  }, [taskId]);
 
   useEffect(() => {
-    void refresh().then(() => void refreshContributions());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskId]);
+    refresh();
+  }, [refresh]);
+
+  const canSubmit = useMemo(() => {
+    if (!submitUrl.trim()) return false;
+    if (!address) return false;
+    if (!task) return false;
+    const me = address.toLowerCase();
+    // v1 flow: you must claim the task before submitting work.
+    return (
+      task.claimed_by_id === me &&
+      (task.status === "CLAIMED" || task.status === "CHANGES_REQUESTED")
+    );
+  }, [address, submitUrl, task]);
 
   // Handle profile check for authenticated actions
   async function handleAuthenticatedAction(): Promise<boolean> {
@@ -140,31 +133,45 @@ export default function TaskPage({ taskId }: { taskId: string }) {
     const canProceed = await ensureProfile();
     if (!canProceed) {
       if (hasProfile === false) {
-          setError("Please create a contributor profile first at /contribute/profile");
+        setError(
+          "Please create a contributor profile first at /contribute/profile",
+        );
       }
     }
     return canProceed;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/contribute/features"
-              className="text-sm font-mono text-muted-foreground hover:text-primary"
-              style={{ textDecoration: "none" }}
-            >
-              ← Features
-            </Link>
-          </div>
           <h1 className="text-2xl md:text-3xl font-mono font-bold tracking-wider">
+            <span className="text-muted-foreground">{">"}</span>{" "}
             {task?.name ?? "Task"}
           </h1>
           {task ? (
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">{task.status}</Badge>
+              <Badge
+                variant={
+                  task.status === "DONE"
+                    ? "default"
+                    : task.status === "IN_REVIEW"
+                      ? "secondary"
+                      : task.status === "CHANGES_REQUESTED"
+                        ? "destructive"
+                        : "outline"
+                }
+                className="gap-1"
+              >
+                {task.status === "DONE" ? (
+                  <CheckCircle2 className="w-3 h-3" />
+                ) : task.status === "IN_REVIEW" ? (
+                  <Clock className="w-3 h-3" />
+                ) : task.status === "CHANGES_REQUESTED" ? (
+                  <AlertCircle className="w-3 h-3" />
+                ) : null}
+                {task.status}
+              </Badge>
               <Badge variant="secondary">{task.task_type}</Badge>
             </div>
           ) : null}
@@ -177,8 +184,8 @@ export default function TaskPage({ taskId }: { taskId: string }) {
 
         <div className="flex items-center gap-2">
           {address && hasProfile === null ? (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => void ensureProfile()}
               disabled={profileLoading}
             >
@@ -197,14 +204,14 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 onClick={async () => {
                   if (!task) return;
                   const ok = window.confirm(
-                    `Delete this task? This cannot be undone.\n\n${task.name}`
+                    `Delete this task? This cannot be undone.\n\n${task.name}`,
                   );
                   if (!ok) return;
 
                   setError(null);
                   const canProceed = await handleAuthenticatedAction();
                   if (!canProceed) return;
-                  
+
                   setDeleting(true);
                   try {
                     await deleteTask(taskId);
@@ -217,10 +224,17 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                   }
                 }}
               >
-                {deleting ? "Deleting…" : "Delete"}
-              </Button>
-              <Button variant="outline" onClick={() => setEditOpen((v) => !v)}>
-                {editOpen ? "Close edit" : "Edit"}
+                {deleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Deleting
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </>
+                )}
               </Button>
             </>
           ) : null}
@@ -229,7 +243,17 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             onClick={() => void refresh()}
             disabled={loading || deleting}
           >
-            {loading ? "Loading…" : "Refresh"}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                Refresh
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -241,206 +265,260 @@ export default function TaskPage({ taskId }: { taskId: string }) {
       ) : null}
 
       {!task ? (
-        <Card className="p-4 border border-border/60 bg-background/60">
-          <p className="text-sm text-muted-foreground">Loading task…</p>
+        <Card className="p-4 border border-border/60 bg-card/60 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground relative">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Loading task…
+          </div>
         </Card>
       ) : null}
 
       {task ? (
-        <Card className="p-4 border border-border/60 bg-background/60">
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-            Description
-          </h2>
-          <pre className="mt-2 whitespace-pre-wrap text-sm text-foreground/90 font-mono leading-relaxed">
-            {task.description || "(no description)"}
-          </pre>
-          <h2 className="mt-4 text-sm font-mono font-semibold uppercase tracking-wider">
-            Acceptance criteria
-          </h2>
-          <pre className="mt-2 whitespace-pre-wrap text-sm text-foreground/90 font-mono leading-relaxed">
-            {task.acceptance_criteria || "(none)"}
-          </pre>
-        </Card>
-      ) : null}
+        <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          
+          {/* Name Field */}
+          <EditableTextField
+            title="Name"
+            value={editName}
+            isAdmin={isAdmin}
+            isEditing={editingName}
+            isSaving={savingField}
+            onEdit={() => {
+              setEditName(task.name);
+              setEditingName(true);
+            }}
+            onCancel={() => setEditingName(false)}
+            onChange={setEditName}
+            onSave={async () => {
+              setError(null);
+              const canProceed = await handleAuthenticatedAction();
+              if (!canProceed) return;
 
-      {task ? (
-        <Card className="p-4 border border-border/60 bg-background/60">
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-            Claim
-          </h2>
-          <p className="mt-2 text-xs text-muted-foreground font-mono">
-            Only one contributor can claim a task at a time.
-          </p>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Button
-              disabled={!task || loading || task.status !== "OPEN" || !address}
-              onClick={async () => {
-                setError(null);
-                const canProceed = await handleAuthenticatedAction();
-                if (!canProceed) return;
-
-                try {
-                  await claimTask({ task_id: task.id, action: "CLAIM" });
-                  await refresh();
-                } catch (e) {
-                  setError(e instanceof Error ? e.message : String(e));
-                }
-              }}
-            >
-              Claim task
-            </Button>
-
-            <Button
-              variant="outline"
-              disabled={
-                !task ||
-                loading ||
-                task.status !== "CLAIMED" ||
-                !address ||
-                task.claimed_by_id !== address.toLowerCase()
+              setSavingField(true);
+              try {
+                await patchTask(taskId, {
+                  feature_id: task.feature_id,
+                  name: editName,
+                  description: task.description,
+                  task_type: task.task_type,
+                  acceptance_criteria: task.acceptance_criteria,
+                  status: task.status,
+                });
+                await refresh();
+                setEditingName(false);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : String(e));
+              } finally {
+                setSavingField(false);
               }
-              onClick={async () => {
-                setError(null);
-                const canProceed = await handleAuthenticatedAction();
-                if (!canProceed) return;
-                try {
-                  await claimTask({ task_id: task.id, action: "UNCLAIM" });
-                  await refresh();
-                } catch (e) {
-                  setError(e instanceof Error ? e.message : String(e));
-                }
-              }}
-            >
-              Unclaim
-            </Button>
+            }}
+          />
 
-            <span className="text-xs text-muted-foreground font-mono">
-              {task.claimed_by_id
-                ? `Claimed by ${task.claimed_by_id.slice(0, 6)}…${task.claimed_by_id.slice(-4)}`
-                : "Unclaimed"}
-            </span>
-          </div>
-        </Card>
-      ) : null}
+          {/* Type Field */}
+          <EditableOptionsField
+            title="Type"
+            value={editType}
+            options={TYPE_OPTIONS}
+            isAdmin={isAdmin}
+            isEditing={editingType}
+            isSaving={savingField}
+            onEdit={() => {
+              setEditType(task.task_type);
+              setEditingType(true);
+            }}
+            onCancel={() => setEditingType(false)}
+            onChange={setEditType}
+            onSave={async () => {
+              setError(null);
+              const canProceed = await handleAuthenticatedAction();
+              if (!canProceed) return;
 
-      {editOpen && task && isAdmin ? (
-        <Card className="p-4 border border-border/60 bg-background/60">
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-            Edit task
-          </h2>
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="md:col-span-2">
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                Name
-              </label>
-              <Input
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                Type
-              </label>
-              <Select
-                value={editType}
-                onValueChange={(v) => setEditType(v as TaskType)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TYPE_OPTIONS.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                Status
-              </label>
-              <Select
-                value={editStatus}
-                onValueChange={(v) => setEditStatus(v as TaskStatus)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                Description
-              </label>
-              <textarea
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-                className="w-full min-h-[140px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                Acceptance criteria
-              </label>
-              <textarea
-                value={editAcceptanceCriteria}
-                onChange={(e) => setEditAcceptanceCriteria(e.target.value)}
-                className="w-full min-h-[140px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
-              />
-            </div>
-          </div>
-          <div className="mt-3 flex items-center gap-2">
-            <Button
-              onClick={async () => {
-                setError(null);
-                const canProceed = await handleAuthenticatedAction();
-                if (!canProceed) return;
-                
-                try {
-                  await patchTask(taskId, {
-                    feature_id: task.feature_id,
-                    name: editName,
-                    description: editDescription,
-                    task_type: editType,
-                    acceptance_criteria: editAcceptanceCriteria,
-                    status: editStatus,
-                  });
-                  await refresh();
-                  setEditOpen(false);
-                } catch (e) {
-                  setError(e instanceof Error ? e.message : String(e));
+              setSavingField(true);
+              try {
+                await patchTask(taskId, {
+                  feature_id: task.feature_id,
+                  name: task.name,
+                  description: task.description,
+                  task_type: editType,
+                  acceptance_criteria: task.acceptance_criteria,
+                  status: task.status,
+                });
+                await refresh();
+                setEditingType(false);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : String(e));
+              } finally {
+                setSavingField(false);
+              }
+            }}
+            renderDisplay={() => (
+              <Badge variant="secondary" className="mt-2">
+                {task.task_type}
+              </Badge>
+            )}
+          />
+
+          {/* Status Field */}
+          <EditableOptionsField
+            title="Status"
+            value={editStatus}
+            options={STATUS_OPTIONS}
+            isAdmin={isAdmin}
+            isEditing={editingStatus}
+            isSaving={savingField}
+            onEdit={() => {
+              setEditStatus(task.status);
+              setEditingStatus(true);
+            }}
+            onCancel={() => setEditingStatus(false)}
+            onChange={setEditStatus}
+            onSave={async () => {
+              setError(null);
+              const canProceed = await handleAuthenticatedAction();
+              if (!canProceed) return;
+
+              setSavingField(true);
+              try {
+                await patchTask(taskId, {
+                  feature_id: task.feature_id,
+                  name: task.name,
+                  description: task.description,
+                  task_type: task.task_type,
+                  acceptance_criteria: task.acceptance_criteria,
+                  status: editStatus,
+                });
+                await refresh();
+                setEditingStatus(false);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : String(e));
+              } finally {
+                setSavingField(false);
+              }
+            }}
+            renderDisplay={() => (
+              <Badge
+                variant={
+                  task.status === "DONE"
+                    ? "default"
+                    : task.status === "IN_REVIEW"
+                      ? "secondary"
+                      : task.status === "CHANGES_REQUESTED"
+                        ? "destructive"
+                        : "outline"
                 }
-              }}
-            >
-              Save
-            </Button>
-          </div>
+                className="gap-1 mt-2"
+              >
+                {task.status === "DONE" ? (
+                  <CheckCircle2 className="w-3 h-3" />
+                ) : task.status === "IN_REVIEW" ? (
+                  <Clock className="w-3 h-3" />
+                ) : task.status === "CHANGES_REQUESTED" ? (
+                  <AlertCircle className="w-3 h-3" />
+                ) : null}
+                {task.status}
+              </Badge>
+            )}
+          />
+
+          {/* Description Field */}
+          <EditableTextField
+            title="Description"
+            value={editDescription}
+            isAdmin={isAdmin}
+            isEditing={editingDescription}
+            isSaving={savingField}
+            multiline
+            onEdit={() => {
+              setEditDescription(task.description);
+              setEditingDescription(true);
+            }}
+            onCancel={() => setEditingDescription(false)}
+            onChange={setEditDescription}
+            onSave={async () => {
+              setError(null);
+              const canProceed = await handleAuthenticatedAction();
+              if (!canProceed) return;
+
+              setSavingField(true);
+              try {
+                await patchTask(taskId, {
+                  feature_id: task.feature_id,
+                  name: task.name,
+                  description: editDescription,
+                  task_type: task.task_type,
+                  acceptance_criteria: task.acceptance_criteria,
+                  status: task.status,
+                });
+                await refresh();
+                setEditingDescription(false);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : String(e));
+              } finally {
+                setSavingField(false);
+              }
+            }}
+            placeholder="What did you do? Anything reviewers should know?"
+          />
+
+          {/* Acceptance Criteria Field */}
+          <EditableTextField
+            title="Acceptance criteria"
+            value={editAcceptanceCriteria}
+            isAdmin={isAdmin}
+            isEditing={editingAcceptanceCriteria}
+            isSaving={savingField}
+            multiline
+            onEdit={() => {
+              setEditAcceptanceCriteria(task.acceptance_criteria);
+              setEditingAcceptanceCriteria(true);
+            }}
+            onCancel={() => setEditingAcceptanceCriteria(false)}
+            onChange={setEditAcceptanceCriteria}
+            onSave={async () => {
+              setError(null);
+              const canProceed = await handleAuthenticatedAction();
+              if (!canProceed) return;
+
+              setSavingField(true);
+              try {
+                await patchTask(taskId, {
+                  feature_id: task.feature_id,
+                  name: task.name,
+                  description: task.description,
+                  task_type: task.task_type,
+                  acceptance_criteria: editAcceptanceCriteria,
+                  status: task.status,
+                });
+                await refresh();
+                setEditingAcceptanceCriteria(false);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : String(e));
+              } finally {
+                setSavingField(false);
+              }
+            }}
+            className=""
+          />
         </Card>
       ) : null}
 
       {task ? (
-        <Card className="p-4 border border-border/60 bg-background/60">
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-            Submit work
+        <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
+            <span className="text-primary">{">"}[</span> Submit work{" "}
+            <span className="text-primary">]</span>
           </h2>
           <p className="mt-2 text-xs text-muted-foreground font-mono">
-            Submit a link to your work (PR, docs, demo). Requires a contributor profile.
+            Submit a link to your work (PR, docs, demo). Requires a contributor
+            profile.
           </p>
 
           <div className="mt-3 grid grid-cols-1 gap-3">
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-xs font-mono text-muted-foreground">
                 Work URL
               </label>
               <Input
@@ -451,7 +529,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             </div>
 
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-xs font-mono text-muted-foreground">
                 GitHub PR number (optional)
               </label>
               <Input
@@ -462,7 +540,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             </div>
 
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-xs font-mono text-muted-foreground">
                 Notes (optional)
               </label>
               <textarea
@@ -492,7 +570,11 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                     return;
                   }
 
-                  if (task.claimed_by_id !== me || (task.status !== "CLAIMED" && task.status !== "CHANGES_REQUESTED")) {
+                  if (
+                    task.claimed_by_id !== me ||
+                    (task.status !== "CLAIMED" &&
+                      task.status !== "CHANGES_REQUESTED")
+                  ) {
                     setError("You must claim this task before submitting");
                     return;
                   }
@@ -515,14 +597,15 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                     await submitContribution({
                       task_id: task.id,
                       submitted_work_url: submitUrl.trim(),
-                      submission_notes: submitNotes.trim() ? submitNotes.trim() : null,
+                      submission_notes: submitNotes.trim()
+                        ? submitNotes.trim()
+                        : null,
                       github_pr_number: parsedPrNumber,
                     });
                     setSubmitUrl("");
                     setSubmitNotes("");
                     setSubmitPrNumber("");
                     await refresh();
-                    await refreshContributions(task);
                   } catch (e) {
                     setError(e instanceof Error ? e.message : String(e));
                   }
@@ -539,217 +622,15 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 <span className="text-xs text-muted-foreground font-mono">
                   Claim this task first to submit
                 </span>
-              ) : task && task.status !== "CLAIMED" && task.status !== "CHANGES_REQUESTED" ? (
+              ) : task &&
+                task.status !== "CLAIMED" &&
+                task.status !== "CHANGES_REQUESTED" ? (
                 <span className="text-xs text-muted-foreground font-mono">
                   Submissions are only allowed when CLAIMED or CHANGES_REQUESTED
                 </span>
               ) : null}
             </div>
           </div>
-        </Card>
-      ) : null}
-
-      {task ? (
-        <Card className="p-4 border border-border/60 bg-background/60">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-              Contributions
-            </h2>
-            <Button
-              variant="outline"
-              onClick={() => void refreshContributions(task)}
-              disabled={contribLoading}
-            >
-              {contribLoading ? "Loading…" : "Refresh"}
-            </Button>
-          </div>
-
-          {contribError ? (
-            <div className="mt-3 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-              {contribError}
-            </div>
-          ) : null}
-
-          {contributions.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">No submissions yet.</p>
-          ) : (
-            <div className="mt-3 space-y-2">
-              {contributions
-                .slice()
-                .sort((a, b) => (a.submission_date < b.submission_date ? 1 : -1))
-                .map((c) => (
-                  <div
-                    key={c.id}
-                    className="rounded-md border border-border/60 bg-background px-3 py-2"
-                  >
-                    <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline">{c.status}</Badge>
-                        {typeof c.cp_awarded === "number" ? (
-                          <Badge variant="secondary">{c.cp_awarded} CP</Badge>
-                        ) : null}
-                      </div>
-                      <div className="text-xs text-muted-foreground font-mono">
-                        {c.contributor_id.slice(0, 6)}…{c.contributor_id.slice(-4)} · {formatIsoTime(c.submission_date)}
-                      </div>
-                    </div>
-
-                    <div className="mt-2 text-sm font-mono">
-                      <a
-                        href={c.submitted_work_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="hover:text-primary"
-                      >
-                        {c.submitted_work_url}
-                      </a>
-                    </div>
-                    {c.submission_notes ? (
-                      <pre className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground font-mono">
-                        {c.submission_notes}
-                      </pre>
-                    ) : null}
-
-                    {c.approver_id ? (
-                      <div className="mt-2 text-xs text-muted-foreground font-mono">
-                        Approved by {c.approver_id.slice(0, 6)}…{c.approver_id.slice(-4)}
-                        {c.approval_date ? ` · ${formatIsoTime(c.approval_date)}` : ""}
-                      </div>
-                    ) : null}
-                    {c.approval_notes ? (
-                      <pre className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground font-mono">
-                        {c.approval_notes}
-                      </pre>
-                    ) : null}
-
-                    {isAdmin ? (
-                      <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
-                        <div className="text-xs font-mono font-semibold uppercase tracking-wider">
-                          Review (Admin)
-                        </div>
-                        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                              CP (for APPROVED)
-                            </label>
-                            <Input
-                              value={reviewCp[c.id] ?? ""}
-                              onChange={(e) =>
-                                setReviewCp((prev) => ({ ...prev, [c.id]: e.target.value }))
-                              }
-                              placeholder="e.g. 50"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                              Status
-                            </label>
-                            <Input
-                              value={c.status}
-                              readOnly
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                              Notes
-                            </label>
-                            <textarea
-                              value={reviewNotes[c.id] ?? ""}
-                              onChange={(e) =>
-                                setReviewNotes((prev) => ({ ...prev, [c.id]: e.target.value }))
-                              }
-                              className="w-full min-h-[90px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
-                              placeholder="Feedback / approval notes"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          <Button
-                            variant="outline"
-                            disabled={loading}
-                            onClick={async () => {
-                              setError(null);
-                              const canProceed = await handleAuthenticatedAction();
-                              if (!canProceed) return;
-                              try {
-                                await approveContribution({
-                                  contribution_id: c.id,
-                                  status: "CHANGES_REQUESTED",
-                                  cp_awarded: null,
-                                  approval_notes: (reviewNotes[c.id] ?? "").trim() || null,
-                                });
-                                await refreshContributions(task);
-                              } catch (e) {
-                                setError(e instanceof Error ? e.message : String(e));
-                              }
-                            }}
-                          >
-                            Request changes
-                          </Button>
-                          <Button
-                            variant="outline"
-                            disabled={loading}
-                            onClick={async () => {
-                              setError(null);
-                              const canProceed = await handleAuthenticatedAction();
-                              if (!canProceed) return;
-
-                              try {
-                                await approveContribution({
-                                  contribution_id: c.id,
-                                  status: "REJECTED",
-                                  cp_awarded: null,
-                                  approval_notes: (reviewNotes[c.id] ?? "").trim() || null,
-                                });
-                                await refreshContributions(task);
-                              } catch (e) {
-                                setError(e instanceof Error ? e.message : String(e));
-                              }
-                            }}
-                          >
-                            Reject
-                          </Button>
-                          <Button
-                            disabled={loading}
-                            onClick={async () => {
-                              setError(null);
-                              const canProceed = await handleAuthenticatedAction();
-                              if (!canProceed) return;
-
-                              const cpText = (reviewCp[c.id] ?? "").trim();
-                              if (!cpText) {
-                                setError("CP is required to approve");
-                                return;
-                              }
-                              const cpValue = Number(cpText);
-                              if (!Number.isFinite(cpValue) || cpValue < 0) {
-                                setError("CP must be a non-negative number");
-                                return;
-                              }
-
-                              try {
-                                await approveContribution({
-                                  contribution_id: c.id,
-                                  status: "APPROVED",
-                                  cp_awarded: cpValue,
-                                  approval_notes: (reviewNotes[c.id] ?? "").trim() || null,
-                                });
-                                await refreshContributions(task);
-                              } catch (e) {
-                                setError(e instanceof Error ? e.message : String(e));
-                              }
-                            }}
-                          >
-                            Approve
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-            </div>
-          )}
         </Card>
       ) : null}
     </div>

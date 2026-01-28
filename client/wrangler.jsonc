@@ -35,10 +35,6 @@
 			"binding": "PRESENCE_WORKER",
 			"service": "cft-presence-worker"
 		},
-		{
-			"binding": "TASKS_WORKER",
-			"service": "cft-tasks-worker"
-		}
 	],
 	/**
 	 * Durable Object migrations

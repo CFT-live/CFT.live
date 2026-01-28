@@ -6,7 +6,6 @@ declare namespace Cloudflare {
 		NEXTJS_ENV: string;
 		ASSETS: Fetcher;
         PRESENCE_WORKER: Fetcher;
-        TASKS_WORKER: Fetcher;
 	}
 }
 interface CloudflareEnv extends Cloudflare.Env {}

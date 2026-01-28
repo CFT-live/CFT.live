@@ -4,6 +4,20 @@ import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { ChevronRight } from "lucide-react";
 
+// Helper to check if a string looks like a UUID
+function isUuid(str: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
+// Helper to format segment labels
+function formatLabel(segment: string): string {
+  if (isUuid(segment)) {
+    // Shorten UUIDs to first 8 characters
+    return segment.slice(0, 8).toUpperCase();
+  }
+  return segment.charAt(0).toUpperCase() + segment.slice(1);
+}
+
 export function Breadcrumb() {
   const pathname = usePathname();
   
@@ -23,7 +37,7 @@ export function Breadcrumb() {
     { label: "Home", href: "/" },
     ...pathWithoutLocale.map((segment, index) => {
       const href = `/${pathWithoutLocale.slice(0, index + 1).join("/")}`;
-      const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+      const label = formatLabel(segment);
       return { label, href };
     }),
   ];

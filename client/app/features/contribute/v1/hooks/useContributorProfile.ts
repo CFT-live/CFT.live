@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getMyContributor } from "../api/api";
 import type { Contributor } from "../api/types";
+import { MILLIS } from "@/app/helpers";
 
 type CachedProfile = {
   address: string;
@@ -11,7 +12,7 @@ type CachedProfile = {
 };
 
 const CACHE_KEY = "cft_profile_cache";
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const CACHE_DURATION = 12 * MILLIS.inHour;
 
 function getCachedProfile(address: string): CachedProfile | null {
   if (typeof window === "undefined") return null;
@@ -35,7 +36,8 @@ function getCachedProfile(address: string): CachedProfile | null {
     // Clear invalid cache
     sessionStorage.removeItem(CACHE_KEY);
     return null;
-  } catch {
+  } catch (e) {
+    console.warn("Failed to remove profile cache", e);
     return null;
   }
 }
@@ -45,8 +47,8 @@ function setCachedProfile(profile: CachedProfile): void {
 
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify(profile));
-  } catch {
-    // Ignore storage errors
+  } catch (e) {
+    console.warn("Failed to set profile cache", e);
   }
 }
 
@@ -82,15 +84,16 @@ export function useContributorProfile(address: string | undefined) {
     setIsLoading(true);
     try {
       const res = await getMyContributor();
+      const isUserAdmin = (res.contributor.roles ?? []).includes("ADMIN") || (res.contributor.roles ?? []).includes("CORE");
       setHasProfile(true);
-      setIsAdmin((res.contributor.roles ?? []).includes("ADMIN") || (res.contributor.roles ?? []).includes("CORE"));
+      setIsAdmin(isUserAdmin);
       setContributor(res.contributor);
 
       // Cache the result
       setCachedProfile({
         address,
         hasProfile: true,
-        isAdmin: (res.contributor.roles ?? []).includes("ADMIN") || (res.contributor.roles ?? []).includes("CORE"),
+        isAdmin: isUserAdmin,
         contributor: res.contributor,
         timestamp: Date.now(),
       });
@@ -105,8 +108,8 @@ export function useContributorProfile(address: string | undefined) {
       // and "stick" across reloads after a user creates a profile.
       try {
         sessionStorage.removeItem(CACHE_KEY);
-      } catch {
-        // Ignore
+      } catch (e) {
+        console.warn("Failed to clear profile cache", e);
       }
 
       return false;
@@ -130,9 +133,6 @@ export function useContributorProfile(address: string | undefined) {
       setContributor(null);
     }
   }, [address]);
-
-  // Note: We don't need the second useEffect anymore since we initialize from cache
-  // and update on address change
 
   return {
     isAdmin,
