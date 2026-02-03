@@ -9,6 +9,9 @@ import {
   Clock,
   AlertCircle,
   Trash2,
+  User,
+  XCircle,
+  ExternalLink,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,11 +24,15 @@ import {
   getTask,
   patchTask,
   submitContribution,
+  claimTask,
+  listContributions,
+  approveContribution,
 } from "@/app/features/contribute/v1/api/api";
 import type {
   Task,
   TaskStatus,
   TaskType,
+  Contribution,
 } from "@/app/features/contribute/v1/api/types";
 import { useContributorProfile } from "./hooks/useContributorProfile";
 import { EditableTextField, EditableOptionsField } from "./EditableField";
@@ -88,6 +95,15 @@ export default function TaskPage({ taskId }: { taskId: string }) {
   const [submitNotes, setSubmitNotes] = useState("");
   const [submitPrNumber, setSubmitPrNumber] = useState<string>("");
 
+  const [claiming, setClaiming] = useState(false);
+  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [contributionsLoading, setContributionsLoading] = useState(false);
+  const [claimerUsername, setClaimerUsername] = useState<string | null>(null);
+  const [submittingWork, setSubmittingWork] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [reviewCp, setReviewCp] = useState<Record<string, string>>({});
+  const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
+
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -100,10 +116,46 @@ export default function TaskPage({ taskId }: { taskId: string }) {
       setEditAcceptanceCriteria(res.task.acceptance_criteria);
       setEditType(res.task.task_type);
       setEditStatus(res.task.status);
+
+      // Fetch claimer username if task is claimed
+      if (res.task.claimed_by_id) {
+        try {
+          const claimerRes = await fetch("/api/public/contributors/get", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ id: res.task.claimed_by_id }),
+          });
+          if (claimerRes.ok) {
+            const claimerData = (await claimerRes.json()) as {
+              contributor: { username: string };
+            };
+            setClaimerUsername(claimerData.contributor.username);
+          }
+        } catch {
+          // Fail silently, will show address instead
+        }
+      } else {
+        setClaimerUsername(null);
+      }
+
+      // Load contributions
+      await refreshContributions();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(false);
+    }
+  }, [taskId]);
+
+  const refreshContributions = useCallback(async () => {
+    setContributionsLoading(true);
+    try {
+      const res = await listContributions({ task_id: taskId });
+      setContributions(res.contributions);
+    } catch (e) {
+      console.error("Failed to load contributions:", e);
+    } finally {
+      setContributionsLoading(false);
     }
   }, [taskId]);
 
@@ -143,6 +195,45 @@ export default function TaskPage({ taskId }: { taskId: string }) {
 
   return (
     <div className="space-y-6 relative">
+      {/* Error Alert */}
+      {error && (
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+            <div className="flex-1">
+              <h3 className="text-sm font-mono font-semibold text-destructive mb-1">
+                Error
+              </h3>
+              <p className="text-sm font-mono text-destructive/90">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-destructive/70 hover:text-destructive transition-colors"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Alert */}
+      {successMessage && (
+        <div className="rounded-md border border-primary/50 bg-primary/10 p-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-mono text-primary">{successMessage}</p>
+            </div>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="text-primary/70 hover:text-primary transition-colors"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
           <h1 className="text-2xl md:text-3xl font-mono font-bold tracking-wider">
@@ -282,7 +373,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
           <EditableTextField
             title="Name"
             value={editName}
-            isAdmin={isAdmin}
+            isEditable={isAdmin}
             isEditing={editingName}
             isSaving={savingField}
             onEdit={() => {
@@ -293,6 +384,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             onChange={setEditName}
             onSave={async () => {
               setError(null);
+              setSuccessMessage(null);
               const canProceed = await handleAuthenticatedAction();
               if (!canProceed) return;
 
@@ -308,6 +400,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 });
                 await refresh();
                 setEditingName(false);
+                setSuccessMessage("Task name updated successfully!");
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               } finally {
@@ -321,7 +414,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             title="Type"
             value={editType}
             options={TYPE_OPTIONS}
-            isAdmin={isAdmin}
+            isEditable={isAdmin}
             isEditing={editingType}
             isSaving={savingField}
             onEdit={() => {
@@ -332,6 +425,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             onChange={setEditType}
             onSave={async () => {
               setError(null);
+              setSuccessMessage(null);
               const canProceed = await handleAuthenticatedAction();
               if (!canProceed) return;
 
@@ -347,6 +441,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 });
                 await refresh();
                 setEditingType(false);
+                setSuccessMessage("Task type updated successfully!");
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               } finally {
@@ -365,7 +460,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             title="Status"
             value={editStatus}
             options={STATUS_OPTIONS}
-            isAdmin={isAdmin}
+            isEditable={isAdmin}
             isEditing={editingStatus}
             isSaving={savingField}
             onEdit={() => {
@@ -376,6 +471,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             onChange={setEditStatus}
             onSave={async () => {
               setError(null);
+              setSuccessMessage(null);
               const canProceed = await handleAuthenticatedAction();
               if (!canProceed) return;
 
@@ -391,6 +487,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 });
                 await refresh();
                 setEditingStatus(false);
+                setSuccessMessage("Task status updated successfully!");
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               } finally {
@@ -426,7 +523,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
           <EditableTextField
             title="Description"
             value={editDescription}
-            isAdmin={isAdmin}
+            isEditable={isAdmin}
             isEditing={editingDescription}
             isSaving={savingField}
             multiline
@@ -438,6 +535,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             onChange={setEditDescription}
             onSave={async () => {
               setError(null);
+              setSuccessMessage(null);
               const canProceed = await handleAuthenticatedAction();
               if (!canProceed) return;
 
@@ -453,6 +551,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 });
                 await refresh();
                 setEditingDescription(false);
+                setSuccessMessage("Task description updated successfully!");
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               } finally {
@@ -466,7 +565,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
           <EditableTextField
             title="Acceptance criteria"
             value={editAcceptanceCriteria}
-            isAdmin={isAdmin}
+            isEditable={isAdmin}
             isEditing={editingAcceptanceCriteria}
             isSaving={savingField}
             multiline
@@ -478,6 +577,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             onChange={setEditAcceptanceCriteria}
             onSave={async () => {
               setError(null);
+              setSuccessMessage(null);
               const canProceed = await handleAuthenticatedAction();
               if (!canProceed) return;
 
@@ -493,6 +593,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 });
                 await refresh();
                 setEditingAcceptanceCriteria(false);
+                setSuccessMessage("Acceptance criteria updated successfully!");
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               } finally {
@@ -508,8 +609,130 @@ export default function TaskPage({ taskId }: { taskId: string }) {
         <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
           <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
-            <span className="text-primary">{">"}[</span> Submit work{" "}
-            <span className="text-primary">]</span>
+            <span>{">"}</span> Claim task
+          </h2>
+          <p className="mt-2 text-xs text-muted-foreground font-mono">
+            Claim this task to work on it. You must claim before submitting.
+          </p>
+
+          <div className="mt-3 flex items-center gap-2">
+            {task.status === "OPEN" && !task.claimed_by_id ? (
+              <Button
+                disabled={!address || !hasProfile || claiming || loading}
+                onClick={async () => {
+                  setError(null);
+                  setSuccessMessage(null);
+                  const canProceed = await handleAuthenticatedAction();
+                  if (!canProceed) return;
+
+                  setClaiming(true);
+                  try {
+                    await claimTask({ task_id: taskId, action: "CLAIM" });
+                    await refresh();
+                    setSuccessMessage("Task claimed successfully!");
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : String(e));
+                  } finally {
+                    setClaiming(false);
+                  }
+                }}
+              >
+                {claiming ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Claiming…
+                  </>
+                ) : (
+                  <>
+                    <User className="w-4 h-4" />
+                    Claim Task
+                  </>
+                )}
+              </Button>
+            ) : task.status === "CLAIMED" &&
+              task.claimed_by_id === address?.toLowerCase() ? (
+              <Button
+                variant="outline"
+                disabled={claiming || loading}
+                onClick={async () => {
+                  setError(null);
+                  setSuccessMessage(null);
+                  const canProceed = await handleAuthenticatedAction();
+                  if (!canProceed) return;
+
+                  setClaiming(true);
+                  
+                  // Optimistic update: immediately update UI
+                  const previousTask = task;
+                  setTask({
+                    ...task,
+                    status: "OPEN" as TaskStatus,
+                    claimed_by_id: null,
+                    claimed_date: null,
+                  });
+                  setSuccessMessage("Task unclaimed successfully!");
+                  
+                  try {
+                    await claimTask({ task_id: taskId, action: "UNCLAIM" });
+                    await refresh();
+                  } catch (e) {
+                    // Revert optimistic update on error
+                    setTask(previousTask);
+                    setSuccessMessage(null);
+                    setError(e instanceof Error ? e.message : String(e));
+                  } finally {
+                    setClaiming(false);
+                  }
+                }}
+              >
+                {claiming ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Unclaiming…
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-4 h-4" />
+                    Unclaim Task
+                  </>
+                )}
+              </Button>
+            ) : task.claimed_by_id ? (
+              <span className="text-xs text-muted-foreground font-mono">
+                Task claimed by{" "}
+                {claimerUsername ??
+                  `${task.claimed_by_id.slice(0, 6)}…${task.claimed_by_id.slice(-4)}`}
+              </span>
+            ) : (
+              <span className="text-xs text-muted-foreground font-mono">
+                {task.status === "IN_REVIEW"
+                  ? "Task is in review and cannot be claimed"
+                  : task.status === "DONE"
+                    ? "Task is completed and cannot be claimed"
+                    : task.status === "CHANGES_REQUESTED"
+                      ? "Task has requested changes and cannot be claimed"
+                      : "Task cannot be claimed in its current status"}
+              </span>
+            )}
+
+            {!address ? (
+              <span className="text-xs text-muted-foreground font-mono">
+                Connect wallet to claim
+              </span>
+            ) : !hasProfile ? (
+              <span className="text-xs text-muted-foreground font-mono">
+                Create profile to claim
+              </span>
+            ) : null}
+          </div>
+        </Card>
+      ) : null}
+
+      {task ? (
+        <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
+            <span>{">"}</span> Submit work
           </h2>
           <p className="mt-2 text-xs text-muted-foreground font-mono">
             Submit a link to your work (PR, docs, demo). Requires a contributor
@@ -518,44 +741,54 @@ export default function TaskPage({ taskId }: { taskId: string }) {
 
           <div className="mt-3 grid grid-cols-1 gap-3">
             <div>
-              <label className="text-xs font-mono text-muted-foreground">
+              <label htmlFor="work-url" className="text-xs font-mono text-muted-foreground">
                 Work URL
               </label>
               <Input
+                id="work-url"
+                name="workUrl"
                 value={submitUrl}
                 onChange={(e) => setSubmitUrl(e.target.value)}
                 placeholder="https://github.com/.../pull/123"
+                disabled={submittingWork}
               />
             </div>
 
             <div>
-              <label className="text-xs font-mono text-muted-foreground">
+              <label htmlFor="pr-number" className="text-xs font-mono text-muted-foreground">
                 GitHub PR number (optional)
               </label>
               <Input
+                id="pr-number"
+                name="prNumber"
                 value={submitPrNumber}
                 onChange={(e) => setSubmitPrNumber(e.target.value)}
                 placeholder="123"
+                disabled={submittingWork}
               />
             </div>
 
             <div>
-              <label className="text-xs font-mono text-muted-foreground">
+              <label htmlFor="submission-notes" className="text-xs font-mono text-muted-foreground">
                 Notes (optional)
               </label>
               <textarea
+                id="submission-notes"
+                name="submissionNotes"
                 value={submitNotes}
                 onChange={(e) => setSubmitNotes(e.target.value)}
                 className="w-full min-h-[110px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
                 placeholder="What did you do? Anything reviewers should know?"
+                disabled={submittingWork}
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Button
-                disabled={!canSubmit || loading}
+                disabled={!canSubmit || loading || submittingWork}
                 onClick={async () => {
                   setError(null);
+                  setSuccessMessage(null);
                   const canProceed = await handleAuthenticatedAction();
                   if (!canProceed) return;
 
@@ -593,6 +826,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                     return;
                   }
 
+                  setSubmittingWork(true);
                   try {
                     await submitContribution({
                       task_id: task.id,
@@ -605,13 +839,23 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                     setSubmitUrl("");
                     setSubmitNotes("");
                     setSubmitPrNumber("");
+                    setSuccessMessage("Work submitted successfully!");
                     await refresh();
                   } catch (e) {
                     setError(e instanceof Error ? e.message : String(e));
+                  } finally {
+                    setSubmittingWork(false);
                   }
                 }}
               >
-                Submit
+                {submittingWork ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit"
+                )}
               </Button>
 
               {!address ? (
@@ -631,6 +875,262 @@ export default function TaskPage({ taskId }: { taskId: string }) {
               ) : null}
             </div>
           </div>
+        </Card>
+      ) : null}
+
+      {task ? (
+        <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          <div className="flex items-center justify-between gap-2 relative">
+            <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
+              <span>{">"}</span> Submissions for this task
+            </h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void refreshContributions()}
+              disabled={contributionsLoading}
+            >
+              {contributionsLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3 h-3" />
+              )}
+            </Button>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground font-mono">
+            All work submissions for this task. {isAdmin ? "Admins can review here." : ""}
+          </p>
+
+          {contributions.length === 0 ? (
+            <div className="mt-3 text-center py-4 relative">
+              <div className="text-3xl text-muted-foreground/30 font-mono mb-2">
+                [ ]
+              </div>
+              <p className="text-sm text-muted-foreground font-mono">
+                <span>{">"}</span> NO_SUBMISSIONS_YET
+              </p>
+            </div>
+          ) : (
+            <div className="mt-3 space-y-2 relative">
+              {contributions
+                .slice()
+                .sort((a, b) =>
+                  a.submission_date < b.submission_date ? 1 : -1
+                )
+                .map((c) => {
+                  const statusIcon =
+                    c.status === "APPROVED" ? (
+                      <CheckCircle2 className="w-3 h-3" />
+                    ) : c.status === "CHANGES_REQUESTED" ? (
+                      <AlertCircle className="w-3 h-3" />
+                    ) : c.status === "REJECTED" ? (
+                      <XCircle className="w-3 h-3" />
+                    ) : null;
+                  const statusVariant =
+                    c.status === "APPROVED"
+                      ? ("default" as const)
+                      : c.status === "CHANGES_REQUESTED"
+                        ? ("destructive" as const)
+                        : c.status === "REJECTED"
+                          ? ("destructive" as const)
+                          : ("outline" as const);
+
+                  return (
+                    <div
+                      key={c.id}
+                      className="rounded-md border border-border/60 bg-card hover:bg-card/80 hover:border-primary/30 transition-all px-3 py-2"
+                    >
+                      <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant={statusVariant} className="gap-1">
+                            {statusIcon}
+                            {c.status}
+                          </Badge>
+                          {typeof c.cp_awarded === "number" ? (
+                            <Badge variant="secondary">{c.cp_awarded} CP</Badge>
+                          ) : null}
+                        </div>
+                        <div className="text-xs text-muted-foreground font-mono">
+                          {`${c.contributor_id.slice(0, 6)}…${c.contributor_id.slice(-4)}`}{" "}
+                          · {formatIsoTime(c.submission_date)}
+                        </div>
+                      </div>
+
+                      <div className="mt-2 text-sm font-mono">
+                        <a
+                          href={c.submitted_work_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:text-primary inline-flex items-center gap-1 group/link"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          {c.submitted_work_url}
+                        </a>
+                      </div>
+
+                      {c.submission_notes ? (
+                        <pre className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground font-mono">
+                          {c.submission_notes}
+                        </pre>
+                      ) : null}
+
+                      {c.approval_notes ? (
+                        <div className="mt-2 rounded-md border border-border/60 bg-background/50 p-2">
+                          <p className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+                            Review notes
+                          </p>
+                          <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground font-mono">
+                            {c.approval_notes}
+                          </pre>
+                        </div>
+                      ) : null}
+
+                      {isAdmin && c.status !== "APPROVED" ? (
+                        <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
+                          <h3 className="text-xs font-mono font-semibold uppercase tracking-wider">
+                            <span>{">"}</span> ADMIN: REVIEW
+                          </h3>
+                          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                                CP (for APPROVED)
+                              </label>
+                              <Input
+                                value={reviewCp[c.id] ?? ""}
+                                onChange={(e) =>
+                                  setReviewCp((prev) => ({
+                                    ...prev,
+                                    [c.id]: e.target.value,
+                                  }))
+                                }
+                                placeholder="e.g. 50"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                                Notes
+                              </label>
+                              <Input
+                                value={reviewNotes[c.id] ?? ""}
+                                onChange={(e) =>
+                                  setReviewNotes((prev) => ({
+                                    ...prev,
+                                    [c.id]: e.target.value,
+                                  }))
+                                }
+                                placeholder="Feedback / approval notes"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <Button
+                              variant="outline"
+                              disabled={loading || !address}
+                              onClick={async () => {
+                                setError(null);
+                                setSuccessMessage(null);
+                                if (!address) {
+                                  setError("Connect wallet to review");
+                                  return;
+                                }
+                                try {
+                                  await approveContribution({
+                                    contribution_id: c.id,
+                                    status: "CHANGES_REQUESTED",
+                                    cp_awarded: null,
+                                    approval_notes:
+                                      (reviewNotes[c.id] ?? "").trim() || null,
+                                  });
+                                  await refresh();
+                                  setSuccessMessage("Changes requested successfully!");
+                                } catch (e) {
+                                  setError(
+                                    e instanceof Error ? e.message : String(e)
+                                  );
+                                }
+                              }}
+                            >
+                              Request changes
+                            </Button>
+                            <Button
+                              variant="outline"
+                              disabled={loading || !address}
+                              onClick={async () => {
+                                setError(null);
+                                setSuccessMessage(null);
+                                if (!address) {
+                                  setError("Connect wallet to review");
+                                  return;
+                                }
+                                try {
+                                  await approveContribution({
+                                    contribution_id: c.id,
+                                    status: "REJECTED",
+                                    cp_awarded: null,
+                                    approval_notes:
+                                      (reviewNotes[c.id] ?? "").trim() || null,
+                                  });
+                                  await refresh();
+                                  setSuccessMessage("Contribution rejected!");
+                                } catch (e) {
+                                  setError(
+                                    e instanceof Error ? e.message : String(e)
+                                  );
+                                }
+                              }}
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              disabled={loading || !address}
+                              onClick={async () => {
+                                setError(null);
+                                setSuccessMessage(null);
+                                if (!address) {
+                                  setError("Connect wallet to review");
+                                  return;
+                                }
+
+                                const cpText = (reviewCp[c.id] ?? "").trim();
+                                if (!cpText) {
+                                  setError("CP is required to approve");
+                                  return;
+                                }
+                                const cpValue = Number(cpText);
+                                if (!Number.isFinite(cpValue) || cpValue < 0) {
+                                  setError("CP must be a non-negative number");
+                                  return;
+                                }
+
+                                try {
+                                  await approveContribution({
+                                    contribution_id: c.id,
+                                    status: "APPROVED",
+                                    cp_awarded: cpValue,
+                                    approval_notes:
+                                      (reviewNotes[c.id] ?? "").trim() || null,
+                                  });
+                                  await refresh();
+                                  setSuccessMessage(`Contribution approved with ${cpValue} CP!`);
+                                } catch (e) {
+                                  setError(
+                                    e instanceof Error ? e.message : String(e)
+                                  );
+                                }
+                              }}
+                            >
+                              Approve
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </Card>
       ) : null}
     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { getMyContributor } from "../api/api";
 import type { Contributor } from "../api/types";
 import { MILLIS } from "@/app/helpers";
@@ -53,6 +54,8 @@ function setCachedProfile(profile: CachedProfile): void {
 }
 
 export function useContributorProfile(address: string | undefined) {
+  const pathname = usePathname();
+  
   // Try to load from cache immediately on mount
   const initialCache = address ? getCachedProfile(address) : null;
   const [isAdmin, setIsAdmin] = useState(initialCache?.isAdmin ?? false);
@@ -133,6 +136,22 @@ export function useContributorProfile(address: string | undefined) {
       setContributor(null);
     }
   }, [address]);
+
+  // Re-check cache on pathname changes (navigation events)
+  useEffect(() => {
+    if (!address || !pathname) return;
+
+    // Check if cached profile differs from current state
+    const cached = getCachedProfile(address);
+    if (cached) {
+      // Only update if cache indicates a profile exists but our state says otherwise
+      if (cached.hasProfile && hasProfile !== true) {
+        setIsAdmin(cached.isAdmin);
+        setHasProfile(cached.hasProfile);
+        setContributor(cached.contributor);
+      }
+    }
+  }, [pathname, address, hasProfile]);
 
   return {
     isAdmin,

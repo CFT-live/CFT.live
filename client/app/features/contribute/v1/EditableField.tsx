@@ -13,7 +13,7 @@ import {
 interface EditableTextFieldProps {
   title: string;
   value: string;
-  isAdmin: boolean;
+  isEditable: boolean;
   isEditing: boolean;
   isSaving: boolean;
   onEdit: () => void;
@@ -28,7 +28,7 @@ interface EditableTextFieldProps {
 export function EditableTextField({
   title,
   value,
-  isAdmin,
+  isEditable,
   isEditing,
   isSaving,
   onEdit,
@@ -43,18 +43,18 @@ export function EditableTextField({
     <div className={className}>
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
-          <span className="text-primary">{">"}</span> {title}
+          <span>{">"}</span> {title}
         </h2>
-        {isAdmin && !isEditing && (
+        {isEditable && !isEditing && (
           <button
             onClick={onEdit}
-            className="text-muted-foreground hover:text-primary transition-colors"
+            className="text-primary transition-colors cursor-pointer"
           >
             <Edit className="w-3 h-3" />
           </button>
         )}
       </div>
-      {isEditing && isAdmin ? (
+      {isEditing && isEditable ? (
         <div className="mt-2 flex flex-col gap-2">
           {multiline ? (
             <textarea
@@ -88,7 +88,7 @@ export function EditableTextField({
           {value || "(none)"}
         </pre>
       ) : (
-        <p className="mt-2 text-sm text-foreground/90 font-mono">{value}</p>
+        <p className="mt-2 text-sm text-foreground/90 font-mono">{value || "(none)"}</p>
       )}
     </div>
   );
@@ -98,7 +98,7 @@ interface EditableOptionsFieldProps<T extends string> {
   title: string;
   value: T;
   options: readonly T[];
-  isAdmin: boolean;
+  isEditable: boolean;
   isEditing: boolean;
   isSaving: boolean;
   onEdit: () => void;
@@ -113,7 +113,7 @@ export function EditableOptionsField<T extends string>({
   title,
   value,
   options,
-  isAdmin,
+  isEditable,
   isEditing,
   isSaving,
   onEdit,
@@ -127,18 +127,18 @@ export function EditableOptionsField<T extends string>({
     <div className={className}>
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
-          <span className="text-primary">{">"}</span> {title}
+          <span>{">"}</span> {title}
         </h2>
-        {isAdmin && !isEditing && (
+        {isEditable && !isEditing && (
           <button
             onClick={onEdit}
-            className="text-muted-foreground hover:text-primary transition-colors"
+            className="text-primary transition-colors"
           >
             <Edit className="w-3 h-3" />
           </button>
         )}
       </div>
-      {isEditing && isAdmin ? (
+      {isEditing && isEditable ? (
         <div className="mt-2 flex flex-col gap-2">
           <Select value={value} onValueChange={onChange}>
             <SelectTrigger className="flex-1">

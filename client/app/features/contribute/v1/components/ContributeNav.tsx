@@ -21,55 +21,50 @@ export default function ContributeNav() {
   const { hasProfile, contributor, isAdmin, isLoading, ensureProfile } =
     useContributorProfile(address);
 
+  const uiButton = () => {
+    if (hasProfile === false) {
+      // Don't show button if already on create-profile page
+      if (isActive(pathname, "/contribute/create-profile")) {
+        return null;
+      }
+      return (
+        <Button asChild variant="default">
+          <Link href="/contribute/create-profile">
+            <User className="w-4 h-4" />
+            Create profile
+          </Link>
+        </Button>
+      );
+    }
+    return contributor ? (
+      <Link
+        href="/contribute/profile"
+        //className={`${isActive(pathname, "/contribute/profile") ? "text-primary" : "text-muted-foreground"} hover:text-primary transition-colors tracking-wider`}
+      >
+        <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-primary/30 bg-primary/5">
+          <User className="w-4 h-4 text-primary" />
+          <span className="font-mono text-sm">{contributor.username}</span>
+          {isAdmin && (
+            <Badge variant="default" className="text-xs px-1.5 py-0">
+              <Shield className="w-3 h-3 mr-1" />
+              CORE
+            </Badge>
+          )}
+        </div>
+      </Link>
+    ) : (
+      <Button
+        onClick={() => (isConnected ? ensureProfile() : open())}
+        variant="default"
+      >
+        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
+      </Button>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-3 relative">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap items-center gap-4">
-          <Link
-            href="/contribute/features"
-            className={`${isActive(pathname, "/contribute/features") || isActive(pathname, "/contribute") ? "text-primary" : "text-muted-foreground"} hover:text-primary transition-colors tracking-wider`}
-          >
-            Features
-          </Link>
-          <Link
-            href="/contribute/profile"
-            className={`${isActive(pathname, "/contribute/profile") ? "text-primary" : "text-muted-foreground"} hover:text-primary transition-colors tracking-wider`}
-          >
-            Profile
-          </Link>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {hasProfile === false && (
-            <Button asChild variant="default">
-              <Link href="/contribute/profile">
-                <User className="w-4 h-4" />
-                Create profile
-              </Link>
-            </Button>
-          )}
-          {contributor ? (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-primary/30 bg-primary/5">
-              <User className="w-4 h-4 text-primary" />
-              <span className="font-mono text-sm">{contributor.username}</span>
-              {isAdmin && (
-                <Badge variant="default" className="text-xs px-1.5 py-0">
-                  <Shield className="w-3 h-3 mr-1" />
-                  CORE
-                </Badge>
-              )}
-            </div>
-          ) : (
-            <Button
-              onClick={() => (isConnected ? ensureProfile() : open())}
-              variant="default"
-            >
-              sign in
-            </Button>
-          )}
-          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-        </div>
-      </div>
+      <div className="flex justify-end">{uiButton()}</div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   Clock,
   AlertCircle,
   ExternalLink,
+  Trash2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,19 +22,19 @@ import { Link } from "@/i18n/routing";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 
+import { EditableTextField, EditableOptionsField } from "./EditableField";
+import { TaskCard } from "./TaskCard";
+
 import {
   approveContribution,
   createTask,
   listContributions,
-  listDistributions,
   listTasks,
   getFeature,
+  updateFeature,
+  deleteFeature,
 } from "./api/api";
-import type {
-  Contribution,
-  Feature,
-  Task,
-} from "./api/types";
+import type { Contribution, Feature, Task } from "./api/types";
 import { useContributorProfile } from "./hooks/useContributorProfile";
 
 type PublicContributor = {
@@ -68,13 +69,25 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
   const [createTaskAcceptance, setCreateTaskAcceptance] = useState("");
   const [createTaskType, setCreateTaskType] =
     useState<Task["task_type"]>("TECH");
-
+  const [creatingTask, setCreatingTask] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [reviewCp, setReviewCp] = useState<Record<string, string>>({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
-
-
+  // Feature field editing state
+  const [editingName, setEditingName] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [editDescription, setEditDescription] = useState("");
+  const [editingCategory, setEditingCategory] = useState(false);
+  const [editCategory, setEditCategory] = useState("");
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [editStatus, setEditStatus] = useState<Feature["status"]>("OPEN");
+  const [editingTokens, setEditingTokens] = useState(false);
+  const [editTokens, setEditTokens] = useState("");
+  const [savingField, setSavingField] = useState(false);
+  const [deletingFeature, setDeletingFeature] = useState(false);
 
   const taskById = useMemo(() => {
     const map = new Map<string, Task>();
@@ -85,14 +98,39 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
   async function refreshBasics() {
     setLoading(true);
     setError(null);
+    
+    // Check cache for instant loading of recently created features
     try {
-      const [fRes, tRes, dRes] = await Promise.all([
+      const cached = sessionStorage.getItem(`feature_cache_${featureId}`);
+      if (cached) {
+        const cachedFeature = JSON.parse(cached);
+        setFeature(cachedFeature);
+        setEditName(cachedFeature.name);
+        setEditDescription(cachedFeature.description);
+        setEditCategory(cachedFeature.category);
+        setEditStatus(cachedFeature.status);
+        setEditTokens(String(cachedFeature.total_tokens_reward));
+      }
+    } catch (e) {
+      // Ignore cache errors
+    }
+    
+    try {
+      const [fRes, tRes] = await Promise.all([
         getFeature(featureId),
         listTasks({ feature_id: featureId }),
-        listDistributions({ feature_id: featureId }),
       ]);
       setFeature(fRes.feature);
       setTasks(tRes.tasks);
+
+      // Update edit state when feature loads
+      if (fRes.feature) {
+        setEditName(fRes.feature.name);
+        setEditDescription(fRes.feature.description);
+        setEditCategory(fRes.feature.category);
+        setEditStatus(fRes.feature.status);
+        setEditTokens(String(fRes.feature.total_tokens_reward));
+      }
 
       // Auto-load contributions if there are tasks
       if (tRes.tasks.length > 0 && !contributionsLoaded) {
@@ -170,9 +208,64 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
     [tasks],
   );
   const tasksTotal = tasks.length;
+  const allTasksDone = tasksTotal > 0 && tasksDone === tasksTotal;
+
+  const totalCpAwarded = useMemo(
+    () =>
+      contributions
+        .filter((c) => c.status === "APPROVED" && c.cp_awarded !== null)
+        .reduce((sum, c) => sum + (c.cp_awarded ?? 0), 0),
+    [contributions],
+  );
+
+  const activeContributors = useMemo(() => {
+    const claimerIds = new Set(
+      tasks.map((t) => t.claimed_by_id).filter((id): id is string => !!id),
+    );
+    return claimerIds.size;
+  }, [tasks]);
 
   return (
     <div className="space-y-6 relative">
+      {/* Error Alert */}
+      {error && (
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+            <div className="flex-1">
+              <h3 className="text-sm font-mono font-semibold text-destructive mb-1">
+                Error
+              </h3>
+              <p className="text-sm font-mono text-destructive/90">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-destructive/70 hover:text-destructive transition-colors"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Alert */}
+      {successMessage && (
+        <div className="rounded-md border border-primary/50 bg-primary/10 p-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-mono text-primary">{successMessage}</p>
+            </div>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="text-primary/70 hover:text-primary transition-colors"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-mono font-bold tracking-wider uppercase">
@@ -220,23 +313,104 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
               </Tooltip>
             </div>
           ) : null}
-
-          {/* Progress bar for tasks */}
-          {feature && tasksTotal > 0 && (
-            <div className="mt-3 space-y-1">
-              <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
-                <span>Task Progress</span>
-                <span>{Math.round((tasksDone / tasksTotal) * 100)}%</span>
-              </div>
-              <Progress
-                value={(tasksDone / tasksTotal) * 100}
-                className="h-2"
-              />
-            </div>
-          )}
         </div>
 
         <div className="flex items-center gap-2">
+          {isAdmin &&
+          allTasksDone &&
+          feature &&
+          (feature.status === "OPEN" || feature.status === "IN_PROGRESS") ? (
+            <Button
+              onClick={async () => {
+                setError(null);
+                if (!feature) return;
+                const ok = window.confirm(
+                  `Mark this feature as COMPLETED?\n\nAll ${tasksTotal} tasks are done. This will allow distributions to be created.`,
+                );
+                if (!ok) return;
+                setLoading(true);
+                try {
+                  await updateFeature({
+                    id: feature.id,
+                    name: feature.name,
+                    description: feature.description,
+                    category: feature.category,
+                    total_tokens_reward: feature.total_tokens_reward,
+                    status: "COMPLETED",
+                    deadline: feature.deadline,
+                  });
+                  await refreshBasics();
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Completing…
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  Mark Complete
+                </>
+              )}
+            </Button>
+          ) : null}
+          {isAdmin && feature ? (
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                setError(null);
+                setSuccessMessage(null);
+                if (!feature) return;
+
+                // Safety check: prevent deletion if tasks exist
+                if (tasks.length > 0) {
+                  setError(
+                    `Cannot delete feature: ${tasks.length} task(s) still exist. Please delete all tasks first to avoid orphan records.`
+                  );
+                  return;
+                }
+
+                const ok = window.confirm(
+                  `⚠️ DELETE FEATURE?\n\nFeature: "${feature.name}"\n\nThis action cannot be undone. The feature will be permanently deleted.\n\nClick OK to confirm deletion.`
+                );
+                if (!ok) return;
+
+                setDeletingFeature(true);
+                try {
+                  await deleteFeature(feature.id);
+                  setSuccessMessage("Feature deleted successfully!");
+                  // Redirect to features list after short delay
+                  setTimeout(() => {
+                    window.location.href = "/contribute/features";
+                  }, 1000);
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setDeletingFeature(false);
+                }
+              }}
+              disabled={loading || deletingFeature}
+            >
+              {deletingFeature ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  Delete Feature
+                </>
+              )}
+            </Button>
+          ) : null}
           <Button
             variant="outline"
             onClick={() => void refreshBasics()}
@@ -266,13 +440,238 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
       {feature ? (
         <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
-            <span className="text-primary">{">"}[</span> Description{" "}
-            <span className="text-primary">]</span>
-          </h2>
-          <pre className="mt-2 whitespace-pre-wrap text-sm text-foreground/90 font-mono leading-relaxed">
-            {feature.description || "(no description)"}
-          </pre>
+          <div className="relative space-y-4">
+            {/* Feature Name */}
+            <EditableTextField
+              title="Feature Name"
+              value={editName}
+              isEditable={isAdmin}
+              isEditing={editingName}
+              isSaving={savingField}
+              onEdit={() => {
+                setEditName(feature.name);
+                setEditingName(true);
+              }}
+              onCancel={() => setEditingName(false)}
+              onChange={setEditName}
+              onSave={async () => {
+                setError(null);
+                setSuccessMessage(null);
+                setSavingField(true);
+                try {
+                  await updateFeature({
+                    id: feature.id,
+                    name: editName.trim(),
+                    description: feature.description,
+                    category: feature.category,
+                    total_tokens_reward: feature.total_tokens_reward,
+                    status: feature.status,
+                    deadline: feature.deadline,
+                  });
+                  await refreshBasics();
+                  setEditingName(false);
+                  setSuccessMessage("Feature name updated successfully!");
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setSavingField(false);
+                }
+              }}
+              placeholder="Feature name"
+              className="mb-4"
+            />
+
+            {/* Feature Description */}
+            <EditableTextField
+              title="Description"
+              value={editDescription}
+              isEditable={isAdmin}
+              isEditing={editingDescription}
+              isSaving={savingField}
+              onEdit={() => {
+                setEditDescription(feature.description);
+                setEditingDescription(true);
+              }}
+              onCancel={() => setEditingDescription(false)}
+              onChange={setEditDescription}
+              onSave={async () => {
+                setError(null);
+                setSuccessMessage(null);
+                setSavingField(true);
+                try {
+                  await updateFeature({
+                    id: feature.id,
+                    name: feature.name,
+                    description: editDescription.trim(),
+                    category: feature.category,
+                    total_tokens_reward: feature.total_tokens_reward,
+                    status: feature.status,
+                    deadline: feature.deadline,
+                  });
+                  await refreshBasics();
+                  setEditingDescription(false);
+                  setSuccessMessage("Feature description updated successfully!");
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setSavingField(false);
+                }
+              }}
+              multiline
+              placeholder="Feature description"
+              className="mb-4"
+            />
+
+            {/* Feature Category */}
+            <EditableTextField
+              title="Category"
+              value={editCategory}
+              isEditable={isAdmin}
+              isEditing={editingCategory}
+              isSaving={savingField}
+              onEdit={() => {
+                setEditCategory(feature.category);
+                setEditingCategory(true);
+              }}
+              onCancel={() => setEditingCategory(false)}
+              onChange={setEditCategory}
+              onSave={async () => {
+                setError(null);
+                setSuccessMessage(null);
+                setSavingField(true);
+                try {
+                  await updateFeature({
+                    id: feature.id,
+                    name: feature.name,
+                    description: feature.description,
+                    category: editCategory.trim(),
+                    total_tokens_reward: feature.total_tokens_reward,
+                    status: feature.status,
+                    deadline: feature.deadline,
+                  });
+                  await refreshBasics();
+                  setEditingCategory(false);
+                  setSuccessMessage("Feature category updated successfully!");
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setSavingField(false);
+                }
+              }}
+              placeholder="Feature category"
+              className="mb-4"
+            />
+
+            {/* Feature Status */}
+            <EditableOptionsField
+              title="Status"
+              value={editStatus}
+              options={["OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"] as const}
+              isEditable={isAdmin}
+              isEditing={editingStatus}
+              isSaving={savingField}
+              onEdit={() => {
+                setEditStatus(feature.status);
+                setEditingStatus(true);
+              }}
+              onCancel={() => setEditingStatus(false)}
+              onChange={setEditStatus}
+              onSave={async () => {
+                setError(null);
+                setSuccessMessage(null);
+                setSavingField(true);
+                try {
+                  await updateFeature({
+                    id: feature.id,
+                    name: feature.name,
+                    description: feature.description,
+                    category: feature.category,
+                    total_tokens_reward: feature.total_tokens_reward,
+                    status: editStatus,
+                    deadline: feature.deadline,
+                  });
+                  await refreshBasics();
+                  setEditingStatus(false);
+                  setSuccessMessage("Feature status updated successfully!");
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setSavingField(false);
+                }
+              }}
+              renderDisplay={() => (
+                <div className="mt-2">
+                  <Badge
+                    variant={
+                      feature.status === "COMPLETED"
+                        ? "default"
+                        : feature.status === "IN_PROGRESS"
+                          ? "secondary"
+                          : feature.status === "CANCELLED"
+                            ? "destructive"
+                            : "outline"
+                    }
+                    className="gap-1"
+                  >
+                    {feature.status === "COMPLETED" ? (
+                      <CheckCircle2 className="w-3 h-3" />
+                    ) : feature.status === "IN_PROGRESS" ? (
+                      <Clock className="w-3 h-3" />
+                    ) : feature.status === "CANCELLED" ? (
+                      <XCircle className="w-3 h-3" />
+                    ) : null}
+                    {feature.status}
+                  </Badge>
+                </div>
+              )}
+              className="mb-4"
+            />
+
+            {/* Token Reward */}
+            <EditableTextField
+              title="Total Token Reward"
+              value={editTokens}
+              isEditable={isAdmin}
+              isEditing={editingTokens}
+              isSaving={savingField}
+              onEdit={() => {
+                setEditTokens(String(feature.total_tokens_reward));
+                setEditingTokens(true);
+              }}
+              onCancel={() => setEditingTokens(false)}
+              onChange={setEditTokens}
+              onSave={async () => {
+                setError(null);
+                setSuccessMessage(null);
+                const tokenValue = Number(editTokens.trim());
+                if (!Number.isFinite(tokenValue) || tokenValue < 0) {
+                  setError("Token reward must be a non-negative number");
+                  return;
+                }
+                setSavingField(true);
+                try {
+                  await updateFeature({
+                    id: feature.id,
+                    name: feature.name,
+                    description: feature.description,
+                    category: feature.category,
+                    total_tokens_reward: tokenValue,
+                    status: feature.status,
+                    deadline: feature.deadline,
+                  });
+                  await refreshBasics();
+                  setEditingTokens(false);
+                  setSuccessMessage("Token reward updated successfully!");
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setSavingField(false);
+                }
+              }}
+              placeholder="0"
+              className=""
+            />
+          </div>
         </Card>
       ) : (
         <Card className="p-4 border border-border/60 bg-card/60 relative overflow-hidden">
@@ -288,8 +687,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
         <div className="flex items-center justify-between gap-2 relative">
           <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-            <span className="text-primary">{">"}[</span> TASKS{" "}
-            <span className="text-primary">]</span>
+            <span>{">"}</span> TASKS
           </h2>
           <div className="flex items-center gap-2">
             {isAdmin ? (
@@ -313,32 +711,147 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
           </div>
         </div>
 
+        {/* Progress bar for tasks */}
+        {feature && tasksTotal > 0 && (
+          <div className="mt-3 space-y-3">
+            <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
+              <span>Task Progress</span>
+              <span>{Math.round((tasksDone / tasksTotal) * 100)}%</span>
+            </div>
+            <Progress value={(tasksDone / tasksTotal) * 100} className="h-2" />
+            
+            {/* Task status breakdown */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 text-xs font-mono">
+              <div className="rounded-md border border-border/60 bg-background/50 p-2">
+                <div className="text-muted-foreground">OPEN</div>
+                <div className="font-semibold">
+                  {tasks.filter((t) => t.status === "OPEN").length}
+                </div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/50 p-2">
+                <div className="text-muted-foreground">CLAIMED</div>
+                <div className="font-semibold">
+                  {tasks.filter((t) => t.status === "CLAIMED").length}
+                </div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/50 p-2">
+                <div className="text-muted-foreground">IN_REVIEW</div>
+                <div className="font-semibold">
+                  {tasks.filter((t) => t.status === "IN_REVIEW").length}
+                </div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/50 p-2">
+                <div className="text-muted-foreground">CHANGES</div>
+                <div className="font-semibold">
+                  {tasks.filter((t) => t.status === "CHANGES_REQUESTED").length}
+                </div>
+              </div>
+              <div className="rounded-md border border-primary/30 bg-primary/5 p-2">
+                <div className="text-muted-foreground">DONE</div>
+                <div className="font-semibold text-primary">{tasksDone}</div>
+              </div>
+            </div>
+
+            {/* CP and contributor stats */}
+            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+              <div className="rounded-md border border-border/60 bg-background/50 p-2">
+                <div className="text-muted-foreground">Total CP Awarded</div>
+                <div className="font-semibold">{totalCpAwarded}</div>
+              </div>
+              <div className="rounded-md border border-border/60 bg-background/50 p-2">
+                <div className="text-muted-foreground">Active Contributors</div>
+                <div className="font-semibold">{activeContributors}</div>
+              </div>
+            </div>
+
+            {/* Completion alert for admins */}
+            {isAdmin &&
+            allTasksDone &&
+            feature.status !== "COMPLETED" &&
+            feature.status !== "CANCELLED" ? (
+              <div className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-mono font-semibold text-primary">
+                      All tasks completed!
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground font-mono">
+                      This feature is ready to be marked as COMPLETED. Use the &ldquo;Mark
+                      Complete&rdquo; button above to finalize it and enable token distributions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Completion banner */}
+            {feature.status === "COMPLETED" ? (
+              <div className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-mono font-semibold text-primary">
+                      Feature Completed
+                    </p>
+                    <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2 text-xs font-mono">
+                      <div>
+                        <span className="text-muted-foreground">Total CP: </span>
+                        <span className="font-semibold">{totalCpAwarded}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Contributors: </span>
+                        <span className="font-semibold">{activeContributors}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Tasks: </span>
+                        <span className="font-semibold">{tasksDone}/{tasksTotal}</span>
+                      </div>
+                    </div>
+                    {isAdmin ? (
+                      <p className="mt-2 text-xs text-muted-foreground font-mono">
+                        Ready to create distributions on the Distributions page.
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        )}
+
         {createTaskOpen && isAdmin ? (
-          <div className="mt-4 rounded-md border border-border/60 bg-background p-3">
+          <div key={`create-task-${createTaskOpen}`} className="mt-4 rounded-md border border-border/60 bg-background p-3">
             <h3 className="text-xs font-mono font-semibold uppercase tracking-wider">
-              <span className="text-primary">{">"}</span> ADMIN: CREATE TASK FOR
-              THIS FEATURE
+              <span>{">"}</span> CREATE TASK FOR THIS FEATURE
             </h3>
             <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="md:col-span-2">
-                <label className="text-xs font-mono text-muted-foreground">
+                <label htmlFor="task-name" className="text-xs font-mono text-muted-foreground">
                   Task name
                 </label>
                 <Input
+                  id="task-name"
+                  name="taskName"
                   value={createTaskName}
                   onChange={(e) => setCreateTaskName(e.target.value)}
+                  placeholder="Enter task name"
+                  disabled={creatingTask}
                 />
               </div>
               <div>
-                <label className="text-xs font-mono text-muted-foreground">
+                <label htmlFor="task-type" className="text-xs font-mono text-muted-foreground">
                   Type
                 </label>
                 <select
+                  id="task-type"
+                  name="taskType"
                   value={createTaskType}
                   onChange={(e) =>
                     setCreateTaskType(e.target.value as Task["task_type"])
                   }
                   className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-mono"
+                  disabled={creatingTask}
                 >
                   <option value="TECH">TECH</option>
                   <option value="DESIGN">DESIGN</option>
@@ -349,29 +862,37 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-mono text-muted-foreground">
+                <label htmlFor="task-status" className="text-xs font-mono text-muted-foreground">
                   Status
                 </label>
-                <Input value="OPEN" disabled />
+                <Input id="task-status" name="taskStatus" value="OPEN" disabled />
               </div>
               <div className="md:col-span-2">
-                <label className="text-xs font-mono text-muted-foreground">
+                <label htmlFor="task-description" className="text-xs font-mono text-muted-foreground">
                   Description
                 </label>
                 <textarea
+                  id="task-description"
+                  name="taskDescription"
                   value={createTaskDescription}
                   onChange={(e) => setCreateTaskDescription(e.target.value)}
                   className="w-full min-h-[120px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+                  placeholder="Describe the task requirements"
+                  disabled={creatingTask}
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="text-xs font-mono text-muted-foreground">
+                <label htmlFor="task-acceptance" className="text-xs font-mono text-muted-foreground">
                   Acceptance criteria
                 </label>
                 <textarea
+                  id="task-acceptance"
+                  name="taskAcceptance"
                   value={createTaskAcceptance}
                   onChange={(e) => setCreateTaskAcceptance(e.target.value)}
                   className="w-full min-h-[120px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
+                  placeholder="List the acceptance criteria"
+                  disabled={creatingTask}
                 />
               </div>
             </div>
@@ -386,6 +907,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                     : "outline"
                 }
                 disabled={
+                  creatingTask ||
                   !createTaskName.trim() ||
                   !createTaskAcceptance.trim() ||
                   !createTaskDescription.trim()
@@ -393,13 +915,15 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                 onClick={async () => {
                   if (!feature) return;
                   setError(null);
+                  setSuccessMessage(null);
+                  setCreatingTask(true);
                   try {
                     await createTask({
                       feature_id: feature.id,
                       name: createTaskName.trim(),
-                      description: createTaskDescription,
+                      description: createTaskDescription.trim(),
                       task_type: createTaskType,
-                      acceptance_criteria: createTaskAcceptance,
+                      acceptance_criteria: createTaskAcceptance.trim(),
                       status: "OPEN",
                     });
                     setCreateTaskName("");
@@ -407,17 +931,24 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                     setCreateTaskAcceptance("");
                     setCreateTaskType("TECH");
                     setCreateTaskOpen(false);
+                    setSuccessMessage("Task created successfully!");
                     await refreshBasics();
                   } catch (e) {
                     setError(e instanceof Error ? e.message : String(e));
+                  } finally {
+                    setCreatingTask(false);
                   }
                 }}
               >
-                Create task
+                {creatingTask ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create task"
+                )}
               </Button>
-              <span className="text-xs text-muted-foreground font-mono">
-                Feature: {featureId}
-              </span>
             </div>
           </div>
         ) : null}
@@ -429,7 +960,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                 [ ]
               </div>
               <p className="text-sm text-muted-foreground font-mono">
-                <span className="text-primary">{">"}</span> NO_TASKS_YET
+                <span>{">"}</span> NO_TASKS_YET
               </p>
             </div>
           ) : null}
@@ -455,37 +986,13 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                       ? ("destructive" as const)
                       : ("outline" as const);
               return (
-                <div
+                <TaskCard
                   key={t.id}
-                  className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between rounded-md border border-border/60 bg-card hover:bg-card/80 hover:border-primary/30 transition-all px-3 py-2 group"
-                >
-                  <div className="space-y-1">
-                    <Link
-                      href={`/contribute/features/${featureId}/tasks/${t.id}`}
-                      className="font-mono font-semibold hover:text-primary group-hover:text-primary transition-colors"
-                      style={{ textDecoration: "none" }}
-                    >
-                      <span className="text-primary text-xs">{">"}</span>{" "}
-                      {t.name}
-                    </Link>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant={statusVariant} className="gap-1">
-                        {statusIcon}
-                        {t.status}
-                      </Badge>
-                      <Badge variant="secondary">{t.task_type}</Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" asChild>
-                      <Link
-                        href={`/contribute/features/${featureId}/tasks/${t.id}`}
-                      >
-                        Open
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
+                  task={t}
+                  featureId={featureId}
+                  statusIcon={statusIcon}
+                  statusVariant={statusVariant}
+                />
               );
             })}
         </div>
@@ -494,8 +1001,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
       <Card className="p-4 border border-border/60 bg-background/60">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-mono font-semibold uppercase tracking-wider">
-            <span className="text-primary">{">"}[</span> Submissions{" "}
-            <span className="text-primary">]</span>
+            <span>{">"}</span> Submissions{" "}
           </h2>
         </div>
         <p className="mt-2 text-xs text-muted-foreground font-mono">
@@ -509,7 +1015,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
               [ ]
             </div>
             <p className="text-sm text-muted-foreground font-mono">
-              <span className="text-primary">{">"}</span> NO_SUBMISSIONS_YET
+              <span>{">"}</span> NO_SUBMISSIONS_YET
             </p>
           </div>
         ) : (
@@ -585,7 +1091,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                     {isAdmin ? (
                       <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
                         <h3 className="text-xs font-mono font-semibold uppercase tracking-wider">
-                          <span className="text-primary">{">"}</span> ADMIN:
+                          <span>{">"}</span> ADMIN:
                           REVIEW
                         </h3>
                         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -627,6 +1133,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                             disabled={loading || !address}
                             onClick={async () => {
                               setError(null);
+                              setSuccessMessage(null);
                               if (!address) {
                                 setError("Connect wallet to review");
                                 return;
@@ -640,6 +1147,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                                     (reviewNotes[c.id] ?? "").trim() || null,
                                 });
                                 await refreshContributions();
+                                setSuccessMessage("Changes requested successfully!");
                               } catch (e) {
                                 setError(
                                   e instanceof Error ? e.message : String(e),
@@ -654,6 +1162,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                             disabled={loading || !address}
                             onClick={async () => {
                               setError(null);
+                              setSuccessMessage(null);
                               if (!address) {
                                 setError("Connect wallet to review");
                                 return;
@@ -667,6 +1176,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                                     (reviewNotes[c.id] ?? "").trim() || null,
                                 });
                                 await refreshContributions();
+                                setSuccessMessage("Contribution rejected!");
                               } catch (e) {
                                 setError(
                                   e instanceof Error ? e.message : String(e),
@@ -680,6 +1190,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                             disabled={loading || !address}
                             onClick={async () => {
                               setError(null);
+                              setSuccessMessage(null);
                               if (!address) {
                                 setError("Connect wallet to review");
                                 return;
@@ -705,6 +1216,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                                     (reviewNotes[c.id] ?? "").trim() || null,
                                 });
                                 await refreshContributions();
+                                setSuccessMessage(`Contribution approved with ${cpValue} CP!`);
                               } catch (e) {
                                 setError(
                                   e instanceof Error ? e.message : String(e),

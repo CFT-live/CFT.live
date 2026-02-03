@@ -41,6 +41,7 @@ export const FeatureSchema = z.object({
   category: z.string().min(1).max(64),
   total_tokens_reward: z.number().nonnegative(),
   status: FeatureStatus,
+  discussions_url: z.string().url().nullable(),
   created_by_id: z.string().min(1),
   created_date: z.string().datetime(),
   deadline: z.string().datetime().nullable(),

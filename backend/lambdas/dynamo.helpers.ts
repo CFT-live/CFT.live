@@ -447,6 +447,7 @@ export const upsertFeature = async (input: {
     created_by_id: existing?.created_by_id ?? input.created_by_id,
     created_date,
     deadline: input.deadline,
+    discussions_url: '', // TODO: populate properly
   };
 
   return putFeature(feature);
