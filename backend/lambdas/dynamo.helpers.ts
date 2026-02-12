@@ -432,7 +432,7 @@ export const upsertFeature = async (input: {
   total_tokens_reward: number;
   status: FeatureStatus;
   created_by_id: string;
-  deadline: string | null;
+  discussions_url?: string | null;
 }): Promise<Feature> => {
   const existing = await getFeature(input.id);
   const created_date = existing?.created_date ?? nowIso();
@@ -446,8 +446,7 @@ export const upsertFeature = async (input: {
     status: input.status,
     created_by_id: existing?.created_by_id ?? input.created_by_id,
     created_date,
-    deadline: input.deadline,
-    discussions_url: '', // TODO: populate properly
+    discussions_url: input.discussions_url ?? null,
   };
 
   return putFeature(feature);

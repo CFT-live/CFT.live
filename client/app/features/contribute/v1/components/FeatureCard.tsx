@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, XCircle } from "lucide-react";
+import { CheckCircle2, ChevronRight, Clock, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
@@ -6,9 +6,11 @@ import type { Feature } from "../api/types";
 
 interface FeatureCardProps {
   feature: Feature;
+  /** Show the status badge. Defaults to true. */
+  showStatus?: boolean;
 }
 
-export function FeatureCard({ feature }: FeatureCardProps) {
+export function FeatureCard({ feature, showStatus = true }: Readonly<FeatureCardProps>) {
   const statusIcon =
     feature.status === "COMPLETED" ? (
       <CheckCircle2 className="w-3 h-3" />
@@ -36,8 +38,8 @@ export function FeatureCard({ feature }: FeatureCardProps) {
       <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden group cursor-pointer">
         {/* Scan line effect */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between relative">
-          <div className="space-y-2 flex-1">
+        <div className="flex items-center gap-3 relative">
+          <div className="space-y-2 flex-1 min-w-0">
             <h3 className="text-base md:text-lg font-mono font-semibold hover:text-primary transition-colors group-hover:text-primary">
               <span className="text-primary">{">"}</span> {feature.name}
             </h3>
@@ -47,34 +49,30 @@ export function FeatureCard({ feature }: FeatureCardProps) {
               </p>
             )}
             <div className="flex flex-wrap gap-2">
-              <Badge variant={statusVariant} className="gap-1">
-                {statusIcon}
-                {feature.status}
-              </Badge>
+              {showStatus && (
+                <Badge variant={statusVariant} className="gap-1">
+                  {statusIcon}
+                  {feature.status}
+                </Badge>
+              )}
               <Badge variant="secondary">{feature.category}</Badge>
               <Badge variant="default">
                 {formatNumber(feature.total_tokens_reward)} CFT
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground font-mono">
-              Created {formatTime(feature.created_date)}
-              {feature.deadline
-                ? ` · Deadline ${formatTime(feature.deadline)}`
-                : ""}
-            </p>
+          </div>
+
+          {/* Hover CTA */}
+          <div className="hidden md:flex flex-col items-center gap-1 shrink-0 text-muted-foreground/40 group-hover:text-primary transition-colors">
+            <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            <span className="text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+              View
+            </span>
           </div>
         </div>
       </Card>
     </Link>
   );
-}
-
-function formatTime(ts: string): string {
-  try {
-    return new Date(ts).toLocaleString();
-  } catch {
-    return String(ts);
-  }
 }
 
 function formatNumber(n: number): string {

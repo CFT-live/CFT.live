@@ -21,6 +21,17 @@
         "Legal_Disclaimer": "Avertissement Légal",
         "Legal_Disclaimer_Text": "Avant d'interagir avec tout contrat intelligent et protocole sur cette plateforme, vous êtes seul responsable de vérifier que ces activités respectent les lois et réglementations de votre juridiction. Les activités basées sur la blockchain peuvent être restreintes ou interdites dans certains pays ou régions.",
         "Legal_Disclaimer_Text_2": "En accédant et en utilisant ces services, vous reconnaissez avoir examiné les lois locales applicables et confirmez que votre participation est légale. Vous assumez l’entière responsabilité de toute conséquence légale résultant de l’utilisation de cette plateforme. CFT.live ne fournit aucun conseil juridique et ne pourra être tenu responsable de tout dommage ou problème légal découlant de votre participation.",
-        "SYSTEM_ONLINE": "SYSTÈME EN LIGNE"
+        "SYSTEM_ONLINE": "SYSTÈME EN LIGNE",
+        "Contribute": "Contribuer",
+        "Contribute_Intro": "CFT.live est développé de manière ouverte. Parcourez les tâches disponibles, réclamez du travail adapté à vos compétences et gagnez des tokens CFT pour vos contributions approuvées. Chaque soumission est examinée et récompensée de manière transparente sur Arbitrum One.",
+        "Contribute_Step_1_Title": "Parcourir les tâches",
+        "Contribute_Step_1_Desc": "Trouvez des tâches ouvertes—code, design, documentation et plus.",
+        "Contribute_Step_2_Title": "Réclamer et construire",
+        "Contribute_Step_2_Desc": "Réclamez une tâche en exclusivité et soumettez votre travail.",
+        "Contribute_Step_3_Title": "Gagner des CP",
+        "Contribute_Step_3_Desc": "Les soumissions approuvées rapportent des Points de Contribution selon l'impact.",
+        "Contribute_Step_4_Title": "Obtenir des tokens CFT",
+        "Contribute_Step_4_Desc": "Les tokens sont distribués proportionnellement à vos CP sur Arbitrum.",
+        "Contribute_CTA": "COMMENCER À CONTRIBUER"
     }
 }

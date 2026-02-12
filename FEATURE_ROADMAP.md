@@ -9,20 +9,105 @@
 
 ## Table of Contents
 
-1. [Prediction Market V2 Upgrade](#1-prediction-market-v2-upgrade)
-2. [Lotto V2 Upgrade](#2-lotto-v2-upgrade)
-3. [Roulette V2 Upgrade](#3-roulette-v2-upgrade)
-4. [Contribution System V2 Upgrade](#4-contribution-system-v2-upgrade)
-5. [Sandbox V2 Upgrade](#5-sandbox-v2-upgrade)
-6. [Infrastructure V2 Upgrade](#6-infrastructure-v2-upgrade)
-7. [UI/UX Modernization V2](#7-uiux-modernization-v2)
-8. [Smart Contract Security & Optimization V2](#8-smart-contract-security--optimization-v2)
-9. [Developer Experience V2](#9-developer-experience-v2)
-10. [Analytics & Monitoring V2](#10-analytics--monitoring-v2)
+1. [Prediction Market V1](#1-prediction-market-v1)
+2. [Lotto V1](#2-lotto-v1)
+3. [Roulette V1](#3-roulette-v1)
+4. [Contribution System V1](#4-contribution-system-v1)
+5. [Smart Contract Sandbox V1](#5-smart-contract-sandbox-v1)
+6. [Platform & Infra V1](#6-platform--infra-v1)
+7. [Prediction Market V2 Upgrade](#7-prediction-market-v2-upgrade)
+8. [Lotto V2 Upgrade](#8-lotto-v2-upgrade)
+9. [Roulette V2 Upgrade](#9-roulette-v2-upgrade)
+10. [Contribution System V2 Upgrade](#10-contribution-system-v2-upgrade)
+11. [Sandbox V2 Upgrade](#11-sandbox-v2-upgrade)
+12. [Infrastructure V2 Upgrade](#12-infrastructure-v2-upgrade)
+13. [UI/UX Modernization V2](#13-uiux-modernization-v2)
+14. [Smart Contract Security & Optimization V2](#14-smart-contract-security--optimization-v2)
+15. [Developer Experience V2](#15-developer-experience-v2)
+16. [Analytics & Monitoring V2](#16-analytics--monitoring-v2)
+
+**Production footprint:** All v1 protocols are deployed to Arbitrum One with subgraphs, Cloudflare/OpenNext frontend, and supporting workers.
+
+## 1. Prediction Market V1
+**Status:** Shipped | **Network:** Arbitrum One | **Data:** The Graph subgraph
+
+**Description**
+UP/DOWN prediction market with automated round progression, Pyth pricing, and admin-tunable parameters.
+
+**Tasks (delivered)**
+- Implement round lifecycle (create → open → lock → resolve → claim) with on-chain settlement and user bet placement.  
+- Integrate Pyth Network price feeds with freshness enforcement and price max-age guardrails.  
+- Add advance-worker cron to progress rounds with lock/close buffers and cooldowns.  
+- Build admin controls: fees, bet limits, min open/lock times, pause, bet lock buffer, data wait window, advance cooldown, max open rounds, ETH/ARB feed addresses.  
+- Prefetch contract metadata/balances and open/live/closed rounds via React Query + GraphQL subgraph for fast loads.  
+- Expose UX for contract metadata, price data, contract balance, user bet history, and admin observability (user balances/bets).
+
+## 2. Lotto V1
+**Status:** Shipped | **Network:** Arbitrum One | **Data:** Dedicated subgraph
+
+**Description**
+On-chain lottery with Chainlink VRF winner selection and draw management.
+
+**Tasks (delivered)**
+- Implement draw lifecycle with ticket purchases, VRF winner selection, and closed-draw history.  
+- Surface open/closed draws and winner views with server-side prefetch for fast rendering.  
+- Provide admin dashboard for draw management and contract configuration.  
+- Deliver lotto metadata card, instructions, draw lists, and winner visibility in the client.
+
+## 3. Roulette V1
+**Status:** Shipped | **Network:** Arbitrum One | **Data:** Roulette subgraph
+
+**Description**
+Table-based roulette with join/create flow and in-app gameplay view.
+
+**Tasks (delivered)**
+- Implement table lifecycle with create/join, open tables, and in-progress tables.  
+- Add per-table gameplay view with optional selected-table play area.  
+- Expose global stats and contract metadata; fetch open/in-progress tables via subgraph.  
+- Provide admin dashboard for contract configuration and monitoring.  
+- Deliver UX with instructions, active/open tables, and selected-table experience.
+
+## 4. Contribution System V1
+**Status:** Shipped | **Backend:** Lambda/CDK API + DynamoDB | **Auth:** Wallet (Reown AppKit)
+
+**Description**
+Contribution tracking with features, tasks, contributions, CP awards, and payout ledger.
+
+**Tasks (delivered)**
+- Implement feature/task/contribution/distribution entities with fixed CFT pools and CP awards.  
+- Build task list with filters/search, claim/unclaim, submission (URL/notes), and status transitions.  
+- Add core-team approval flow awarding CP; record distributions with Arbitrum tx hash/status.  
+- Enable wallet auth with signed headers (`x-cft-message`, `x-cft-signature`); profile creation/editing and contributor dashboards.  
+- Provide admin tools to create/update features/tasks, approve contributions, and record distributions via Edge-proxied API routes.  
+- Expose transparent public views for tasks/features, contribution histories, CP guidelines, and distribution records.
+
+## 5. Smart Contract Sandbox V1
+**Status:** Shipped | **Execution:** Client-only (browser)
+
+**Description**
+Browser sandbox to paste Solidity, convert to JavaScript, and interact safely without blockchain calls.
+
+**Tasks (delivered)**
+- Parse Solidity to JS in-browser and instantiate contract instances without network access.  
+- Provide state panel, callable functions list, call history, and reset flow.  
+- Support common Solidity types with automatic conversions and mocked `msg.sender`/`block.timestamp`.  
+- Ensure zero server execution and no external network interactions.
+
+## 6. Platform & Infra V1
+**Status:** Shipped | **Hosting:** Cloudflare/OpenNext | **Network:** Arbitrum One
+
+**Description**
+Core platform stack, workers, contracts, and automation supporting all v1 products.
+
+**Tasks (delivered)**
+- Deploy Next.js 15 + React 19 frontend with i18n and shadcn-based terminal aesthetic on Cloudflare (OpenNext).  
+- Operate workers: Chat Durable Object (last 100 messages), Presence tracker (active users), Advance worker for prediction automation; custom worker entry exporting Durable Objects.  
+- Maintain CFT token project plus game-specific Hardhat projects (prediction, lotto, roulette) with generated ABIs and The Graph subgraphs.  
+- Run TypeScript contract bot service for automation/ops.  
+- Set up CI/build tooling and environment configuration for production deploys.
 
 ---
-
-## 1. Prediction Market V2 Upgrade
+## 7. Prediction Market V2 Upgrade
 
 **Total Token Pool:** TBD  
 **Priority:** High  
@@ -117,7 +202,7 @@ Complete overhaul of the prediction market system with enhanced features, better
 
 ---
 
-## 2. Lotto V2 Upgrade
+## 8. Lotto V2 Upgrade
 
 **Total Token Pool:** TBD  
 **Priority:** Medium  
@@ -212,7 +297,7 @@ Enhanced lottery system with better fairness mechanisms, multi-ticket support, a
 
 ---
 
-## 3. Roulette V2 Upgrade
+## 9. Roulette V2 Upgrade
 
 **Total Token Pool:** TBD  
 **Priority:** Medium  
@@ -307,7 +392,7 @@ Enhanced roulette experience with multiplayer support, improved graphics, and ad
 
 ---
 
-## 4. Contribution System V2 Upgrade
+## 10. Contribution System V2 Upgrade
 
 **Total Token Pool:** TBD  
 **Priority:** High  
@@ -421,7 +506,7 @@ Complete overhaul of the contribution tracking and reward system with enhanced t
 
 ---
 
-## 5. Sandbox V2 Upgrade
+## 11. Sandbox V2 Upgrade
 
 **Total Token Pool:** TBD  
 **Priority:** Medium  
@@ -504,7 +589,7 @@ Enhanced sandbox environment for testing smart contracts with better UI, faucet 
 
 ---
 
-## 6. Infrastructure V2 Upgrade
+## 12. Infrastructure V2 Upgrade
 
 **Total Token Pool:** TBD  
 **Priority:** High  
@@ -625,7 +710,7 @@ Complete infrastructure modernization including backend API, workers, deployment
 
 ---
 
-## 7. UI/UX Modernization V2
+## 13. UI/UX Modernization V2
 
 **Total Token Pool:** TBD  
 **Priority:** High  
@@ -759,7 +844,7 @@ Complete UI/UX overhaul with modern design system, improved accessibility, and e
 
 ---
 
-## 8. Smart Contract Security & Optimization V2
+## 14. Smart Contract Security & Optimization V2
 
 **Total Token Pool:** TBD  
 **Priority:** Critical  
@@ -867,7 +952,7 @@ Comprehensive security audit, gas optimization, and upgrade system implementatio
 
 ---
 
-## 9. Developer Experience V2
+## 15. Developer Experience V2
 
 **Total Token Pool:** TBD  
 **Priority:** Medium  
@@ -975,7 +1060,7 @@ Major improvements to developer tooling, documentation, and onboarding to accele
 
 ---
 
-## 10. Analytics & Monitoring V2
+## 16. Analytics & Monitoring V2
 
 **Total Token Pool:** TBD  
 **Priority:** Medium  

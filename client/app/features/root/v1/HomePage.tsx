@@ -2,6 +2,7 @@ import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight, Terminal } from "lucide-react";
 
+import { ContributionBanner } from "@/app/features/root/v1/components/ContributionBanner";
 import { TerminalCard } from "@/app/features/root/v1/components/TerminalCard";
 import { Typewriter } from "@/app/features/root/v1/components/Typewriter";
 import { VideoPreview } from "@/app/features/root/v1/components/VideoPreview";
@@ -77,7 +78,7 @@ export default async function HomePage() {
             </h2>
             <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Sandbox */}
             <Link href="/sandbox" className="block h-full">
@@ -123,148 +124,174 @@ export default async function HomePage() {
             </h2>
             <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Prediction Market */}
             <Link href="/prediction" className="block h-full">
-            <TerminalCard title="prediction" status="online" className="h-full">
-              <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
-                <VideoPreview
-                  src={predictionVideo}
-                  className="mix-blend-screen opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
-                <div className="absolute bottom-3 right-3 pointer-events-none">
-                  <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
-                    {t("LIVE")}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 flex flex-col flex-1 gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                    <Terminal className="w-4 h-4" /> {t("Prediction_Market")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("Prediction_Market_Description")}
-                  </p>
+              <TerminalCard
+                title="prediction"
+                status="online"
+                className="h-full"
+              >
+                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
+                  <VideoPreview
+                    src={predictionVideo}
+                    className="mix-blend-screen opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 pointer-events-none">
+                    <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
+                      {t("LIVE")}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
-                  <span>{t("EXECUTE_PROTOCOL")}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </TerminalCard>
-          </Link>
+                <div className="p-6 flex flex-col flex-1 gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                      <Terminal className="w-4 h-4" /> {t("Prediction_Market")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t("Prediction_Market_Description")}
+                    </p>
+                  </div>
 
-          {/* Hash Roulette */}
-          <Link href="/roulette" className="block h-full">
-            <TerminalCard title="roulette" status="online" className="h-full">
-              <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
-                <VideoPreview
-                  src={rouletteVideo}
-                  className="mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
-                <div className="absolute bottom-3 right-3 pointer-events-none">
-                  <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
-                    {t("LIVE")}
-                  </span>
+                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span>{t("EXECUTE_PROTOCOL")}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-              </div>
+              </TerminalCard>
+            </Link>
 
-              <div className="p-6 flex flex-col flex-1 gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                    <Terminal className="w-4 h-4" /> {t("Hash_Roulette")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("Hash_Roulette_Description")}
-                  </p>
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
-                  <span>{t("EXECUTE_PROTOCOL")}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </TerminalCard>
-          </Link>
-
-          {/* Lotto Pool */}
-          <Link href="/lotto" className="block h-full">
-            <TerminalCard title="lotto" status="online" className="h-full">
-              <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
-                <VideoPreview
-                  src={lottoVideo}
-                  className="opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
-                <div className="absolute bottom-3 right-3 pointer-events-none">
-                  <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
-                    {t("LIVE")}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 flex flex-col flex-1 gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                    <Terminal className="w-4 h-4" /> {t("Lotto_Pool")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("Lotto_Pool_Description")}
-                  </p>
+            {/* Hash Roulette */}
+            <Link href="/roulette" className="block h-full">
+              <TerminalCard title="roulette" status="online" className="h-full">
+                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
+                  <VideoPreview
+                    src={rouletteVideo}
+                    className="mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 pointer-events-none">
+                    <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
+                      {t("LIVE")}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
-                  <span>{t("EXECUTE_PROTOCOL")}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </TerminalCard>
-          </Link>
+                <div className="p-6 flex flex-col flex-1 gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                      <Terminal className="w-4 h-4" /> {t("Hash_Roulette")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t("Hash_Roulette_Description")}
+                    </p>
+                  </div>
 
-          {/* Asteroid dash*/}
-          <div className="block h-full">
-            <TerminalCard
-              title="Asteroid dash"
-              status="offline"
-              className="h-full"
-            >
-              <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
-                <VideoPreview
-                  src={asteroidVideo}
-                  className="opacity-80 group-hover:opacity-100 transition-opacity duration-500 mix-blend-luminosity"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
-                <div className="absolute bottom-3 right-3 pointer-events-none">
-                  <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
-                    {t("COMING_SOON")}
-                  </span>
+                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span>{t("EXECUTE_PROTOCOL")}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-              </div>
+              </TerminalCard>
+            </Link>
 
-              <div className="p-6 flex flex-col flex-1 gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                    <Terminal className="w-4 h-4" /> {t("Asteroid_Dash")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("Asteroid_Dash_Description")}
-                  </p>
+            {/* Lotto Pool */}
+            <Link href="/lotto" className="block h-full">
+              <TerminalCard title="lotto" status="online" className="h-full">
+                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
+                  <VideoPreview
+                    src={lottoVideo}
+                    className="opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 pointer-events-none">
+                    <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
+                      {t("LIVE")}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
-                  <span>{t("EXECUTE_PROTOCOL")}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                <div className="p-6 flex flex-col flex-1 gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                      <Terminal className="w-4 h-4" /> {t("Lotto_Pool")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t("Lotto_Pool_Description")}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span>{t("EXECUTE_PROTOCOL")}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-              </div>
-            </TerminalCard>
+              </TerminalCard>
+            </Link>
+
+            {/* Asteroid dash*/}
+            <div className="block h-full">
+              <TerminalCard
+                title="Asteroid dash"
+                status="offline"
+                className="h-full"
+              >
+                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
+                  <VideoPreview
+                    src={asteroidVideo}
+                    className="opacity-80 group-hover:opacity-100 transition-opacity duration-500 mix-blend-luminosity"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 pointer-events-none">
+                    <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
+                      {t("COMING_SOON")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 flex flex-col flex-1 gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                      <Terminal className="w-4 h-4" /> {t("Asteroid_Dash")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t("Asteroid_Dash_Description")}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span>{t("EXECUTE_PROTOCOL")}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </TerminalCard>
+            </div>
           </div>
         </div>
+
+        {/* Contribution Section */}
+        <div className="mb-20">
+          <div className="mb-8 flex items-center gap-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary font-mono">
+              <span className="text-muted-foreground">{">"}  </span> {t("Contribute")}
+            </h2>
+            <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
+          </div>
+
+          <ContributionBanner
+            title={t("Contribute")}
+            intro={t("Contribute_Intro")}
+            cta={t("Contribute_CTA")}
+            steps={[
+              { title: t("Contribute_Step_1_Title"), desc: t("Contribute_Step_1_Desc") },
+              { title: t("Contribute_Step_2_Title"), desc: t("Contribute_Step_2_Desc") },
+              { title: t("Contribute_Step_3_Title"), desc: t("Contribute_Step_3_Desc") },
+              { title: t("Contribute_Step_4_Title"), desc: t("Contribute_Step_4_Desc") },
+            ]}
+          />
         </div>
 
         {/* Legal Disclaimer */}

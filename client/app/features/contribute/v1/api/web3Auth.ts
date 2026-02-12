@@ -43,9 +43,8 @@ function parseMessage(message: string): ParsedMessage {
   return { uri, method, issuedAt, nonce, bodySha256 };
 }
 
-async function sha256Hex(data: Uint8Array): Promise<string> {
-  const copy = Uint8Array.from(data);
-  const digest = await crypto.subtle.digest("SHA-256", copy.buffer);
+async function sha256Hex(data: BufferSource): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", data);
   const bytes = new Uint8Array(digest);
   return Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, "0"))

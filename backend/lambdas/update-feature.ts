@@ -30,7 +30,7 @@ export const handler = async (event: any) => {
       total_tokens_reward: paramsValidation.data.total_tokens_reward,
       status: paramsValidation.data.status,
       created_by_id: paramsValidation.data.created_by_id,
-      deadline: paramsValidation.data.deadline,
+      discussions_url: paramsValidation.data.discussions_url,
     });
 
     return {

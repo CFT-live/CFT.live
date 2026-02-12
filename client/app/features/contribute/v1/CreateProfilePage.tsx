@@ -81,7 +81,7 @@ export default function CreateProfilePage() {
           <span className="text-muted-foreground">{">"}</span> CREATE PROFILE
         </h1>
         <p className="text-sm text-muted-foreground">
-          Create your contributor profile to claim tasks and submit
+          Create your contributor profile to submit
           contributions.
         </p>
       </div>

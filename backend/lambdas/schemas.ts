@@ -44,7 +44,6 @@ export const FeatureSchema = z.object({
   discussions_url: z.string().url().nullable(),
   created_by_id: z.string().min(1),
   created_date: z.string().datetime(),
-  deadline: z.string().datetime().nullable(),
 });
 
 // Tasks

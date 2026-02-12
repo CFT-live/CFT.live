@@ -227,7 +227,7 @@ export async function createFeature(input: {
   category: string;
   total_tokens_reward: number;
   status: Feature["status"];
-  deadline?: string | null;
+  discussions_url?: string | null;
 }): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/create", {
     signed: true,
@@ -237,7 +237,7 @@ export async function createFeature(input: {
       category: input.category,
       total_tokens_reward: input.total_tokens_reward,
       status: input.status,
-      deadline: input.deadline ?? null,
+      discussions_url: input.discussions_url,
     },
   });
 }
@@ -249,7 +249,7 @@ export async function updateFeature(input: {
   category: string;
   total_tokens_reward: number;
   status: Feature["status"];
-  deadline?: string | null;
+  discussions_url?: string | null;
 }): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/update", {
     signed: true,
@@ -260,7 +260,7 @@ export async function updateFeature(input: {
       category: input.category,
       total_tokens_reward: input.total_tokens_reward,
       status: input.status,
-      deadline: input.deadline ?? null,
+      discussions_url: input.discussions_url,
     },
   });
 }

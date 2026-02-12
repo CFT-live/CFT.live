@@ -146,7 +146,7 @@ export const validateUpsertFeatureParams = (params: any) => {
       total_tokens_reward: z.number().nonnegative().default(0),
       status: FeatureStatus,
       created_by_id: z.string().min(1).optional(),
-      deadline: IsoDateTime.nullable().optional(),
+      discussions_url: z.string().url().nullable().optional(),
     })
     .transform((data) => ({
       ...data,
@@ -155,7 +155,6 @@ export const validateUpsertFeatureParams = (params: any) => {
           ? data.total_tokens_reward
           : Number(data.total_tokens_reward),
       created_by_id: data.created_by_id ?? "system",
-      deadline: data.deadline ?? null,
     }))
     .safeParse(params);
 };

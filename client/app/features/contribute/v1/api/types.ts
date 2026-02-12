@@ -83,7 +83,7 @@ export interface Feature {
   status: FeatureStatus;
   created_by_id: string;
   created_date: string;
-  deadline: string | null;
+  discussions_url: string | null;
 }
 
 export type TransactionStatus = "Pending" | "Confirmed" | "Failed";

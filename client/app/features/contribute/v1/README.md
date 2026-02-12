@@ -240,7 +240,7 @@ Features
 ├── name, description, category
 ├── total_tokens_reward (fixed, locked at creation)
 ├── status (Open → In Progress → Completed)
-├── created_by_id, deadline
+├── created_by_id, discussion_url
 └── [has many Tasks]
 
 Tasks
@@ -380,7 +380,7 @@ text
 **Feature Dashboard**:
 Feature: "Marketing Campaign Q1" | 15,000 CFT | Status: 60% complete
 Contributors: Alice (250 CP) | Bob (180 CP) | Charlie (100 CP)
-Tasks: 8/12 completed | Deadline: Feb 15, 2026
+Tasks: 8/12 completed
 
 text
 

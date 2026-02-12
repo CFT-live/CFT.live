@@ -479,7 +479,7 @@ export class ApiCFTStack extends cdk.Stack {
     /**
      * POST /features/create
      * - Create a new feature
-     * - Request body: { name, description, category, total_tokens_reward, created_by_id, deadline? }
+     * - Request body: { name, description, category, total_tokens_reward, created_by_id, discussion_url? }
      */
     createFeature.addMethod(
       "POST",
@@ -492,7 +492,7 @@ export class ApiCFTStack extends cdk.Stack {
     /**
      * POST /features/update
      * - Update an existing feature
-     * - Request body: { id, name?, description?, category?, total_tokens_reward?, status?, deadline? }
+     * - Request body: { id, name?, description?, category?, total_tokens_reward?, status?, discussion_url? }
      */
     updateFeature.addMethod(
       "POST",

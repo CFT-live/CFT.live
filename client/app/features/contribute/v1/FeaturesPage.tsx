@@ -7,8 +7,6 @@ import {
   Plus,
   RefreshCw,
   Search,
-  Filter,
-  SortAsc,
   X as XIcon,
   AlertCircle,
   CheckCircle2,
@@ -17,20 +15,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tooltip } from "@/components/ui/tooltip";
+import { Link } from "@/i18n/routing";
 
-import { createFeature, listFeatures } from "./api/api";
-import type { Feature, FeatureStatus } from "./api/types";
+import { listFeatures } from "./api/api";
+import type { Feature } from "./api/types";
+import { ACTIVE_STATUSES, ARCHIVED_STATUSES, CATEGORY_OPTIONS } from "./constants";
 import { useContributorProfile } from "./hooks/useContributorProfile";
 import { EmptyState } from "./components/EmptyState";
-import { FeatureCard } from "./components/FeatureCard";
+import { CategorySection } from "./components/CategorySection";
+import { ArchivedSection } from "./components/ArchivedSection";
 
 export default function FeaturesPage() {
   const { address } = useAppKitAccount();
@@ -41,65 +34,61 @@ export default function FeaturesPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Search and filter state
+  // Search state
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<FeatureStatus | "ALL">(
-    "ALL",
-  );
-  const [sortBy, setSortBy] = useState<"date" | "tokens" | "name">("date");
 
-  const [createOpen, setCreateOpen] = useState(false);
-  const [createName, setCreateName] = useState("");
-  const [createCategory, setCreateCategory] = useState("Technical");
-  const [createDescription, setCreateDescription] = useState("");
-  const [createTokens, setCreateTokens] = useState<string>("1000");
-  const [createDeadline, setCreateDeadline] = useState<string>("");
-  const [createStatus, setCreateStatus] = useState<FeatureStatus>("OPEN");
+  // Apply search filter then split into active vs archived
+  const { activeByCategory, archivedFeatures, totalActive, totalArchived } =
+    useMemo(() => {
+      let filtered = features;
 
-  const canCreate = useMemo(() => {
-    return (
-      isAdmin &&
-      createName.trim().length > 0 &&
-      createCategory.trim().length > 0 &&
-      Number.isFinite(Number(createTokens))
-    );
-  }, [createCategory, createName, createTokens, isAdmin]);
-
-  // Filter and sort features
-  const filteredFeatures = useMemo(() => {
-    let filtered = features;
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (f) =>
-          f.name.toLowerCase().includes(query) ||
-          f.description.toLowerCase().includes(query) ||
-          f.category.toLowerCase().includes(query),
-      );
-    }
-
-    // Apply status filter
-    if (statusFilter !== "ALL") {
-      filtered = filtered.filter((f) => f.status === statusFilter);
-    }
-
-    // Apply sorting
-    filtered = filtered.slice().sort((a, b) => {
-      switch (sortBy) {
-        case "name":
-          return a.name.localeCompare(b.name);
-        case "tokens":
-          return b.total_tokens_reward - a.total_tokens_reward;
-        case "date":
-        default:
-          return a.created_date < b.created_date ? 1 : -1;
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(
+          (f) =>
+            f.name.toLowerCase().includes(query) ||
+            f.description.toLowerCase().includes(query) ||
+            f.category.toLowerCase().includes(query),
+        );
       }
-    });
 
-    return filtered;
-  }, [features, searchQuery, statusFilter, sortBy]);
+      // Sort by newest first within each group
+      const sorted = filtered
+        .slice()
+        .sort((a, b) => (a.created_date < b.created_date ? 1 : -1));
+
+      const active = sorted.filter((f) =>
+        ACTIVE_STATUSES.includes(f.status),
+      );
+      const archived = sorted.filter((f) =>
+        ARCHIVED_STATUSES.includes(f.status),
+      );
+
+      // Group active features by category, preserving CATEGORY_OPTIONS order
+      const byCategory = new Map<string, Feature[]>();
+      for (const cat of CATEGORY_OPTIONS) {
+        const catFeatures = active.filter((f) => f.category === cat);
+        if (catFeatures.length > 0) {
+          byCategory.set(cat, catFeatures);
+        }
+      }
+      // Catch any features with categories not in CATEGORY_OPTIONS
+      const knownCats = new Set(CATEGORY_OPTIONS);
+      const uncategorized = active.filter((f) => !knownCats.has(f.category));
+      if (uncategorized.length > 0) {
+        byCategory.set("Other", uncategorized);
+      }
+
+      return {
+        activeByCategory: byCategory,
+        archivedFeatures: archived,
+        totalActive: active.length,
+        totalArchived: archived.length,
+      };
+    }, [features, searchQuery]);
+
+  const activeCategoryCount = activeByCategory.size;
+  const hasResults = totalActive > 0 || totalArchived > 0;
 
   async function refresh() {
     setLoading(true);
@@ -127,26 +116,19 @@ export default function FeaturesPage() {
             <span className="text-muted-foreground">{">"}</span> All features
           </h1>
           <p className="text-sm text-muted-foreground">
-            Browse and contribute to open features.
+            Pick a feature below and start contributing to earn CFT tokens.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {isAdmin ? (
-            <Button variant="outline" onClick={() => setCreateOpen((v) => !v)}>
-              {createOpen ? (
-                <>
-                  <XIcon className="w-4 h-4" />
-                  Close
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4" />
-                  New feature
-                </>
-              )}
-            </Button>
-          ) : null}
+          {isAdmin && (
+            <Link href="/contribute/features/create">
+              <Button variant="outline">
+                <Plus className="w-4 h-4" />
+                New feature
+              </Button>
+            </Link>
+          )}
 
           <Button
             variant="outline"
@@ -168,225 +150,47 @@ export default function FeaturesPage() {
         </div>
       </div>
 
-      {/* Search and Filter Section */}
+      {/* Search */}
       <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm">
-        <div className="flex flex-col md:flex-row gap-3">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search features by name, description, or category..."
-              className="pl-10"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <XIcon className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Tooltip content="Filter by status">
-              <Select
-                value={statusFilter}
-                onValueChange={(v) =>
-                  setStatusFilter(v as FeatureStatus | "ALL")
-                }
-              >
-                <SelectTrigger className="w-[140px]">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Status</SelectItem>
-                  <SelectItem value="OPEN">Open</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </Tooltip>
-            <Tooltip content="Sort features">
-              <Select
-                value={sortBy}
-                onValueChange={(v) =>
-                  setSortBy(v as "date" | "tokens" | "name")
-                }
-              >
-                <SelectTrigger className="w-[140px]">
-                  <SortAsc className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">By Date</SelectItem>
-                  <SelectItem value="tokens">By Tokens</SelectItem>
-                  <SelectItem value="name">By Name</SelectItem>
-                </SelectContent>
-              </Select>
-            </Tooltip>
-          </div>
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search features by name, description, or category..."
+            className="pl-10"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <XIcon className="w-4 h-4" />
+            </button>
+          )}
         </div>
-        {(searchQuery || statusFilter !== "ALL") && (
+        {searchQuery && (
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground font-mono">
             <span>
-              Showing {filteredFeatures.length} of {features.length} feature
-              {features.length !== 1 ? "s" : ""}
+              Showing {totalActive + totalArchived} of {features.length} feature
+              {features.length === 1 ? "" : "s"}
+              {totalActive > 0 &&
+                ` · ${totalActive} active across ${activeCategoryCount} ${activeCategoryCount === 1 ? "category" : "categories"}`}
             </span>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                setSearchQuery("");
-                setStatusFilter("ALL");
-              }}
+              onClick={() => setSearchQuery("")}
               className="h-auto py-1"
             >
-              Clear filters
+              Clear search
             </Button>
           </div>
         )}
       </Card>
 
-      {createOpen && isAdmin ? (
-        <Card className="p-4 border-2 border-primary/30 bg-card/80 backdrop-blur-sm shadow-lg shadow-primary/5 relative overflow-hidden">
-          {/* Scan line effect */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
-            <span className="text-primary">{">"}[</span> Create Feature{" "}
-            <span className="text-primary">]</span>
-          </h2>
-          <p className="mt-2 text-xs text-muted-foreground font-mono">
-            Token pool is fixed at creation (v1).
-          </p>
-
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="md:col-span-2">
-              <label className="text-xs font-mono text-muted-foreground">
-                Name
-              </label>
-              <Input
-                value={createName}
-                onChange={(e) => setCreateName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-mono text-muted-foreground">
-                Category
-              </label>
-              <Input
-                value={createCategory}
-                onChange={(e) => setCreateCategory(e.target.value)}
-                placeholder="Technical, Marketing, Docs…"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-mono text-muted-foreground">
-                Total CFT reward
-              </label>
-              <Input
-                value={createTokens}
-                onChange={(e) => setCreateTokens(e.target.value)}
-                inputMode="decimal"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-mono text-muted-foreground">
-                Status
-              </label>
-              <Input
-                value={createStatus}
-                onChange={(e) =>
-                  setCreateStatus(e.target.value as FeatureStatus)
-                }
-                placeholder="OPEN"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-mono text-muted-foreground">
-                Deadline (optional, ISO)
-              </label>
-              <Input
-                value={createDeadline}
-                onChange={(e) => setCreateDeadline(e.target.value)}
-                placeholder="2026-02-01T00:00:00.000Z"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="text-xs font-mono text-muted-foreground">
-                Description
-              </label>
-              <textarea
-                value={createDescription}
-                onChange={(e) => setCreateDescription(e.target.value)}
-                className="w-full min-h-[140px] rounded-md border border-border bg-background px-3 py-2 text-sm font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="mt-3 flex items-center gap-2">
-            <Button
-              variant={canCreate ? "default" : "outline"}
-              disabled={!canCreate}
-              onClick={async () => {
-                setError(null);
-                setSuccessMessage(null);
-                try {
-                  const tokens = Number(createTokens);
-                  if (!Number.isFinite(tokens) || tokens < 0) {
-                    setError("Total CFT reward must be a non-negative number");
-                    return;
-                  }
-                  const result = await createFeature({
-                    name: createName.trim(),
-                    category: createCategory.trim(),
-                    description: createDescription,
-                    total_tokens_reward: tokens,
-                    status: createStatus,
-                    deadline: createDeadline.trim()
-                      ? createDeadline.trim()
-                      : null,
-                  });
-                  
-                  // Cache the newly created feature for instant loading
-                  try {
-                    sessionStorage.setItem(
-                      `feature_cache_${result.feature.id}`,
-                      JSON.stringify(result.feature)
-                    );
-                  } catch (e) {
-                    // Ignore cache errors
-                  }
-                  
-                  setCreateName("");
-                  setCreateDescription("");
-                  setCreateTokens("1000");
-                  setCreateDeadline("");
-                  setCreateCategory("Technical");
-                  setCreateStatus("OPEN");
-                  setCreateOpen(false);
-                  await refresh();
-                  setSuccessMessage("Feature created successfully!");
-                } catch (e) {
-                  const message = e instanceof Error ? e.message : String(e);
-                  setError(message);
-                }
-              }}
-            >
-              Create
-            </Button>
-            {address ? (
-              <span className="text-xs text-muted-foreground font-mono">
-                Connected: {address.slice(0, 6)}…{address.slice(-4)}
-              </span>
-            ) : null}
-          </div>
-        </Card>
-      ) : null}
-
-      {error ? (
+      {/* Error banner */}
+      {error && (
         <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
           <div className="flex-1 text-sm text-destructive">{error}</div>
@@ -398,9 +202,10 @@ export default function FeaturesPage() {
             <XIcon className="w-4 h-4" />
           </button>
         </div>
-      ) : null}
+      )}
 
-      {successMessage ? (
+      {/* Success banner */}
+      {successMessage && (
         <div className="rounded-md border border-green-600/40 bg-green-600/10 p-3 flex items-start gap-2">
           <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
           <div className="flex-1 text-sm text-green-600">{successMessage}</div>
@@ -412,60 +217,77 @@ export default function FeaturesPage() {
             <XIcon className="w-4 h-4" />
           </button>
         </div>
-      ) : null}
+      )}
 
-      <div className="space-y-3">
-        {loading ? (
-          <Card className="border border-border/60 bg-card/60 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-            <div className="p-8 flex flex-col items-center justify-center gap-3">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground font-mono">Loading features…</p>
-            </div>
-          </Card>
-        ) : filteredFeatures.length === 0 ? (
-          <Card className="border border-border/60 bg-card/60 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-            <EmptyState
-              variant="features"
-              title={
-                searchQuery || statusFilter !== "ALL"
-                  ? "No features match your filters"
-                  : "No features found"
-              }
-              description={
-                searchQuery || statusFilter !== "ALL"
-                  ? "Try adjusting your search or filters to find what you're looking for."
-                  : isAdmin
-                    ? "Create your first feature to begin accepting contributions."
-                    : "Check back later for new contribution opportunities."
-              }
-              action={
-                searchQuery || statusFilter !== "ALL" ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setStatusFilter("ALL");
-                    }}
-                  >
-                    Clear filters
-                  </Button>
-                ) : isAdmin ? (
-                  <Button onClick={() => setCreateOpen(true)}>
+      {/* Loading state */}
+      {loading && (
+        <Card className="border border-border/60 bg-card/60 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          <div className="p-8 flex flex-col items-center justify-center gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground font-mono">
+              Loading features…
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {/* Empty state */}
+      {!loading && !hasResults && (
+        <Card className="border border-border/60 bg-card/60 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
+          <EmptyState
+            variant="features"
+            title={
+              searchQuery
+                ? "No features match your search"
+                : "No features found"
+            }
+            description={
+              searchQuery
+                ? "Try adjusting your search to find what you're looking for."
+                : isAdmin
+                  ? "Create your first feature to begin accepting contributions."
+                  : "Check back later for new contribution opportunities."
+            }
+            action={
+              searchQuery ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setSearchQuery("")}
+                >
+                  Clear search
+                </Button>
+              ) : isAdmin ? (
+                <Link href="/contribute/features/create">
+                  <Button>
                     <Plus className="w-4 h-4 mr-2" />
                     Create first feature
                   </Button>
-                ) : null
-              }
-            />
-          </Card>
-        ) : null}
+                </Link>
+              ) : null
+            }
+          />
+        </Card>
+      )}
 
-        {filteredFeatures.map((f) => (
-          <FeatureCard key={f.id} feature={f} />
-        ))}
-      </div>
+      {/* Active feature sections grouped by category */}
+      {!loading && (
+        <div className="space-y-6">
+          {Array.from(activeByCategory.entries()).map(
+            ([category, catFeatures]) => (
+              <CategorySection
+                key={category}
+                title={category}
+                features={catFeatures}
+              />
+            ),
+          )}
+
+          {/* Archived section (completed / cancelled) */}
+          <ArchivedSection features={archivedFeatures} />
+        </div>
+      )}
     </div>
   );
 }

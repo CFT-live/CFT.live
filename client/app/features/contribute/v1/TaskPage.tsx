@@ -87,7 +87,8 @@ export default function TaskPage({ taskId }: { taskId: string }) {
   const [editType, setEditType] = useState<TaskType>("TECH");
   const [editingStatus, setEditingStatus] = useState(false);
   const [editStatus, setEditStatus] = useState<TaskStatus>("OPEN");
-  const [editingAcceptanceCriteria, setEditingAcceptanceCriteria] = useState(false);
+  const [editingAcceptanceCriteria, setEditingAcceptanceCriteria] =
+    useState(false);
   const [editAcceptanceCriteria, setEditAcceptanceCriteria] = useState("");
   const [savingField, setSavingField] = useState(false);
 
@@ -167,12 +168,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
     if (!submitUrl.trim()) return false;
     if (!address) return false;
     if (!task) return false;
-    const me = address.toLowerCase();
-    // v1 flow: you must claim the task before submitting work.
-    return (
-      task.claimed_by_id === me &&
-      (task.status === "CLAIMED" || task.status === "CHANGES_REQUESTED")
-    );
+    return true;
   }, [address, submitUrl, task]);
 
   // Handle profile check for authenticated actions
@@ -368,7 +364,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
       {task ? (
         <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-          
+
           {/* Name Field */}
           <EditableTextField
             title="Name"
@@ -609,129 +605,6 @@ export default function TaskPage({ taskId }: { taskId: string }) {
         <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
           <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
-            <span>{">"}</span> Claim task
-          </h2>
-          <p className="mt-2 text-xs text-muted-foreground font-mono">
-            Claim this task to work on it. You must claim before submitting.
-          </p>
-
-          <div className="mt-3 flex items-center gap-2">
-            {task.status === "OPEN" && !task.claimed_by_id ? (
-              <Button
-                disabled={!address || !hasProfile || claiming || loading}
-                onClick={async () => {
-                  setError(null);
-                  setSuccessMessage(null);
-                  const canProceed = await handleAuthenticatedAction();
-                  if (!canProceed) return;
-
-                  setClaiming(true);
-                  try {
-                    await claimTask({ task_id: taskId, action: "CLAIM" });
-                    await refresh();
-                    setSuccessMessage("Task claimed successfully!");
-                  } catch (e) {
-                    setError(e instanceof Error ? e.message : String(e));
-                  } finally {
-                    setClaiming(false);
-                  }
-                }}
-              >
-                {claiming ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Claiming…
-                  </>
-                ) : (
-                  <>
-                    <User className="w-4 h-4" />
-                    Claim Task
-                  </>
-                )}
-              </Button>
-            ) : task.status === "CLAIMED" &&
-              task.claimed_by_id === address?.toLowerCase() ? (
-              <Button
-                variant="outline"
-                disabled={claiming || loading}
-                onClick={async () => {
-                  setError(null);
-                  setSuccessMessage(null);
-                  const canProceed = await handleAuthenticatedAction();
-                  if (!canProceed) return;
-
-                  setClaiming(true);
-                  
-                  // Optimistic update: immediately update UI
-                  const previousTask = task;
-                  setTask({
-                    ...task,
-                    status: "OPEN" as TaskStatus,
-                    claimed_by_id: null,
-                    claimed_date: null,
-                  });
-                  setSuccessMessage("Task unclaimed successfully!");
-                  
-                  try {
-                    await claimTask({ task_id: taskId, action: "UNCLAIM" });
-                    await refresh();
-                  } catch (e) {
-                    // Revert optimistic update on error
-                    setTask(previousTask);
-                    setSuccessMessage(null);
-                    setError(e instanceof Error ? e.message : String(e));
-                  } finally {
-                    setClaiming(false);
-                  }
-                }}
-              >
-                {claiming ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Unclaiming…
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-4 h-4" />
-                    Unclaim Task
-                  </>
-                )}
-              </Button>
-            ) : task.claimed_by_id ? (
-              <span className="text-xs text-muted-foreground font-mono">
-                Task claimed by{" "}
-                {claimerUsername ??
-                  `${task.claimed_by_id.slice(0, 6)}…${task.claimed_by_id.slice(-4)}`}
-              </span>
-            ) : (
-              <span className="text-xs text-muted-foreground font-mono">
-                {task.status === "IN_REVIEW"
-                  ? "Task is in review and cannot be claimed"
-                  : task.status === "DONE"
-                    ? "Task is completed and cannot be claimed"
-                    : task.status === "CHANGES_REQUESTED"
-                      ? "Task has requested changes and cannot be claimed"
-                      : "Task cannot be claimed in its current status"}
-              </span>
-            )}
-
-            {!address ? (
-              <span className="text-xs text-muted-foreground font-mono">
-                Connect wallet to claim
-              </span>
-            ) : !hasProfile ? (
-              <span className="text-xs text-muted-foreground font-mono">
-                Create profile to claim
-              </span>
-            ) : null}
-          </div>
-        </Card>
-      ) : null}
-
-      {task ? (
-        <Card className="p-4 border border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all relative overflow-hidden">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
-          <h2 className="text-sm font-mono font-semibold uppercase tracking-wider relative">
             <span>{">"}</span> Submit work
           </h2>
           <p className="mt-2 text-xs text-muted-foreground font-mono">
@@ -741,7 +614,10 @@ export default function TaskPage({ taskId }: { taskId: string }) {
 
           <div className="mt-3 grid grid-cols-1 gap-3">
             <div>
-              <label htmlFor="work-url" className="text-xs font-mono text-muted-foreground">
+              <label
+                htmlFor="work-url"
+                className="text-xs font-mono text-muted-foreground"
+              >
                 Work URL
               </label>
               <Input
@@ -755,7 +631,10 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             </div>
 
             <div>
-              <label htmlFor="pr-number" className="text-xs font-mono text-muted-foreground">
+              <label
+                htmlFor="pr-number"
+                className="text-xs font-mono text-muted-foreground"
+              >
                 GitHub PR number (optional)
               </label>
               <Input
@@ -769,7 +648,10 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             </div>
 
             <div>
-              <label htmlFor="submission-notes" className="text-xs font-mono text-muted-foreground">
+              <label
+                htmlFor="submission-notes"
+                className="text-xs font-mono text-muted-foreground"
+              >
                 Notes (optional)
               </label>
               <textarea
@@ -800,15 +682,6 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                   const me = address?.toLowerCase();
                   if (!me) {
                     setError("Missing wallet address");
-                    return;
-                  }
-
-                  if (
-                    task.claimed_by_id !== me ||
-                    (task.status !== "CLAIMED" &&
-                      task.status !== "CHANGES_REQUESTED")
-                  ) {
-                    setError("You must claim this task before submitting");
                     return;
                   }
 
@@ -858,21 +731,11 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                 )}
               </Button>
 
-              {!address ? (
+              {!address && (
                 <span className="text-xs text-muted-foreground font-mono">
                   Connect wallet to submit
                 </span>
-              ) : task && task.claimed_by_id !== address.toLowerCase() ? (
-                <span className="text-xs text-muted-foreground font-mono">
-                  Claim this task first to submit
-                </span>
-              ) : task &&
-                task.status !== "CLAIMED" &&
-                task.status !== "CHANGES_REQUESTED" ? (
-                <span className="text-xs text-muted-foreground font-mono">
-                  Submissions are only allowed when CLAIMED or CHANGES_REQUESTED
-                </span>
-              ) : null}
+              )}
             </div>
           </div>
         </Card>
@@ -899,7 +762,8 @@ export default function TaskPage({ taskId }: { taskId: string }) {
             </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground font-mono">
-            All work submissions for this task. {isAdmin ? "Admins can review here." : ""}
+            All work submissions for this task.{" "}
+            {isAdmin ? "Admins can review here." : ""}
           </p>
 
           {contributions.length === 0 ? (
@@ -916,7 +780,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
               {contributions
                 .slice()
                 .sort((a, b) =>
-                  a.submission_date < b.submission_date ? 1 : -1
+                  a.submission_date < b.submission_date ? 1 : -1,
                 )
                 .map((c) => {
                   const statusIcon =
@@ -1044,10 +908,12 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                                       (reviewNotes[c.id] ?? "").trim() || null,
                                   });
                                   await refresh();
-                                  setSuccessMessage("Changes requested successfully!");
+                                  setSuccessMessage(
+                                    "Changes requested successfully!",
+                                  );
                                 } catch (e) {
                                   setError(
-                                    e instanceof Error ? e.message : String(e)
+                                    e instanceof Error ? e.message : String(e),
                                   );
                                 }
                               }}
@@ -1076,7 +942,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                                   setSuccessMessage("Contribution rejected!");
                                 } catch (e) {
                                   setError(
-                                    e instanceof Error ? e.message : String(e)
+                                    e instanceof Error ? e.message : String(e),
                                   );
                                 }
                               }}
@@ -1113,10 +979,12 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                                       (reviewNotes[c.id] ?? "").trim() || null,
                                   });
                                   await refresh();
-                                  setSuccessMessage(`Contribution approved with ${cpValue} CP!`);
+                                  setSuccessMessage(
+                                    `Contribution approved with ${cpValue} CP!`,
+                                  );
                                 } catch (e) {
                                   setError(
-                                    e instanceof Error ? e.message : String(e)
+                                    e instanceof Error ? e.message : String(e),
                                   );
                                 }
                               }}

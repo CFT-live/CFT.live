@@ -24,15 +24,6 @@ export const handler = async (event: any) => {
     }
 
     const contributorId = paramsValidation.data.contributor_id.toLowerCase();
-    const isAllowedStatus = task.status === "CLAIMED" || task.status === "CHANGES_REQUESTED";
-    if (!isAllowedStatus || task.claimed_by_id !== contributorId) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: "Task must be claimed by contributor before submitting",
-        }),
-      };
-    }
 
     const id = randomUUID();
     const contribution = await createContribution({
