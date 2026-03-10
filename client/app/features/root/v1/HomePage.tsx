@@ -2,7 +2,6 @@ import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight, Terminal } from "lucide-react";
 
-import { ContributionBanner } from "@/app/features/root/v1/components/ContributionBanner";
 import { TerminalCard } from "@/app/features/root/v1/components/TerminalCard";
 import { Typewriter } from "@/app/features/root/v1/components/Typewriter";
 import { VideoPreview } from "@/app/features/root/v1/components/VideoPreview";
@@ -10,6 +9,7 @@ import { ConnectionStatusText } from "@/app/features/root/v1/components/Connecti
 import { MaskedRevealImage } from "@/app/features/root/v1/components/MaskedRevealImage";
 
 import { version } from "../../../../package.json";
+import { ContributeSection } from "./components/ContributeSection";
 
 const predictionVideo = "/assets/prediction.mp4";
 const rouletteVideo = "/assets/roulette.mp4";
@@ -276,22 +276,13 @@ export default async function HomePage() {
         <div className="mb-20">
           <div className="mb-8 flex items-center gap-3">
             <h2 className="text-2xl md:text-3xl font-bold text-primary font-mono">
-              <span className="text-muted-foreground">{">"}  </span> {t("Contribute")}
+              <span className="text-muted-foreground">{">"} </span>{" "}
+              {t("Contribute")}
             </h2>
             <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
           </div>
 
-          <ContributionBanner
-            title={t("Contribute")}
-            intro={t("Contribute_Intro")}
-            cta={t("Contribute_CTA")}
-            steps={[
-              { title: t("Contribute_Step_1_Title"), desc: t("Contribute_Step_1_Desc") },
-              { title: t("Contribute_Step_2_Title"), desc: t("Contribute_Step_2_Desc") },
-              { title: t("Contribute_Step_3_Title"), desc: t("Contribute_Step_3_Desc") },
-              { title: t("Contribute_Step_4_Title"), desc: t("Contribute_Step_4_Desc") },
-            ]}
-          />
+          <ContributeSection />
         </div>
 
         {/* Legal Disclaimer */}
