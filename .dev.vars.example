@@ -1,7 +1,0 @@
-# Example Wrangler dev vars.
-#
-# Wrangler supports a `.dev.vars` file (DO NOT COMMIT) used for local `wrangler dev`.
-# Copy this to `.dev.vars` and fill values as needed.
-
-# Advance worker
-ADVANCE_API_KEY=

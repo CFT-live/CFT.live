@@ -8,7 +8,6 @@ import { Github } from "lucide-react";
 import { ContextProvider } from "@/app/context";
 import Providers from "@/app/providers/Providers";
 import { UserCounter } from "@/app/features/root/v1/components/UserCounter";
-import { ChatContainer } from "@/app/features/root/v1/components/chat";
 import ConnectButton from "@/app/features/root/v1/components/ConnectButton";
 import LanguageSwitcher from "@/app/features/root/v1/components/LanguageSwitcher";
 import { Breadcrumb } from "@/app/features/root/v1/components/Breadcrumb";
@@ -235,12 +234,11 @@ export default async function RootLayout({
                       </a>
                     </div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                      © 2025 CFT.LIVE. All lives reserved.
+                      © 2026 CFT.LIVE. All lives reserved.
                     </p>
                   </div>
                 </div>
               </footer>
-              <ChatContainer />
             </div>
             </Providers>
           </NextIntlClientProvider>
