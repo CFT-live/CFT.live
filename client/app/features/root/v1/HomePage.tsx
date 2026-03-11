@@ -81,7 +81,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Sandbox */}
-            <Link href="/sandbox" className="block h-full">
+            <Link href="/sandbox" className="block h-full no-underline">
               <TerminalCard title="sandbox" status="online" className="h-full">
                 <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.2)_0%,transparent_70%)] animate-pulse" />
@@ -116,7 +116,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Games Section */}
+        {/* Protocols Section */}
         <div className="mb-20">
           <div className="mb-8 flex items-center gap-3">
             <h2 className="text-2xl md:text-3xl font-bold text-primary font-mono">
@@ -127,7 +127,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Prediction Market */}
-            <Link href="/prediction" className="block h-full">
+            <Link href="/prediction" className="block h-full no-underline">
               <TerminalCard
                 title="prediction"
                 status="online"
@@ -165,7 +165,7 @@ export default async function HomePage() {
             </Link>
 
             {/* Hash Roulette */}
-            <Link href="/roulette" className="block h-full">
+            <Link href="/roulette" className="block h-full no-underline">
               <TerminalCard title="roulette" status="online" className="h-full">
                 <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
                   <VideoPreview
@@ -199,7 +199,7 @@ export default async function HomePage() {
             </Link>
 
             {/* Lotto Pool */}
-            <Link href="/lotto" className="block h-full">
+            <Link href="/lotto" className="block h-full no-underline">
               <TerminalCard title="lotto" status="online" className="h-full">
                 <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
                   <VideoPreview

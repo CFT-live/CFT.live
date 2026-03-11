@@ -94,7 +94,7 @@ function CtaLink({
         className,
       ].join(" ")}
     >
-      START EARNING
+      Contribute
       <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
     </Link>
   );
@@ -167,7 +167,7 @@ export function ContributeSection() {
 
               <div className="space-y-4">
                 <h2 className="font-mono text-4xl font-bold text-primary text-glow-orange md:text-6xl">
-                  $ CONTRIBUTE & EARN USDC
+                  $ CONTRIBUTE & EARN
                 </h2>
                 <p className="max-w-2xl text-base leading-7 text-foreground md:text-lg">
                   Help build the world&apos;s largest smart contract hub. Complete
