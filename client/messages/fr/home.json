@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "Les soumissions approuvées rapportent des Points de Contribution selon l'impact.",
         "Contribute_Step_4_Title": "Obtenir des tokens CFT",
         "Contribute_Step_4_Desc": "Les tokens sont distribués proportionnellement à vos CP sur Arbitrum.",
-        "Contribute_CTA": "COMMENCER À CONTRIBUER"
+        "Contribute_CTA": "COMMENCER À CONTRIBUER",
+        "Redeem": "Rachat",
+        "Redeem_Status": "Pool de rachat CFT",
+        "Redeem_Title": "Convertissez vos CFT gagnés en USDC adossés.",
+        "Redeem_Description": "Ouvrez le flux de rachat pour consulter le solde de votre wallet, signer un rachat par permit en une transaction ou utiliser la solution de secours avec autorisation illimitée.",
+        "Redeem_CTA": "OUVRIR LE FLUX DE RACHAT"
     }
 }

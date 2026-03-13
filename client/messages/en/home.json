@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "Approved submissions earn Contribution Points based on impact.",
         "Contribute_Step_4_Title": "Get CFT tokens",
         "Contribute_Step_4_Desc": "Tokens are distributed proportionally to your CP on Arbitrum.",
-        "Contribute_CTA": "START CONTRIBUTING"
+        "Contribute_CTA": "START CONTRIBUTING",
+        "Redeem": "Redeem",
+        "Redeem_Status": "CFT Redemption Pool",
+        "Redeem_Title": "Convert earned CFT into backed USDC.",
+        "Redeem_Description": "Open the redeem flow to review your wallet balance, sign a one-transaction permit redeem, or use the approval fallback with unlimited allowance support.",
+        "Redeem_CTA": "OPEN REDEEM FLOW"
     }
 }

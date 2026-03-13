@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "Genehmigte Beiträge erhalten Contribution Points basierend auf dem Impact.",
         "Contribute_Step_4_Title": "CFT-Token erhalten",
         "Contribute_Step_4_Desc": "Token werden proportional zu deinen CP auf Arbitrum verteilt.",
-        "Contribute_CTA": "JETZT MITWIRKEN"
+        "Contribute_CTA": "JETZT MITWIRKEN",
+        "Redeem": "Einlösen",
+        "Redeem_Status": "CFT-Redemption-Pool",
+        "Redeem_Title": "Verdiente CFT in gedeckte USDC umwandeln.",
+        "Redeem_Description": "Öffne den Einlösefluss, um dein Wallet-Guthaben zu prüfen, eine Ein-Transaktions-Permit-Einlösung zu signieren oder den Freigabe-Fallback mit unbegrenzter Freigabe zu nutzen.",
+        "Redeem_CTA": "EINLÖSEFLUSS ÖFFNEN"
     }
 }

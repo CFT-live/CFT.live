@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "承認された提出は影響度に基づいてコントリビューションポイントを獲得します。",
         "Contribute_Step_4_Title": "CFTトークンを獲得",
         "Contribute_Step_4_Desc": "トークンはArbitrum上であなたのCPに比例して分配されます。",
-        "Contribute_CTA": "貢献を始める"
+        "Contribute_CTA": "貢献を始める",
+        "Redeem": "換金",
+        "Redeem_Status": "CFT換金プール",
+        "Redeem_Title": "獲得したCFTを裏付けのあるUSDCに変換。",
+        "Redeem_Description": "換金フローを開いてウォレット残高を確認し、1トランザクションのpermit換金に署名するか、無制限承認に対応した代替承認フローを利用できます。",
+        "Redeem_CTA": "換金フローを開く"
     }
 }

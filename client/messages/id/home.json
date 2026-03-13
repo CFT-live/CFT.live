@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "Pengajuan yang disetujui mendapat Poin Kontribusi berdasarkan dampak.",
         "Contribute_Step_4_Title": "Dapatkan token CFT",
         "Contribute_Step_4_Desc": "Token didistribusikan secara proporsional sesuai CP Anda di Arbitrum.",
-        "Contribute_CTA": "MULAI BERKONTRIBUSI"
+        "Contribute_CTA": "MULAI BERKONTRIBUSI",
+        "Redeem": "Tukar",
+        "Redeem_Status": "Pool penukaran CFT",
+        "Redeem_Title": "Ubah CFT yang Anda peroleh menjadi USDC yang didukung.",
+        "Redeem_Description": "Buka alur penukaran untuk meninjau saldo dompet Anda, menandatangani penukaran permit satu transaksi, atau menggunakan alur persetujuan cadangan dengan dukungan allowance tak terbatas.",
+        "Redeem_CTA": "BUKA ALUR PENUKARAN"
     }
 }

@@ -1,19 +1,17 @@
 {
-  "name": "cft-token",
+	"name": "cft-token",
 	"version": "0.1.0",
 	"private": true,
 	"packageManager": "pnpm@10.12.4",
 	"type": "module",
 	"scripts": {
-    "contract:complile": "npx hardhat compile",
-		"contract:build": "npx hardhat build contracts/CftToken.sol",
+		"contract:build": "npx hardhat build contracts/CftToken.sol && npx hardhat build contracts/ContributorDistributor.sol && npx hardhat build contracts/RedemptionPool.sol",
 		"contract:test": "npx hardhat test",
 		"contract:exposeabi": "node scripts/exposeAbi.js",
-		"contract:deploy": "npx hardhat ignition deploy ignition/modules/CftToken.ts --network arbitrumOne --verify",
+		"contract:deploy": "npx hardhat ignition deploy ignition/modules/CFT.ts --network arbitrumOne --verify",
 		"contract:deploy:force": "npx hardhat ignition wipe chain-42161 CftTokenModule#CFTToken --network arbitrumOne && npm run contract:deploy",
 		"contract:verify": "npx hardhat ignition --network arbitrumOne verify chain-42161"
 	},
-	"dependencies": {},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
 		"@nomicfoundation/hardhat-ignition": "^3.0.3",
@@ -26,6 +24,7 @@
 		"forge-std": "github:foundry-rs/forge-std#v1.9.4",
 		"hardhat": "^3.0.6",
 		"matchstick-as": "0.5.0",
-		"typescript": "^5"
+		"typescript": "^5",
+		"viem": "^2.47.1"
 	}
 }

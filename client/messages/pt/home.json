@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "Envios aprovados ganham Pontos de Contribuição com base no impacto.",
         "Contribute_Step_4_Title": "Receber tokens CFT",
         "Contribute_Step_4_Desc": "Os tokens são distribuídos proporcionalmente aos seus CP na Arbitrum.",
-        "Contribute_CTA": "COMEÇAR A CONTRIBUIR"
+        "Contribute_CTA": "COMEÇAR A CONTRIBUIR",
+        "Redeem": "Resgatar",
+        "Redeem_Status": "Pool de resgate CFT",
+        "Redeem_Title": "Converta CFT ganhos em USDC com lastro.",
+        "Redeem_Description": "Abra o fluxo de resgate para revisar o saldo da sua carteira, assinar um resgate com permit em uma transação ou usar o fluxo alternativo com permissão ilimitada.",
+        "Redeem_CTA": "ABRIR FLUXO DE RESGATE"
     }
 }

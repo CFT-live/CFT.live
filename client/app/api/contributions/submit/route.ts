@@ -1,12 +1,12 @@
 import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
-import { requireSignedRequest } from "@/app/features/contribute/v1/api/web3Auth";
+import { requireAuthenticatedSession } from "@/app/features/contribute/v1/api/sessionAuth";
 
 export const runtime = "edge";
 
 export async function POST(request: Request) {
   const bodyText = await request.text();
   try {
-    const { address } = await requireSignedRequest({ request, rawBodyText: bodyText });
+    const { address } = await requireAuthenticatedSession(request);
     const signer = address.toLowerCase();
 
     // Never accept contributor_id from the client. Contributor identity is derived
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const status = message.includes("Missing wallet signature") ? 401 : 400;
+    const status = message.includes("Authentication required") ? 401 : 400;
     return new Response(message, { status });
   }
 }

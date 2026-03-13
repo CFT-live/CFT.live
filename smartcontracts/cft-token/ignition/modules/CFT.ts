@@ -1,30 +1,25 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-export default buildModule("CFTMVP", (m) => {
+export default buildModule("CFT", (m) => {
   const deployer = m.getAccount(0);
 
   // Parameters (override via --parameters)
-  const usdc = m.getParameter<string>("usdc"); // required
-  const signer = m.getParameter<string>("signer"); // required
+  // Payment token address (USDC on Arbitrum One)
+  const usdc = m.getParameter<string>("usdc", "0xaf88d065e77c8cc2239327c5edb3a432268e5831");
 
-  const name = m.getParameter<string>("name", "CFT.live");
-  const symbol = m.getParameter<string>("symbol", "CFT");
+  // const name = m.getParameter<string>("name", "CFT.live");
+  // const symbol = m.getParameter<string>("symbol", "CFT");
+  const name = m.getParameter<string>("name", "TEST.live");
+  const symbol = m.getParameter<string>("symbol", "TEST");
 
-  // Bigint params must be passed as strings with an "n" suffix in the parameters file
-  const maxSupply = m.getParameter<bigint>("maxSupply", 100_000_000n * 10n ** 18n);
-
-  const low = m.getParameter<bigint>("low", 2_500n * 10n ** 18n);
-  const medium = m.getParameter<bigint>("medium", 10_000n * 10n ** 18n);
-  const high = m.getParameter<bigint>("high", 40_000n * 10n ** 18n);
-
-  // For MVP, set admin to deployer so role wiring can happen inside the module.
+  // Set admin to deployer so role wiring can happen inside the module.
   const admin = deployer;
 
-  const cft = m.contract("CFTToken", [name, symbol, maxSupply, admin], { from: deployer });
+  const cft = m.contract("CFTToken", [name, symbol, admin], { from: deployer });
 
   const distributor = m.contract(
     "ContributorDistributor",
-    [cft, admin, signer, low, medium, high],
+    [cft, admin],
     { from: deployer }
   );
 
@@ -35,8 +30,15 @@ export default buildModule("CFTMVP", (m) => {
   const BURNER_ROLE = m.staticCall(cft, "BURNER_ROLE", []);
 
   // Wire roles
-  m.call(cft, "grantRole", [MINTER_ROLE, distributor], { from: admin });
-  m.call(cft, "grantRole", [BURNER_ROLE, pool], { from: admin });
+  m.call(cft, "grantRole", [MINTER_ROLE, distributor], {
+    from: admin,
+    id: "GrantMinterRoleToDistributor",
+  });
+
+  m.call(cft, "grantRole", [BURNER_ROLE, pool], {
+    from: admin,
+    id: "GrantBurnerRoleToPool",
+  });
 
   return { cft, distributor, pool };
 });

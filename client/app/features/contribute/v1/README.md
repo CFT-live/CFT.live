@@ -281,17 +281,17 @@ text
 
 User connects Arbitrum wallet (MetaMask/WalletConnect)
 
-Signs each privileged request (no gas cost)
+AppKit starts a SIWE sign-in flow for the connected wallet (no gas cost)
 
-Client sends signed headers with the request:
-- `x-cft-message`
-- `x-cft-signature`
+Next.js issues a short-lived nonce cookie and verifies the signed SIWE message
 
-Next.js Edge `/api/**` routes verify the signature and derive the actor wallet address
+Next.js stores an authenticated session cookie containing the verified wallet address and chain id
+
+Protected Next.js Edge `/api/**` routes read the session cookie and derive the actor wallet address
 
 Edge routes proxy to the backend API (API Gateway) using a server-side API key
 
-Contributor profile is created/fetched using the signer wallet address
+Contributor profile is created/fetched using the authenticated wallet address
 
 text
 

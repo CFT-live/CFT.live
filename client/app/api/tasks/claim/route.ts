@@ -1,12 +1,12 @@
 import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
-import { requireSignedRequest } from "@/app/features/contribute/v1/api/web3Auth";
+import { requireAuthenticatedSession } from "@/app/features/contribute/v1/api/sessionAuth";
 
 export const runtime = "edge";
 
 export async function POST(request: Request) {
   const bodyText = await request.text();
   try {
-    const { address } = await requireSignedRequest({ request, rawBodyText: bodyText });
+    const { address } = await requireAuthenticatedSession(request);
     const body = bodyText
       ? (JSON.parse(bodyText) as { task_id?: string; action?: "CLAIM" | "UNCLAIM" })
       : {};
@@ -26,13 +26,14 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const status = message.includes("Missing wallet signature")
-      ? 401
-      : message.includes("Only the current claimant")
-        ? 403
-        : message.includes("already claimed") || message.includes("not open")
-          ? 409
-          : 400;
+    let status = 400;
+    if (message.includes("Authentication required")) {
+      status = 401;
+    } else if (message.includes("Only the current claimant")) {
+      status = 403;
+    } else if (message.includes("already claimed") || message.includes("not open")) {
+      status = 409;
+    }
     return new Response(message, { status });
   }
 }

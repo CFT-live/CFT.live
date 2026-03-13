@@ -285,6 +285,42 @@ export default async function HomePage() {
           <ContributeSection />
         </div>
 
+        <div className="mb-20">
+          <div className="mb-8 flex items-center gap-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary font-mono">
+              <span className="text-muted-foreground">{">"}</span> {t("Redeem")}
+            </h2>
+            <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
+          </div>
+
+          <div className="glow-orange relative overflow-hidden rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,hsl(var(--primary)/0.12),transparent_65%)] p-6 md:p-8">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_38%)]" />
+            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl space-y-3">
+                <div className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
+                  {t("Redeem_Status")}
+                </div>
+                <h3 className="font-mono text-2xl font-bold text-primary md:text-3xl">
+                  {t("Redeem_Title")}
+                </h3>
+                <p className="text-sm leading-7 text-muted-foreground md:text-base">
+                  {t("Redeem_Description")}
+                </p>
+              </div>
+
+              <div className="shrink-0">
+                <Link
+                  href="/redeem"
+                  className="group inline-flex items-center justify-center gap-2 rounded border border-primary bg-primary px-8 py-4 font-mono text-sm font-bold tracking-wide text-primary-foreground transition-all duration-200 hover:bg-primary/90 glow-orange-strong"
+                >
+                  {t("Redeem_CTA")}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Legal Disclaimer */}
         <div className="mt-16  mx-auto">
           <div className="border border-yellow-500/30 bg-yellow-500/5 rounded-lg p-6">

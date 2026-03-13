@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "Los envíos aprobados obtienen Puntos de Contribución según el impacto.",
         "Contribute_Step_4_Title": "Obtener tokens CFT",
         "Contribute_Step_4_Desc": "Los tokens se distribuyen proporcionalmente a tus CP en Arbitrum.",
-        "Contribute_CTA": "EMPEZAR A CONTRIBUIR"
+        "Contribute_CTA": "EMPEZAR A CONTRIBUIR",
+        "Redeem": "Canjear",
+        "Redeem_Status": "Pool de canje CFT",
+        "Redeem_Title": "Convierte los CFT ganados en USDC respaldados.",
+        "Redeem_Description": "Abre el flujo de canje para revisar el saldo de tu wallet, firmar un canje con permit en una sola transacción o usar el flujo alternativo con autorización ilimitada.",
+        "Redeem_CTA": "ABRIR FLUJO DE CANJE"
     }
 }

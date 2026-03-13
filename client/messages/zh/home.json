@@ -32,6 +32,11 @@
         "Contribute_Step_3_Desc": "获批的提交根据影响力获得贡献积分。",
         "Contribute_Step_4_Title": "获取 CFT 代币",
         "Contribute_Step_4_Desc": "代币按照你的 CP 比例在 Arbitrum 上分发。",
-        "Contribute_CTA": "开始贡献"
+        "Contribute_CTA": "开始贡献",
+        "Redeem": "兑换",
+        "Redeem_Status": "CFT 兑换池",
+        "Redeem_Title": "将赚取的 CFT 转换为有支撑的 USDC。",
+        "Redeem_Description": "打开兑换流程，查看你的钱包余额，签署单笔 permit 兑换，或使用支持无限授权的备用授权流程。",
+        "Redeem_CTA": "打开兑换流程"
     }
 }

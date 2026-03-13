@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import {
   ArrowRightIcon,
-  ArrowUpRightIcon,
   AwardIcon,
   CodeIcon,
   CoinsIcon,
@@ -18,6 +17,8 @@ import {
   WalletIcon,
   type LucideIcon,
 } from "lucide-react";
+
+import { TokenPriceWidget } from "./TokenPriceWidget";
 
 const earningFlow = [
   {
@@ -208,25 +209,7 @@ export function ContributeSection() {
             </div>
           </div>
 
-          {/* Token Price Widget */}
-          <div className="mb-10 flex justify-center lg:justify-start">
-            <div className="inline-flex flex-wrap items-center justify-center gap-3 rounded-lg border border-primary/40 bg-card/70 px-5 py-3 backdrop-blur-sm sm:flex-nowrap">
-              <span className="font-mono text-sm text-muted-foreground">
-                CFT / USDC
-              </span>
-              <div className="hidden h-5 w-px bg-border/50 sm:block" />
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-2xl font-bold text-primary text-glow-orange">
-                  $0.23
-                </span>
-                <TrendingUpIcon className="h-4 w-4 text-green-500" />
-              </div>
-              <div className="hidden h-5 w-px bg-border/50 sm:block" />
-              <span className="font-mono text-xs text-muted-foreground">
-                1 CFT = 0.23 USDC
-              </span>
-            </div>
-          </div>
+          <TokenPriceWidget />
 
           {/* Visual Earning Flow Diagram */}
           <div className="mb-8 rounded-2xl border border-border/60 bg-black/25 p-5 md:p-6">
@@ -242,7 +225,7 @@ export function ContributeSection() {
             </div>
 
             <div className="grid gap-4 lg:grid-cols-4">
-              {earningFlow.map((item, index) => {
+              {earningFlow.map((item) => {
                 const Icon = item.icon;
 
                 return (

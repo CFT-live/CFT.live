@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { getMyContributor } from "../api/api";
+import { getAuthSession, getMyContributor } from "../api/api";
 import type { Contributor } from "../api/types";
 import { MILLIS } from "@/app/helpers";
 
@@ -16,7 +16,7 @@ const CACHE_KEY = "cft_profile_cache";
 const CACHE_DURATION = 12 * MILLIS.inHour;
 
 function getCachedProfile(address: string): CachedProfile | null {
-  if (typeof window === "undefined") return null;
+  if (globalThis.sessionStorage === undefined) return null;
 
   try {
     const cached = sessionStorage.getItem(CACHE_KEY);
@@ -44,7 +44,7 @@ function getCachedProfile(address: string): CachedProfile | null {
 }
 
 function setCachedProfile(profile: CachedProfile): void {
-  if (typeof window === "undefined") return;
+  if (globalThis.sessionStorage === undefined) return;
 
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify(profile));
@@ -75,7 +75,10 @@ export function useContributorProfile(address: string | undefined) {
     }
 
     // Check session storage cache first
-    const cached = !force ? getCachedProfile(address) : null;
+    let cached: CachedProfile | null = null;
+    if (!force) {
+      cached = getCachedProfile(address);
+    }
     if (cached?.hasProfile) {
       setHasProfile(cached.hasProfile);
       setIsAdmin(cached.isAdmin);
@@ -86,6 +89,14 @@ export function useContributorProfile(address: string | undefined) {
     // Fetch fresh profile data
     setIsLoading(true);
     try {
+      const session = await getAuthSession();
+      if (session?.address?.toLowerCase() !== address.toLowerCase()) {
+        setHasProfile(null);
+        setIsAdmin(false);
+        setContributor(null);
+        return false;
+      }
+
       const res = await getMyContributor();
       const isUserAdmin = (res.contributor.roles ?? []).includes("ADMIN") || (res.contributor.roles ?? []).includes("CORE");
       setHasProfile(true);
@@ -102,8 +113,11 @@ export function useContributorProfile(address: string | undefined) {
       });
 
       return true;
-    } catch {
-      setHasProfile(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      const isAuthError = message.includes("Authentication required");
+
+      setHasProfile(isAuthError ? null : false);
       setIsAdmin(false);
       setContributor(null);
 

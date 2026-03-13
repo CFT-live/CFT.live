@@ -16,10 +16,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
     const homeMessages = (await import(`../messages/${locale}/home.json`)).default;
     
     // Load other message files with Promise.all for better performance
-    const [predictionMessages, rouletteMessages, lottoMessages] = await Promise.all([
+    const [predictionMessages, rouletteMessages, lottoMessages, redeemMessages] = await Promise.all([
       import(`../messages/${locale}/prediction.json`).then(m => m.default).catch(() => ({})),
       import(`../messages/${locale}/roulette.json`).then(m => m.default).catch(() => ({})),
       import(`../messages/${locale}/lotto.json`).then(m => m.default).catch(() => ({})),
+      import(`../messages/${locale}/redeem.json`).then(m => m.default).catch(() => ({})),
     ]);
 
     return {
@@ -29,6 +30,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         ...predictionMessages,
         ...rouletteMessages,
         ...lottoMessages,
+        ...redeemMessages,
       },
     };
   } catch (error) {

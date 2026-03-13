@@ -1,5 +1,8 @@
 import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
-import { requireSignedRequest } from "@/app/features/contribute/v1/api/web3Auth";
+import {
+  isContributorAdmin,
+  requireAuthenticatedSession,
+} from "@/app/features/contribute/v1/api/sessionAuth";
 import type {
   Contributor,
   ContributorStatus,
@@ -8,24 +11,11 @@ import type {
 
 export const runtime = "edge";
 
-async function isAdmin(address: string): Promise<boolean> {
-  try {
-    const res = await apiGatewayPost<{ contributor: Contributor }>(
-      "/contributors/get",
-      { id: address.toLowerCase() }
-    );
-    const roles = res.contributor.roles ?? [];
-    return roles.includes("CORE") || roles.includes("ADMIN");
-  } catch {
-    return false;
-  }
-}
-
 export async function POST(request: Request) {
   const bodyText = await request.text();
 
   try {
-    const { address } = await requireSignedRequest({ request, rawBodyText: bodyText });
+    const { address } = await requireAuthenticatedSession(request);
     const body = bodyText
       ? (JSON.parse(bodyText) as {
           wallet_address?: string;
@@ -43,7 +33,7 @@ export async function POST(request: Request) {
     const signer = address.toLowerCase();
     const target = (body.wallet_address ?? signer).toLowerCase();
 
-    const admin = await isAdmin(address);
+    const admin = await isContributorAdmin(address);
     if (target !== signer && !admin) {
       return new Response("Admin role required", { status: 403 });
     }
@@ -78,7 +68,7 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const status = message.includes("Missing wallet signature") ? 401 : 400;
+    const status = message.includes("Authentication required") ? 401 : 400;
     return new Response(message, { status });
   }
 }

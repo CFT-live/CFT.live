@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { arbitrum } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { projectId, wagmiAdapter } from "../config";
+import { siweConfig } from "../config/siwe";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ createAppKit({
   networks: [arbitrum],
   defaultNetwork: arbitrum,
   metadata: metadata,
+  siweConfig,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
   },

@@ -16,6 +16,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useQueryClient } from "@tanstack/react-query";
+import { isAddress } from "viem";
 import { AdminSection } from "./AdminSection";
 import { useCloseDraw } from "../../../prediction/v1/hooks/useCloseDraw";
 import { useSafeWriteContractLotto } from "../../../prediction/v1/hooks/useSafeWriteContractLotto";
@@ -25,22 +26,25 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { ContractButton } from "../../../root/v1/components/ContractButton";
 
 interface LottoAdminCardProps {
-  contractOwnerAddress: string;
+  readonly contractOwnerAddress: string;
 }
 
 export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const { address: userAddress } = useAppKitAccount();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-
-  // Close draw
-  const onCloseSuccess = useCallback(() => {
+  const invalidateMetadata = useCallback(() => {
     setTimeout(() => {
       queryClient.invalidateQueries({
         queryKey: [LOTTO_CONTRACT_METADATA_QUERY_KEY],
       });
     }, 3 * MILLIS.inSecond);
   }, [queryClient]);
+
+  // Close draw
+  const onCloseSuccess = useCallback(() => {
+    invalidateMetadata();
+  }, [invalidateMetadata]);
 
   const {
     closeDraw,
@@ -52,12 +56,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const [ticketPrice, setTicketPrice] = useState("");
   const onPriceSuccess = useCallback(() => {
     setTicketPrice("");
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [LOTTO_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    invalidateMetadata();
+  }, [invalidateMetadata]);
 
   const {
     writeToContract: setPrice,
@@ -75,12 +75,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const [maxTickets, setMaxTickets] = useState("");
   const onMaxSuccess = useCallback(() => {
     setMaxTickets("");
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [LOTTO_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    invalidateMetadata();
+  }, [invalidateMetadata]);
 
   const {
     writeToContract: setMaxAmount,
@@ -94,14 +90,40 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
     setMaxAmount("setMaxTicketAmount", [max]);
   };
 
+  // Set fee config
+  const [feeCollector, setFeeCollector] = useState("");
+  const [feeBps, setFeeBps] = useState("");
+  const onFeeConfigSuccess = useCallback(() => {
+    setFeeCollector("");
+    setFeeBps("");
+    invalidateMetadata();
+  }, [invalidateMetadata]);
+
+  const {
+    writeToContract: setFeeConfig,
+    isLoading: isFeeConfigLoading,
+    errorMessage: feeConfigError,
+  } = useSafeWriteContractLotto(onFeeConfigSuccess);
+
+  const handleSetFeeConfig = () => {
+    const parsedFeeBps = Number.parseInt(feeBps, 10);
+    if (!isAddress(feeCollector)) return;
+    if (Number.isNaN(parsedFeeBps) || parsedFeeBps < 0 || parsedFeeBps > 10000) {
+      return;
+    }
+    setFeeConfig("setFeeConfig", [feeCollector, parsedFeeBps]);
+  };
+
+  const isFeeConfigValid =
+    isAddress(feeCollector) &&
+    feeBps.length > 0 &&
+    Number.parseInt(feeBps, 10) >= 0 &&
+    Number.parseInt(feeBps, 10) <= 10000;
+
   // Withdraw fees
   const onWithdrawSuccess = useCallback(() => {
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [LOTTO_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    invalidateMetadata();
+  }, [invalidateMetadata]);
 
   const {
     writeToContract: withdrawFees,
@@ -115,12 +137,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
 
   // Pause/Unpause
   const onPauseSuccess = useCallback(() => {
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [LOTTO_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    invalidateMetadata();
+  }, [invalidateMetadata]);
 
   const {
     writeToContract: togglePause,
@@ -137,10 +155,7 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   };
 
   // Only show to owner
-  if (
-    !userAddress ||
-    userAddress.toLowerCase() !== contractOwnerAddress.toLowerCase()
-  ) {
+  if (userAddress?.toLowerCase() !== contractOwnerAddress.toLowerCase()) {
     return null;
   }
 
@@ -274,6 +289,55 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
                   >
                     {isMaxLoading ? "Setting..." : "Set Max"}
                   </ContractButton>
+                </div>
+              </div>
+            </AdminSection>
+
+            {/* Set Fee Config */}
+            <AdminSection
+              title="Set Fee Configuration"
+              description="Update the fee collector address and fee in basis points. Use 100 for 1% and 10000 for 100%."
+              errorMessage={feeConfigError}
+            >
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="feeCollector" className="text-xs">
+                    Fee Collector Address
+                  </Label>
+                  <Input
+                    id="feeCollector"
+                    value={feeCollector}
+                    onChange={(e) => setFeeCollector(e.target.value)}
+                    placeholder="0x..."
+                    disabled={isFeeConfigLoading}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label htmlFor="feeBps" className="text-xs">
+                      Fee (Basis Points)
+                    </Label>
+                    <Input
+                      id="feeBps"
+                      type="number"
+                      min="0"
+                      max="10000"
+                      step="1"
+                      value={feeBps}
+                      onChange={(e) => setFeeBps(e.target.value)}
+                      placeholder="100"
+                      disabled={isFeeConfigLoading}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <ContractButton
+                      onClick={handleSetFeeConfig}
+                      disabled={isFeeConfigLoading || !isFeeConfigValid}
+                      size="sm"
+                    >
+                      {isFeeConfigLoading ? "Setting..." : "Set Fee"}
+                    </ContractButton>
+                  </div>
                 </div>
               </div>
             </AdminSection>

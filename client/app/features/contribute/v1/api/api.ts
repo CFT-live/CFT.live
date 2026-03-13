@@ -8,14 +8,17 @@ import type {
   TaskType,
   TransactionStatus,
 } from "./types";
-import { buildSignedHeaders } from "./auth";
+
+export type AuthSession = {
+  address: string;
+  chainId: number;
+};
 
 async function apiFetch<T>(
   pathname: string,
   options: {
     method?: string;
     body?: unknown;
-    signed?: boolean;
   } = {}
 ): Promise<T> {
   const method = options.method ?? "POST";
@@ -25,20 +28,29 @@ async function apiFetch<T>(
     "content-type": "application/json",
   };
 
-  if (options.signed) {
-    const signed = await buildSignedHeaders({
-      method,
-      pathname,
-      bodyText,
-    });
-    headers["x-cft-message"] = signed["x-cft-message"];
-    headers["x-cft-signature"] = signed["x-cft-signature"];
-  }
-
   const res = await fetch(pathname, {
     method,
+    cache: "no-store",
     headers,
     body: bodyText || undefined,
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    if (res.status === 401) {
+      throw new Error(text || "Authentication required");
+    }
+
+    throw new Error(text || `Request failed: ${res.status}`);
+  }
+
+  return (await res.json()) as T;
+}
+
+export async function getAuthSession(): Promise<AuthSession | null> {
+  const res = await fetch("/api/auth/siwe/session", {
+    cache: "no-store",
+    method: "GET",
   });
 
   if (!res.ok) {
@@ -46,7 +58,8 @@ async function apiFetch<T>(
     throw new Error(text || `Request failed: ${res.status}`);
   }
 
-  return (await res.json()) as T;
+  const session: AuthSession | null = await res.json();
+  return session;
 }
 
 export async function listTasks(input: {
@@ -79,7 +92,6 @@ export async function createTask(input: {
   status: TaskStatus;
 }): Promise<{ task: Task }> {
   return apiFetch("/api/tasks/update", {
-    signed: true,
     body: {
       feature_id: input.feature_id,
       name: input.name,
@@ -90,7 +102,6 @@ export async function createTask(input: {
     },
   });
 }
-
 export async function getTask(taskId: string): Promise<{ task: Task }> {
   return apiFetch("/api/tasks/get", {
     body: { id: taskId },
@@ -141,7 +152,6 @@ export async function claimTask(input: {
   action: "CLAIM" | "UNCLAIM";
 }): Promise<{ task: Task }> {
   return apiFetch("/api/tasks/claim", {
-    signed: true,
     body: {
       task_id: input.task_id,
       action: input.action,
@@ -156,7 +166,6 @@ export async function submitContribution(input: {
   github_pr_number?: number | null;
 }): Promise<{ contribution: Contribution }> {
   return apiFetch("/api/contributions/submit", {
-    signed: true,
     body: {
       task_id: input.task_id,
       submitted_work_url: input.submitted_work_url,
@@ -189,7 +198,6 @@ export async function approveContribution(input: {
   approval_notes?: string | null;
 }): Promise<{ contribution: Contribution }> {
   return apiFetch("/api/contributions/approve", {
-    signed: true,
     body: {
       contribution_id: input.contribution_id,
       status: input.status,
@@ -230,7 +238,6 @@ export async function createFeature(input: {
   discussions_url?: string | null;
 }): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/create", {
-    signed: true,
     body: {
       name: input.name,
       description: input.description,
@@ -252,7 +259,6 @@ export async function updateFeature(input: {
   discussions_url?: string | null;
 }): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/update", {
-    signed: true,
     body: {
       id: input.id,
       name: input.name,
@@ -267,7 +273,6 @@ export async function updateFeature(input: {
 
 export async function deleteFeature(featureId: string): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/delete", {
-    signed: true,
     body: { id: featureId },
   });
 }
@@ -297,7 +302,6 @@ export async function createDistribution(input: {
   arbitrum_tx_hash?: string | null;
 }): Promise<{ distribution: FeatureDistribution }> {
   return apiFetch("/api/distributions/create", {
-    signed: true,
     body: {
       feature_id: input.feature_id,
       contributor_id: input.contributor_id,
@@ -315,7 +319,6 @@ export async function updateDistribution(input: {
   arbitrum_tx_hash?: string | null;
 }): Promise<{ distribution: FeatureDistribution }> {
   return apiFetch("/api/distributions/update", {
-    signed: true,
     body: {
       id: input.id,
       transaction_status: input.transaction_status,
@@ -325,7 +328,7 @@ export async function updateDistribution(input: {
 }
 
 export async function getMyContributor(): Promise<{ contributor: Contributor }> {
-  return apiFetch("/api/contributors/get", { signed: true, body: {} });
+  return apiFetch("/api/contributors/get", { body: {} });
 }
 
 export async function upsertMyContributor(input: {
@@ -337,7 +340,6 @@ export async function upsertMyContributor(input: {
   profile_image_url?: string | null;
 }): Promise<{ contributor: Contributor }> {
   return apiFetch("/api/contributors/update", {
-    signed: true,
     body: {
       username: input.username,
       email: input.email ?? null,

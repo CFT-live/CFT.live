@@ -1,22 +1,16 @@
 import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
-import { requireSignedRequest } from "@/app/features/contribute/v1/api/web3Auth";
-import type { Contributor } from "@/app/features/contribute/v1/api/types";
+import {
+  requireAuthenticatedSession,
+  requireContributorAdmin,
+} from "@/app/features/contribute/v1/api/sessionAuth";
 
 export const runtime = "edge";
-
-async function requireAdmin(address: string): Promise<void> {
-  const id = address.toLowerCase();
-  const res = await apiGatewayPost<{ contributor: Contributor }>("/contributors/get", { id });
-  const roles = res.contributor.roles ?? [];
-  const ok = roles.includes("CORE") || roles.includes("ADMIN");
-  if (!ok) throw new Error("Admin role required");
-}
 
 export async function POST(request: Request) {
   const bodyText = await request.text();
   try {
-    const { address } = await requireSignedRequest({ request, rawBodyText: bodyText });
-    await requireAdmin(address);
+    const { address } = await requireAuthenticatedSession(request);
+    await requireContributorAdmin(address);
 
     const body = bodyText ? (JSON.parse(bodyText) as Record<string, unknown>) : {};
     const result = await apiGatewayPost("/features/update", {
@@ -30,11 +24,12 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const status = message.includes("Admin role required")
-      ? 403
-      : message.includes("Missing wallet signature")
-        ? 401
-        : 400;
+    let status = 400;
+    if (message.includes("Admin role required")) {
+      status = 403;
+    } else if (message.includes("Authentication required")) {
+      status = 401;
+    }
     return new Response(message, { status });
   }
 }

@@ -184,6 +184,8 @@ export default function TaskPage({ taskId }: { taskId: string }) {
         setError(
           "Please create a contributor profile first at /contribute/profile",
         );
+      } else {
+        setError("Please authenticate your wallet to continue");
       }
     }
     return canProceed;
