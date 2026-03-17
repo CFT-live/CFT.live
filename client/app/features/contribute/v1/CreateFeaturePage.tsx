@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 
 import { createFeature } from "./api/api";
-import type { FeatureStatus } from "./api/types";
+import type { MutableFeatureStatus } from "./api/types";
 import { useContributorProfile } from "./hooks/useContributorProfile";
 import { CATEGORY_OPTIONS, STATUS_OPTIONS } from "./constants";
 import { TerminalSection } from "./components/TerminalSection";
@@ -36,7 +36,7 @@ export default function CreateFeaturePage() {
   const [category, setCategory] = useState("Technical");
   const [description, setDescription] = useState("");
   const [tokens, setTokens] = useState("1000");
-  const [status, setStatus] = useState<FeatureStatus>("OPEN");
+  const [status, setStatus] = useState<MutableFeatureStatus>("OPEN");
   const [discussionLink, setDiscussionLink] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
@@ -190,7 +190,7 @@ export default function CreateFeaturePage() {
             </span>
             <Select
               value={status}
-              onValueChange={(v) => setStatus(v as FeatureStatus)}
+              onValueChange={(v) => setStatus(v as MutableFeatureStatus)}
             >
               <SelectTrigger className="flex-1">
                 <SelectValue placeholder="Select Status" />

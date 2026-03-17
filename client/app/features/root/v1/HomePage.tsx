@@ -70,52 +70,6 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Tools Section */}
-        <div className="mb-20">
-          <div className="mb-8 flex items-center gap-3">
-            <h2 className="text-2xl md:text-3xl font-bold text-primary font-mono">
-              <span className="text-muted-foreground">{">"}</span> {t("Tools")}
-            </h2>
-            <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {/* Sandbox */}
-            <Link href="/sandbox" className="block h-full no-underline">
-              <TerminalCard title="sandbox" status="online" className="h-full">
-                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.2)_0%,transparent_70%)] animate-pulse" />
-                  <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-20 font-mono text-primary">
-                    {"</>"}
-                  </div>
-                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
-                  <div className="absolute bottom-3 right-3 pointer-events-none">
-                    <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
-                      {t("LIVE")}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6 flex flex-col flex-1 gap-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                      <Terminal className="w-4 h-4" /> {t("Sandbox")}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {t("Sandbox_Description")}
-                    </p>
-                  </div>
-
-                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
-                    <span>{t("EXECUTE_PROTOCOL")}</span>
-                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </TerminalCard>
-            </Link>
-          </div>
-        </div>
-
         {/* Protocols Section */}
         <div className="mb-20">
           <div className="mb-8 flex items-center gap-3">
@@ -269,6 +223,52 @@ export default async function HomePage() {
                 </div>
               </TerminalCard>
             </div>
+          </div>
+        </div>
+
+        {/* Tools Section */}
+        <div className="mb-20">
+          <div className="mb-8 flex items-center gap-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-primary font-mono">
+              <span className="text-muted-foreground">{">"}</span> {t("Tools")}
+            </h2>
+            <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {/* Sandbox */}
+            <Link href="/sandbox" className="block h-full no-underline">
+              <TerminalCard title="sandbox" status="online" className="h-full">
+                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.2)_0%,transparent_70%)] animate-pulse" />
+                  <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-20 font-mono text-primary">
+                    {"</>"}
+                  </div>
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 pointer-events-none">
+                    <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
+                      {t("LIVE")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 flex flex-col flex-1 gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                      <Terminal className="w-4 h-4" /> {t("Sandbox")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t("Sandbox_Description")}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span>{t("EXECUTE_PROTOCOL")}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </TerminalCard>
+            </Link>
           </div>
         </div>
 

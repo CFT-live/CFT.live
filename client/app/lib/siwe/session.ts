@@ -45,8 +45,8 @@ function fromBase64Url(input: string): Uint8Array {
   return Uint8Array.from(binary, (char) => char.codePointAt(0) ?? 0);
 }
 
-function encodeUtf8(input: string): Uint8Array {
-  return new TextEncoder().encode(input);
+function encodeUtf8(input: string): Uint8Array<ArrayBuffer> {
+  return Uint8Array.from(new TextEncoder().encode(input));
 }
 
 function decodeUtf8(input: Uint8Array): string {

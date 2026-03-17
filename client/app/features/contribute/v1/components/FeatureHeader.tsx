@@ -35,7 +35,15 @@ export function FeatureHeader({
   onMarkComplete,
   onDeleteFeature,
   onRefresh,
-}: FeatureHeaderProps) {
+}: Readonly<FeatureHeaderProps>) {
+  const statusBadge = feature ? getFeatureStatusBadge(feature.status) : null;
+  const canMarkComplete =
+    isAdmin &&
+    allTasksDone &&
+    feature !== null &&
+    (feature.status === "OPEN" || feature.status === "IN_PROGRESS");
+  const canDelete = isAdmin && feature !== null && feature.status !== "COMPLETED";
+
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
       <div>
@@ -46,24 +54,10 @@ export function FeatureHeader({
         {feature ? (
           <div className="mt-2 flex flex-wrap gap-2">
             <Badge
-              variant={
-                feature.status === "COMPLETED"
-                  ? "default"
-                  : feature.status === "IN_PROGRESS"
-                    ? "secondary"
-                    : feature.status === "CANCELLED"
-                      ? "destructive"
-                      : "outline"
-              }
+              variant={statusBadge?.variant ?? "outline"}
               className="gap-1"
             >
-              {feature.status === "COMPLETED" ? (
-                <CheckCircle2 className="w-3 h-3" />
-              ) : feature.status === "IN_PROGRESS" ? (
-                <Clock className="w-3 h-3" />
-              ) : feature.status === "CANCELLED" ? (
-                <XCircle className="w-3 h-3" />
-              ) : null}
+              {statusBadge?.icon}
               {feature.status}
             </Badge>
             <Badge variant="secondary">{feature.category}</Badge>
@@ -87,10 +81,7 @@ export function FeatureHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        {isAdmin &&
-        allTasksDone &&
-        feature &&
-        (feature.status === "OPEN" || feature.status === "IN_PROGRESS") ? (
+        {canMarkComplete ? (
           <Button onClick={onMarkComplete} disabled={loading}>
             {loading ? (
               <>
@@ -105,7 +96,7 @@ export function FeatureHeader({
             )}
           </Button>
         ) : null}
-        {isAdmin && feature ? (
+        {canDelete ? (
           <Button
             variant="destructive"
             onClick={onDeleteFeature}
@@ -149,5 +140,33 @@ function formatNumber(n: number): string {
     }).format(n);
   } catch {
     return String(n);
+  }
+}
+
+function getFeatureStatusBadge(status: Feature["status"]): {
+  variant: "default" | "secondary" | "destructive" | "outline";
+  icon: React.ReactNode;
+} {
+  switch (status) {
+    case "COMPLETED":
+      return {
+        variant: "default",
+        icon: <CheckCircle2 className="w-3 h-3" />,
+      };
+    case "IN_PROGRESS":
+      return {
+        variant: "secondary",
+        icon: <Clock className="w-3 h-3" />,
+      };
+    case "CANCELLED":
+      return {
+        variant: "destructive",
+        icon: <XCircle className="w-3 h-3" />,
+      };
+    default:
+      return {
+        variant: "outline",
+        icon: null,
+      };
   }
 }

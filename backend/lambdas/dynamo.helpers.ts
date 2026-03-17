@@ -7,6 +7,7 @@ import {
   PutCommand,
   QueryCommand,
   ScanCommand,
+  TransactWriteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
@@ -14,6 +15,7 @@ import {
   Contribution,
   TeamRole,
   Feature,
+  CompletedFeature,
   FeatureDistribution,
   Task,
   ContributorStatus,
@@ -528,6 +530,114 @@ export const deleteFeature = async (id: string): Promise<Feature | null> => {
   }
 };
 
+// Completed Features
+
+export const getCompletedFeature = async (
+  id: string
+): Promise<CompletedFeature | null> => {
+  if (!id) return null;
+  const params: GetCommandInput = {
+    TableName: process.env.COMPLETED_FEATURES_TABLE_NAME!,
+    Key: { id },
+  };
+
+  try {
+    const data: GetCommandOutput = await docClient.send(new GetCommand(params));
+    return (data.Item as CompletedFeature | undefined) ?? null;
+  } catch (error) {
+    console.error(`Error fetching completed feature for key: ${id}`, error);
+    throw error;
+  }
+};
+
+export const putCompletedFeature = async (
+  feature: CompletedFeature
+): Promise<CompletedFeature> => {
+  const params = {
+    TableName: process.env.COMPLETED_FEATURES_TABLE_NAME!,
+    Item: feature,
+  };
+
+  try {
+    await docClient.send(new PutCommand(params));
+    return feature;
+  } catch (error) {
+    console.error(`Error saving completed feature for key: ${feature.id}`, error);
+    throw error;
+  }
+};
+
+export const listCompletedFeatures = async (filter?: {
+  category?: string;
+  created_by_id?: string;
+  q?: string;
+}): Promise<CompletedFeature[]> => {
+  const TableName = process.env.COMPLETED_FEATURES_TABLE_NAME!;
+
+  try {
+    const resp = await docClient.send(new ScanCommand({ TableName }));
+    const items = ((resp.Items ?? []) as CompletedFeature[])
+      .slice()
+      .sort((a, b) => (a.completed_date < b.completed_date ? 1 : -1));
+
+    const q = (filter?.q ?? "").trim().toLowerCase();
+    return items.filter((feature) => {
+      if (filter?.category && feature.category !== filter.category) return false;
+      if (filter?.created_by_id && feature.created_by_id !== filter.created_by_id) {
+        return false;
+      }
+      if (q) {
+        const haystack = `${feature.name} ${feature.description} ${feature.category}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+  } catch (error) {
+    console.error("Error listing completed features", error);
+    throw error;
+  }
+};
+
+export const completeFeature = async (input: {
+  feature: Feature;
+  completed_by_id: string;
+}): Promise<CompletedFeature> => {
+  const completedFeature: CompletedFeature = {
+    ...input.feature,
+    status: "COMPLETED",
+    completed_by_id: input.completed_by_id,
+    completed_date: nowIso(),
+  };
+
+  try {
+    await docClient.send(
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Put: {
+              TableName: process.env.COMPLETED_FEATURES_TABLE_NAME!,
+              Item: completedFeature,
+              ConditionExpression: "attribute_not_exists(id)",
+            },
+          },
+          {
+            Delete: {
+              TableName: process.env.FEATURES_TABLE_NAME!,
+              Key: { id: input.feature.id },
+              ConditionExpression: "attribute_exists(id)",
+            },
+          },
+        ],
+      })
+    );
+
+    return completedFeature;
+  } catch (error) {
+    console.error(`Error completing feature for key: ${input.feature.id}`, error);
+    throw error;
+  }
+};
+
 // Contributions
 
 export const getContribution = async (id: string): Promise<Contribution | null> => {
@@ -725,9 +835,12 @@ export const putDistribution = async (
 export const upsertDistribution = async (input: {
   id: string;
   feature_id: string;
+  task_id: string;
+  contribution_id: string;
   contributor_id: string;
   cp_amount: number;
   token_amount: number;
+  token_amount_raw: string;
   arbitrum_tx_hash: string | null;
   approver_id: string;
   transaction_status: TransactionStatus;
@@ -739,9 +852,12 @@ export const upsertDistribution = async (input: {
   const distribution: FeatureDistribution = {
     id: input.id,
     feature_id: input.feature_id,
+    task_id: input.task_id,
+    contribution_id: input.contribution_id,
     contributor_id: input.contributor_id,
     cp_amount: input.cp_amount,
     token_amount: input.token_amount,
+    token_amount_raw: input.token_amount_raw,
     arbitrum_tx_hash: input.arbitrum_tx_hash,
     distribution_date,
     approver_id: input.approver_id,
@@ -803,6 +919,7 @@ export const patchDistributionTx = async (input: {
 
 export const listDistributions = async (filter?: {
   feature_id?: string;
+  task_id?: string;
   contributor_id?: string;
   transaction_status?: TransactionStatus;
 }): Promise<FeatureDistribution[]> => {
@@ -819,6 +936,11 @@ export const listDistributions = async (filter?: {
         })
       );
       items = (resp.Items ?? []) as FeatureDistribution[];
+    } else if (filter?.task_id) {
+      const resp = await docClient.send(new ScanCommand({ TableName }));
+      items = ((resp.Items ?? []) as FeatureDistribution[]).filter(
+        (distribution) => distribution.task_id === filter.task_id
+      );
     } else if (filter?.contributor_id) {
       const resp = await docClient.send(
         new QueryCommand({

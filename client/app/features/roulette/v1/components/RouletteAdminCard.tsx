@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useAppKitAccount } from "@reown/appkit/react";
 import {
@@ -18,11 +18,14 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useQueryClient } from "@tanstack/react-query";
+import { isAddress } from "viem";
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { AdminSection } from "./AdminSection";
 import { useSafeWriteContractRoulette } from "../hooks/useSafeWriteContractRoulette";
-import { MILLIS, usdcToWei } from "@/app/helpers";
+import { MILLIS, usdcToWei, weiToUsdcString } from "@/app/helpers";
 import { ROULETTE_CONTRACT_METADATA_QUERY_KEY } from "../queries/keys";
 import { ContractButton } from "@/app/features/root/v1/components/ContractButton";
+import { ROULETTE_ABI, ROULETTE_ADDRESS } from "@/app/lib/contracts";
 
 interface RouletteAdminCardProps {
   readonly contractOwnerAddress: string;
@@ -35,17 +38,36 @@ export function RouletteAdminCard({
   const { address: userAddress } = useAppKitAccount();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
+  const isOwner = userAddress?.toLowerCase() === contractOwnerAddress.toLowerCase();
+  const {
+    data: feePool,
+    refetch: refetchFeePool,
+    isLoading: isFeePoolLoading,
+  } = useReadContract({
+    address: ROULETTE_ADDRESS,
+    abi: ROULETTE_ABI,
+    functionName: "getFeePool",
+    account: userAddress as `0x${string}` | undefined,
+    query: {
+      enabled: Boolean(isOwner && userAddress),
+    },
+  });
+
+  const refreshAdminData = useCallback(() => {
+    setTimeout(() => {
+      queryClient.invalidateQueries({
+        queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
+      });
+      refetchFeePool();
+    }, 3 * MILLIS.inSecond);
+  }, [queryClient, refetchFeePool]);
 
   // Set min bet amount
   const [minBetAmount, setMinBetAmount] = useState("");
   const onMinBetSuccess = useCallback(() => {
     setMinBetAmount("");
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: setMinBet,
@@ -63,12 +85,8 @@ export function RouletteAdminCard({
   const [maxBetAmount, setMaxBetAmount] = useState("");
   const onMaxBetSuccess = useCallback(() => {
     setMaxBetAmount("");
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: setMaxBet,
@@ -86,12 +104,8 @@ export function RouletteAdminCard({
   const [gasLimit, setGasLimit] = useState("");
   const onGasLimitSuccess = useCallback(() => {
     setGasLimit("");
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: setGasLimitValue,
@@ -105,33 +119,120 @@ export function RouletteAdminCard({
     setGasLimitValue("setCallbackGasLimit", [limit]);
   };
 
-  // Withdraw fees
-  const onWithdrawSuccess = useCallback(() => {
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+  // Set fee config
+  const [feeCollector, setFeeCollector] = useState("");
+  const [feeBps, setFeeBps] = useState("");
+  const onFeeConfigSuccess = useCallback(() => {
+    setFeeCollector("");
+    setFeeBps("");
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
-    writeToContract: withdrawFees,
-    isLoading: isWithdrawing,
-    errorMessage: withdrawError,
-  } = useSafeWriteContractRoulette(onWithdrawSuccess);
+    mutate: setFeeConfig,
+    data: feeConfigHash,
+    isPending: isFeeConfigPending,
+    error: feeConfigWriteError,
+    reset: resetFeeConfig,
+  } = useWriteContract();
+
+  const {
+    isLoading: isFeeConfigConfirming,
+    isSuccess: isFeeConfigSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: feeConfigHash,
+    query: {
+      enabled: Boolean(feeConfigHash),
+    },
+  });
+
+  const isFeeConfigLoading = isFeeConfigPending || isFeeConfigConfirming;
+  const feeConfigError = getReadableContractError(
+    feeConfigWriteError,
+    "Failed to set fee configuration."
+  );
+
+  const feeConfigAddress = isAddress(feeCollector)
+    ? (feeCollector as `0x${string}`)
+    : undefined;
+
+  useEffect(() => {
+    if (!isFeeConfigSuccess) {
+      return;
+    }
+    onFeeConfigSuccess();
+  }, [isFeeConfigSuccess, onFeeConfigSuccess]);
+
+  const handleSetFeeConfig = () => {
+    const parsedFeeBps = Number.parseInt(feeBps, 10);
+    if (!feeConfigAddress) return;
+    if (Number.isNaN(parsedFeeBps) || parsedFeeBps < 0 || parsedFeeBps > 10000) {
+      return;
+    }
+    resetFeeConfig();
+    setFeeConfig({
+      address: ROULETTE_ADDRESS,
+      abi: ROULETTE_ABI,
+      functionName: "setFeeConfig",
+      args: [feeConfigAddress, parsedFeeBps],
+    });
+  };
+
+  const isFeeConfigValid =
+    Boolean(feeConfigAddress) &&
+    feeBps.length > 0 &&
+    Number.parseInt(feeBps, 10) >= 0 &&
+    Number.parseInt(feeBps, 10) <= 10000;
+
+  // Withdraw fees
+  const onWithdrawSuccess = useCallback(() => {
+    refreshAdminData();
+  }, [refreshAdminData]);
+
+  const {
+    mutate: withdrawFees,
+    data: withdrawFeesHash,
+    isPending: isWithdrawPending,
+    error: withdrawFeesWriteError,
+    reset: resetWithdrawFees,
+  } = useWriteContract();
+
+  const {
+    isLoading: isWithdrawConfirming,
+    isSuccess: isWithdrawSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: withdrawFeesHash,
+    query: {
+      enabled: Boolean(withdrawFeesHash),
+    },
+  });
+
+  const isWithdrawing = isWithdrawPending || isWithdrawConfirming;
+  const withdrawError = getReadableContractError(
+    withdrawFeesWriteError,
+    "Failed to withdraw collected fees."
+  );
+
+  useEffect(() => {
+    if (!isWithdrawSuccess) {
+      return;
+    }
+    onWithdrawSuccess();
+  }, [isWithdrawSuccess, onWithdrawSuccess]);
 
   const handleWithdrawFees = () => {
-    withdrawFees("withdrawCollectedFees", []);
+    resetWithdrawFees();
+    withdrawFees({
+      address: ROULETTE_ADDRESS,
+      abi: ROULETTE_ABI,
+      functionName: "withdrawCollectedFees",
+    });
   };
 
   // Pause/Unpause
   const onPauseSuccess = useCallback(() => {
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: [ROULETTE_CONTRACT_METADATA_QUERY_KEY],
-      });
-    }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: togglePause,
@@ -148,10 +249,7 @@ export function RouletteAdminCard({
   };
 
   // Only show to owner
-  if (
-    !userAddress ||
-    userAddress.toLowerCase() !== contractOwnerAddress.toLowerCase()
-  ) {
+  if (!isOwner) {
     return null;
   }
 
@@ -309,20 +407,82 @@ export function RouletteAdminCard({
               </div>
             </AdminSection>
 
+            {/* Set Fee Config */}
+            <AdminSection
+              title="Set Fee Configuration"
+              description="Update the fee collector address and fee in basis points. Use 100 for 1% and 10000 for 100%."
+              errorMessage={feeConfigError}
+            >
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="feeCollector" className="text-xs">
+                    Fee Collector Address
+                  </Label>
+                  <Input
+                    id="feeCollector"
+                    value={feeCollector}
+                    onChange={(e) => setFeeCollector(e.target.value)}
+                    placeholder="0x..."
+                    disabled={isFeeConfigLoading}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label htmlFor="feeBps" className="text-xs">
+                      Fee (Basis Points)
+                    </Label>
+                    <Input
+                      id="feeBps"
+                      type="number"
+                      min="0"
+                      max="10000"
+                      step="1"
+                      value={feeBps}
+                      onChange={(e) => setFeeBps(e.target.value)}
+                      placeholder="100"
+                      disabled={isFeeConfigLoading}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <ContractButton
+                      onClick={handleSetFeeConfig}
+                      disabled={isFeeConfigLoading || !isFeeConfigValid}
+                      size="sm"
+                    >
+                      {isFeeConfigLoading ? t("common_setting") : "Set Fee"}
+                    </ContractButton>
+                  </div>
+                </div>
+              </div>
+            </AdminSection>
+
             {/* Withdraw Fees */}
             <AdminSection
               title={t("admin_withdraw_title")}
               description={t("admin_withdraw_description")}
               errorMessage={withdrawError}
             >
-              <ContractButton
-                onClick={handleWithdrawFees}
-                disabled={isWithdrawing}
-                size="sm"
-                variant="default"
-              >
-                {isWithdrawing ? t("admin_withdrawing") : t("admin_withdraw_button")}
-              </ContractButton>
+              <div className="space-y-3">
+                <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Current Fee Pool
+                  </p>
+                  <p className="text-sm font-semibold sm:text-base">
+                    {isFeePoolLoading || feePool === undefined
+                      ? "Loading..."
+                      : `${weiToUsdcString(feePool)} USDC`}
+                  </p>
+                </div>
+
+                <ContractButton
+                  onClick={handleWithdrawFees}
+                  disabled={isWithdrawing}
+                  size="sm"
+                  variant="default"
+                >
+                  {isWithdrawing ? t("admin_withdrawing") : t("admin_withdraw_button")}
+                </ContractButton>
+              </div>
             </AdminSection>
 
             {/* Pause/Unpause */}
@@ -355,4 +515,34 @@ export function RouletteAdminCard({
       </Collapsible>
     </Card>
   );
+}
+
+function getReadableContractError(
+  error: unknown,
+  fallbackMessage: string
+): string | undefined {
+  if (!error) {
+    return undefined;
+  }
+
+  if (typeof error === "object" && error !== null) {
+    const shortMessage =
+      "shortMessage" in error && typeof error.shortMessage === "string"
+        ? error.shortMessage.trim()
+        : "";
+    const message =
+      "message" in error && typeof error.message === "string"
+        ? error.message.trim()
+        : "";
+
+    if (shortMessage) {
+      return shortMessage;
+    }
+
+    if (message) {
+      return message.split("\n").slice(0, 2).join(" ");
+    }
+  }
+
+  return fallbackMessage;
 }

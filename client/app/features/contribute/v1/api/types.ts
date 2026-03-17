@@ -74,6 +74,8 @@ export interface Contribution {
 
 export type FeatureStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
 
+export type MutableFeatureStatus = Exclude<FeatureStatus, "COMPLETED">;
+
 export interface Feature {
   id: string;
   name: string;
@@ -86,14 +88,23 @@ export interface Feature {
   discussions_url: string | null;
 }
 
+export interface CompletedFeature extends Feature {
+  status: "COMPLETED";
+  completed_by_id: string;
+  completed_date: string;
+}
+
 export type TransactionStatus = "Pending" | "Confirmed" | "Failed";
 
 export interface FeatureDistribution {
   id: string;
   feature_id: string;
+  task_id: string;
+  contribution_id: string;
   contributor_id: string;
   cp_amount: number;
   token_amount: number;
+  token_amount_raw: string;
   arbitrum_tx_hash: string | null;
   distribution_date: string;
   approver_id: string;

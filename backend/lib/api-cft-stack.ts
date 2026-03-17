@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as path from "node:path";
 import * as esbuild from "esbuild";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
@@ -101,6 +101,9 @@ export class ApiCFTStack extends cdk.Stack {
       sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
     });
 
+    // Completed features table
+    const completedFeaturesTable = createTable("CFT-CompletedFeatures");
+
     // Tasks table with GSIs
     const tasksTable = createTable("CFT-Tasks");
     tasksTable.addGlobalSecondaryIndex({
@@ -152,6 +155,11 @@ export class ApiCFTStack extends cdk.Stack {
     featureDistributionTable.addGlobalSecondaryIndex({
       indexName: "contributor_id-index",
       partitionKey: { name: "contributor_id", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
+    });
+    featureDistributionTable.addGlobalSecondaryIndex({
+      indexName: "task_id-index",
+      partitionKey: { name: "task_id", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
     });
     featureDistributionTable.addGlobalSecondaryIndex({
@@ -239,6 +247,35 @@ export class ApiCFTStack extends cdk.Stack {
       },
     );
     featuresTable.grantReadWriteData(deleteFeatureLambda);
+
+    const completeFeatureLambda = createLambda(
+      "CompleteFeatureLambda",
+      "mark-feature-completed.handler",
+      {
+        FEATURES_TABLE_NAME: featuresTable.tableName,
+        COMPLETED_FEATURES_TABLE_NAME: completedFeaturesTable.tableName,
+      },
+    );
+    featuresTable.grantReadWriteData(completeFeatureLambda);
+    completedFeaturesTable.grantReadWriteData(completeFeatureLambda);
+
+    const getCompletedFeatureLambda = createLambda(
+      "GetCompletedFeatureLambda",
+      "get-completed-feature.handler",
+      {
+        COMPLETED_FEATURES_TABLE_NAME: completedFeaturesTable.tableName,
+      },
+    );
+    completedFeaturesTable.grantReadData(getCompletedFeatureLambda);
+
+    const getCompletedFeaturesLambda = createLambda(
+      "GetCompletedFeaturesLambda",
+      "get-completed-features.handler",
+      {
+        COMPLETED_FEATURES_TABLE_NAME: completedFeaturesTable.tableName,
+      },
+    );
+    completedFeaturesTable.grantReadData(getCompletedFeaturesLambda);
 
     // Tasks Lambda functions
     const createTaskLambda = createLambda(
@@ -348,13 +385,13 @@ export class ApiCFTStack extends cdk.Stack {
       "create-distribution.handler",
       {
         FEATURE_DISTRIBUTION_TABLE_NAME: featureDistributionTable.tableName,
-        FEATURES_TABLE_NAME: featuresTable.tableName,
+        COMPLETED_FEATURES_TABLE_NAME: completedFeaturesTable.tableName,
         CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
       },
       30, // Longer timeout for blockchain transactions
     );
     featureDistributionTable.grantReadWriteData(createDistributionLambda);
-    featuresTable.grantReadData(createDistributionLambda);
+    completedFeaturesTable.grantReadData(createDistributionLambda);
     contributorsTable.grantReadWriteData(createDistributionLambda);
 
     const updateDistributionLambda = createLambda(
@@ -379,7 +416,6 @@ export class ApiCFTStack extends cdk.Stack {
      * Create the API Gateway
      * ------------------------------------------------------------------------------------------------------------------------------------
      */
-
     // Create an API Gateway
     const api = new apigateway.RestApi(this, `${environment}-CFT-api`, {
       restApiName: `${environment}-CFT-api`,
@@ -397,6 +433,10 @@ export class ApiCFTStack extends cdk.Stack {
     const updateFeature = features.addResource("update");
     const getFeature = features.addResource("get");
     const deleteFeature = features.addResource("delete");
+    const completeFeature = features.addResource("complete");
+
+    const completedFeatures = api.root.addResource("completed-features");
+    const getCompletedFeature = completedFeatures.addResource("get");
 
     const tasks = api.root.addResource("tasks");
     const createTask = tasks.addResource("create");
@@ -523,6 +563,45 @@ export class ApiCFTStack extends cdk.Stack {
     deleteFeature.addMethod(
       "POST",
       new apigateway.LambdaIntegration(deleteFeatureLambda),
+      {
+        apiKeyRequired: true,
+      },
+    );
+
+    /**
+     * POST /features/complete
+     * - Mark an active feature as completed and move it to the completed-features table
+     * - Request body: { id: string, completed_by_id: string }
+     */
+    completeFeature.addMethod(
+      "POST",
+      new apigateway.LambdaIntegration(completeFeatureLambda),
+      {
+        apiKeyRequired: true,
+      },
+    );
+
+    /**
+     * POST /completed-features
+     * - Get all completed features with optional filters
+     * - Request body: { filter?: { category?, created_by_id?, q? } }
+     */
+    completedFeatures.addMethod(
+      "POST",
+      new apigateway.LambdaIntegration(getCompletedFeaturesLambda),
+      {
+        apiKeyRequired: true,
+      },
+    );
+
+    /**
+     * POST /completed-features/get
+     * - Get a completed feature by id
+     * - Request body: { id: string }
+     */
+    getCompletedFeature.addMethod(
+      "POST",
+      new apigateway.LambdaIntegration(getCompletedFeatureLambda),
       {
         apiKeyRequired: true,
       },
@@ -720,17 +799,7 @@ export class ApiCFTStack extends cdk.Stack {
           stage: api.deploymentStage,
         },
       ],
-      /*
-      // TODO: Add if needed
-      throttle: {
-        rateLimit: 100,
-        burstLimit: 200,
-      },
-      quota: {
-        limit: 100000,
-        period: apigateway.Period.DAY,
-      },
-      */
+      // Throttle and quota settings can be added here later if API traffic requires it.
     });
 
     // Associate the API Key with the Usage Plan

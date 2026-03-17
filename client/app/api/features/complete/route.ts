@@ -12,14 +12,12 @@ export async function POST(request: Request) {
     const { address } = await requireAuthenticatedSession(request);
     await requireContributorAdmin(address);
 
-    const body = bodyText ? (JSON.parse(bodyText) as Record<string, unknown>) : {};
+    const body = bodyText ? (JSON.parse(bodyText) as { id?: string }) : {};
+    if (!body.id) return new Response("id required", { status: 400 });
 
-    const featureId = typeof body.feature_id === "string" ? body.feature_id : "";
-    if (!featureId) return new Response("feature_id required", { status: 400 });
-
-    const result = await apiGatewayPost("/distributions/create", {
-      ...body,
-      approver_id: address.toLowerCase(),
+    const result = await apiGatewayPost("/features/complete", {
+      id: body.id,
+      completed_by_id: address.toLowerCase(),
     });
 
     return new Response(JSON.stringify(result), {
@@ -33,6 +31,10 @@ export async function POST(request: Request) {
       status = 403;
     } else if (message.includes("Authentication required")) {
       status = 401;
+    } else if (message.includes("already completed")) {
+      status = 409;
+    } else if (message.includes("not found")) {
+      status = 404;
     }
     return new Response(message, { status });
   }

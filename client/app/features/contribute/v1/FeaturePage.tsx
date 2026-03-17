@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 import { AlertBanner } from "./components/AlertBanner";
+import { CompletionPayoutDialog } from "./components/CompletionPayoutDialog";
 import { FeatureHeader } from "./components/FeatureHeader";
 import { FeatureDetailsCard } from "./components/FeatureDetailsCard";
 import { TasksSection } from "./components/TasksSection";
@@ -11,26 +12,19 @@ import { SubmissionsSection } from "./components/SubmissionsSection";
 import { DistributionPreviewSection } from "./components/DistributionPreviewSection";
 
 import {
+  deleteFeature,
+  getFeature,
   listContributions,
   listTasks,
-  getFeature,
-  updateFeature,
-  deleteFeature,
 } from "./api/api";
 import type { Contribution, Feature, Task } from "./api/types";
+import { useCompleteFeatureWithPayouts } from "@/app/features/contribute/v1/hooks/useCompleteFeatureWithPayouts";
 import { useContributorProfile } from "./hooks/useContributorProfile";
+import type { PublicContributor } from "./payoutPlanning";
 
-type PublicContributor = {
-  id: string;
-  wallet_address: string;
-  username: string;
-  github_username: string | null;
-  telegram_handle: string | null;
-  roles: string[];
-  status: string;
-};
-
-export default function FeaturePage({ featureId }: { featureId: string }) {
+export default function FeaturePage({
+  featureId,
+}: Readonly<{ featureId: string }>) {
   const { address } = useAppKitAccount();
   const { isAdmin } = useContributorProfile(address);
 
@@ -108,10 +102,12 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
                 body: JSON.stringify({ id }),
               });
               if (!r.ok) return null;
-              const json = (await r.json()) as {
-                contributor: PublicContributor;
-              };
-              return json.contributor;
+              const json: unknown = await r.json();
+              if (!json || typeof json !== "object" || !("contributor" in json)) {
+                return null;
+              }
+
+              return (json as { contributor: PublicContributor }).contributor;
             } catch {
               return null;
             }
@@ -152,38 +148,35 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
     [contributions],
   );
 
-  const activeContributors = useMemo(() => {
-    const claimerIds = new Set(
-      tasks.map((t) => t.claimed_by_id).filter((id): id is string => !!id),
-    );
-    return claimerIds.size;
-  }, [tasks]);
-
-  const handleMarkComplete = async () => {
-    setError(null);
-    if (!feature) return;
-    const ok = window.confirm(
-      `Mark this feature as COMPLETED?\n\nAll ${tasksTotal} tasks are done. This will allow distributions to be created.`,
-    );
-    if (!ok) return;
-    setLoading(true);
-    try {
-      await updateFeature({
-        id: feature.id,
-        name: feature.name,
-        description: feature.description,
-        category: feature.category,
-        total_tokens_reward: feature.total_tokens_reward,
-        status: "COMPLETED",
-        discussions_url: feature.discussions_url,
-      });
-      await refreshBasics();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    canFinalize,
+    closeCompletionDialog,
+    completedCount,
+    dialogError,
+    dialogNotice,
+    dialogOpen,
+    finalizeCompletion,
+    isCompleting,
+    isFinalized,
+    isFinalizing,
+    isPreparing,
+    issues,
+    openCompletionDialog,
+    payoutAll,
+    rows,
+    runPayoutForTask,
+    runningTaskId,
+    totalCount,
+  } =
+    useCompleteFeatureWithPayouts({
+      feature,
+      tasks,
+      contributions,
+      contributorsById,
+      onCompleted: refreshBasics,
+      onError: setError,
+      onSuccess: setSuccessMessage,
+    });
 
   const handleDeleteFeature = async () => {
     setError(null);
@@ -198,7 +191,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
       return;
     }
 
-    const ok = window.confirm(
+    const ok = globalThis.confirm(
       `⚠️ DELETE FEATURE?\n\nFeature: "${feature.name}"\n\nThis action cannot be undone. The feature will be permanently deleted.\n\nClick OK to confirm deletion.`,
     );
     if (!ok) return;
@@ -209,7 +202,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
       setSuccessMessage("Feature deleted successfully!");
       // Redirect to features list after short delay
       setTimeout(() => {
-        window.location.href = "/contribute/features";
+        globalThis.location.href = "/contribute/features";
       }, 1000);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -244,9 +237,9 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
         tasksTotal={tasksTotal}
         allTasksDone={allTasksDone}
         isAdmin={isAdmin}
-        loading={loading}
+        loading={loading || isCompleting}
         deletingFeature={deletingFeature}
-        onMarkComplete={handleMarkComplete}
+        onMarkComplete={() => void openCompletionDialog()}
         onDeleteFeature={handleDeleteFeature}
         onRefresh={() => void refreshBasics()}
       />
@@ -265,7 +258,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
         tasksDone={tasksDone}
         tasksTotal={tasksTotal}
         totalCpAwarded={totalCpAwarded}
-        activeContributors={activeContributors}
+        activeContributors={Object.keys(contributorsById).length}
         allTasksDone={allTasksDone}
         isAdmin={isAdmin}
         featureId={featureId}
@@ -279,7 +272,7 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
         contributorsById={contributorsById}
         taskById={taskById}
         isAdmin={isAdmin}
-        loading={loading}
+        loading={loading || isCompleting}
         onRefresh={refreshContributions}
         onError={setError}
         onSuccess={setSuccessMessage}
@@ -290,6 +283,27 @@ export default function FeaturePage({ featureId }: { featureId: string }) {
         contributions={contributions}
         contributorsById={contributorsById}
         totalCpAwarded={totalCpAwarded}
+      />
+
+      <CompletionPayoutDialog
+        canFinalize={canFinalize}
+        completedCount={completedCount}
+        dialogError={dialogError}
+        dialogNotice={dialogNotice}
+        feature={feature}
+        isCompleting={isCompleting}
+        isFinalized={isFinalized}
+        isFinalizing={isFinalizing}
+        isPreparing={isPreparing}
+        issues={issues}
+        onFinalize={() => void finalizeCompletion()}
+        onOpenChange={closeCompletionDialog}
+        onPayoutAll={() => void payoutAll()}
+        onRetryPayout={(taskId) => void runPayoutForTask(taskId)}
+        open={dialogOpen}
+        rows={rows}
+        runningTaskId={runningTaskId}
+        totalCount={totalCount}
       />
     </div>
   );

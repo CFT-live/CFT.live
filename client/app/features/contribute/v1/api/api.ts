@@ -2,7 +2,9 @@ import type {
   Contribution,
   Contributor,
   Feature,
+  CompletedFeature,
   FeatureDistribution,
+  MutableFeatureStatus,
   Task,
   TaskStatus,
   TaskType,
@@ -135,14 +137,12 @@ export async function patchTask(
   if (patch.claimed_date !== undefined) body.claimed_date = patch.claimed_date;
 
   return apiFetch("/api/tasks/update", {
-    signed: true,
     body,
   });
 }
 
 export async function deleteTask(taskId: string): Promise<{ task: Task }> {
   return apiFetch("/api/tasks/delete", {
-    signed: true,
     body: { id: taskId },
   });
 }
@@ -226,7 +226,38 @@ export async function listFeatures(input?: {
 }
 
 export async function getFeature(featureId: string): Promise<{ feature: Feature }> {
-  return apiFetch("/api/features/get", { body: { id: featureId } });
+  try {
+    return await apiFetch("/api/features/get", { body: { id: featureId } });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/not found/i.test(message)) {
+      throw error;
+    }
+
+    return getCompletedFeature(featureId);
+  }
+}
+
+export async function listCompletedFeatures(input?: {
+  category?: string;
+  created_by_id?: string;
+  q?: string;
+}): Promise<{ features: CompletedFeature[] }> {
+  return apiFetch("/api/completed-features", {
+    body: {
+      filter: {
+        category: input?.category,
+        created_by_id: input?.created_by_id,
+        q: input?.q,
+      },
+    },
+  });
+}
+
+export async function getCompletedFeature(
+  featureId: string
+): Promise<{ feature: CompletedFeature }> {
+  return apiFetch("/api/completed-features/get", { body: { id: featureId } });
 }
 
 export async function createFeature(input: {
@@ -234,7 +265,7 @@ export async function createFeature(input: {
   description: string;
   category: string;
   total_tokens_reward: number;
-  status: Feature["status"];
+  status: MutableFeatureStatus;
   discussions_url?: string | null;
 }): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/create", {
@@ -255,7 +286,7 @@ export async function updateFeature(input: {
   description: string;
   category: string;
   total_tokens_reward: number;
-  status: Feature["status"];
+  status: MutableFeatureStatus;
   discussions_url?: string | null;
 }): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/update", {
@@ -271,6 +302,14 @@ export async function updateFeature(input: {
   });
 }
 
+export async function markFeatureComplete(
+  featureId: string
+): Promise<{ feature: CompletedFeature }> {
+  return apiFetch("/api/features/complete", {
+    body: { id: featureId },
+  });
+}
+
 export async function deleteFeature(featureId: string): Promise<{ feature: Feature }> {
   return apiFetch("/api/features/delete", {
     body: { id: featureId },
@@ -279,6 +318,7 @@ export async function deleteFeature(featureId: string): Promise<{ feature: Featu
 
 export async function listDistributions(input?: {
   feature_id?: string;
+  task_id?: string;
   contributor_id?: string;
   transaction_status?: TransactionStatus;
 }): Promise<{ distributions: FeatureDistribution[] }> {
@@ -286,6 +326,7 @@ export async function listDistributions(input?: {
     body: {
       filter: {
         feature_id: input?.feature_id,
+        task_id: input?.task_id,
         contributor_id: input?.contributor_id,
         transaction_status: input?.transaction_status,
       },
@@ -295,18 +336,24 @@ export async function listDistributions(input?: {
 
 export async function createDistribution(input: {
   feature_id: string;
+  task_id: string;
+  contribution_id: string;
   contributor_id: string;
   cp_amount: number;
   token_amount: number;
+  token_amount_raw: string;
   transaction_status: TransactionStatus;
   arbitrum_tx_hash?: string | null;
 }): Promise<{ distribution: FeatureDistribution }> {
   return apiFetch("/api/distributions/create", {
     body: {
       feature_id: input.feature_id,
+      task_id: input.task_id,
+      contribution_id: input.contribution_id,
       contributor_id: input.contributor_id,
       cp_amount: input.cp_amount,
       token_amount: input.token_amount,
+      token_amount_raw: input.token_amount_raw,
       transaction_status: input.transaction_status,
       arbitrum_tx_hash: input.arbitrum_tx_hash ?? null,
     },

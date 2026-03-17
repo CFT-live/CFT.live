@@ -1,5 +1,5 @@
 import { upsertFeature } from "./dynamo.helpers";
-import { validateUpsertFeatureParams } from "./validateParams";
+import { validateUpdateFeatureParams } from "./validateParams";
 
 export const handler = async (event: any) => {
   /**
@@ -7,7 +7,7 @@ export const handler = async (event: any) => {
    */
   try {
     const params = event?.body ? JSON.parse(event.body) : {};
-    const paramsValidation = validateUpsertFeatureParams(params);
+    const paramsValidation = validateUpdateFeatureParams(params);
     if (!paramsValidation.success) {
       return {
         statusCode: 400,
@@ -18,9 +18,6 @@ export const handler = async (event: any) => {
     }
 
     const id = paramsValidation.data.id;
-    if (!id) {
-      return { statusCode: 400, body: JSON.stringify({ error: "id required" }) };
-    }
 
     const saved = await upsertFeature({
       id,

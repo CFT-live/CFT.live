@@ -5,6 +5,7 @@ import {
   TeamRole,
   FeatureDistributionSchema,
   FeatureSchema,
+  CompletedFeatureSchema,
   FeatureStatus,
   ContributionSchema,
   ContributionStatus,
@@ -19,6 +20,7 @@ export type ContributorStatus = z.infer<typeof ContributorStatus>;
 export type TeamRole = z.infer<typeof TeamRole>;
 
 export type Feature = z.infer<typeof FeatureSchema>;
+export type CompletedFeature = z.infer<typeof CompletedFeatureSchema>;
 export type FeatureStatus = z.infer<typeof FeatureStatus>;
 
 export type Task = z.infer<typeof TaskSchema>;

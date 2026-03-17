@@ -195,7 +195,7 @@ export function ContributeSection() {
                   How you earn
                 </div>
                 <div className="text-sm text-foreground">
-                  Complete tasks, earn CP, receive CFT, convert to USDC.
+                  Complete tasks, receive CFT, convert to USDC.
                 </div>
               </div>
               <div className="rounded-lg border border-primary/30 bg-black/30 p-4 backdrop-blur-sm">
@@ -311,7 +311,7 @@ export function ContributeSection() {
           </div>
 
           {/* Social Proof */}
-          <div className="mb-10 grid grid-cols-3 gap-3">
+          {/* <div className="mb-10 grid grid-cols-3 gap-3">
             {stats.map((stat) => (
               <div
                 key={stat.label}
@@ -325,7 +325,7 @@ export function ContributeSection() {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Final CTA Block */}
           <div className="rounded-2xl border border-primary/30 bg-[linear-gradient(135deg,hsl(var(--primary)/0.14),transparent_60%)] px-5 py-8 text-center md:px-8">

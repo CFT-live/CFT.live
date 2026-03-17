@@ -155,7 +155,7 @@ export function TasksSection({
               <div className="font-semibold">{totalCpAwarded}</div>
             </div>
             <div className="rounded-md border border-border/60 bg-background/50 p-2">
-              <div className="text-muted-foreground">Active Contributors</div>
+              <div className="text-muted-foreground">Contributors</div>
               <div className="font-semibold">{activeContributors}</div>
             </div>
           </div>

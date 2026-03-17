@@ -7,10 +7,8 @@ export default buildModule("CFT", (m) => {
   // Payment token address (USDC on Arbitrum One)
   const usdc = m.getParameter<string>("usdc", "0xaf88d065e77c8cc2239327c5edb3a432268e5831");
 
-  // const name = m.getParameter<string>("name", "CFT.live");
-  // const symbol = m.getParameter<string>("symbol", "CFT");
-  const name = m.getParameter<string>("name", "TEST.live");
-  const symbol = m.getParameter<string>("symbol", "TEST");
+  const name = m.getParameter<string>("name", "CFT.live");
+  const symbol = m.getParameter<string>("symbol", "CFT");
 
   // Set admin to deployer so role wiring can happen inside the module.
   const admin = deployer;

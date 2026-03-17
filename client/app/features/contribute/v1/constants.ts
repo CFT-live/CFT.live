@@ -1,4 +1,4 @@
-import type { FeatureStatus } from "./api/types";
+import type { FeatureStatus, MutableFeatureStatus } from "./api/types";
 
 export const CATEGORY_OPTIONS: string[] = [
   "Technical",
@@ -8,10 +8,9 @@ export const CATEGORY_OPTIONS: string[] = [
   "Docs",
 ];
 
-export const STATUS_OPTIONS: FeatureStatus[] = [
+export const STATUS_OPTIONS: MutableFeatureStatus[] = [
   "OPEN",
   "IN_PROGRESS",
-  "COMPLETED",
   "CANCELLED",
 ];
 

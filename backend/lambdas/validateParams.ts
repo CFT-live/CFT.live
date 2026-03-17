@@ -118,7 +118,7 @@ export const validateGetTasksParams = (params: any) => {
     .safeParse(params ?? {});
 };
 
-export const validateGetTaskParams = (params: any) => {
+const validateIdParam = (params: any) => {
   return z
     .object({
       id: z.string().min(1),
@@ -126,25 +126,53 @@ export const validateGetTaskParams = (params: any) => {
     .safeParse(params);
 };
 
+export const validateGetTaskParams = (params: any) => {
+  return validateIdParam(params);
+};
+
 export const validateDeleteTaskParams = (params: any) => {
-  return z
-    .object({
-      id: z.string().min(1),
-    })
-    .safeParse(params);
+  return validateIdParam(params);
 };
 
 // Features
 
-export const validateUpsertFeatureParams = (params: any) => {
+const MutableFeatureStatus = z.enum([
+  "OPEN",
+  "IN_PROGRESS",
+  "CANCELLED",
+]);
+
+export const validateCreateFeatureParams = (params: any) => {
   return z
     .object({
-      id: z.string().min(1).optional(),
       name: z.string().min(1).max(200),
       description: z.string().max(10000),
       category: z.string().min(1).max(64),
       total_tokens_reward: z.number().nonnegative().default(0),
-      status: FeatureStatus,
+      status: MutableFeatureStatus,
+      created_by_id: z.string().min(1).optional(),
+      discussions_url: z.string().url().nullable().optional(),
+    })
+    .transform((data) => ({
+      ...data,
+      total_tokens_reward:
+        typeof data.total_tokens_reward === "number"
+          ? data.total_tokens_reward
+          : Number(data.total_tokens_reward),
+      created_by_id: data.created_by_id ?? "system",
+    }))
+    .safeParse(params);
+};
+
+export const validateUpdateFeatureParams = (params: any) => {
+  return z
+    .object({
+      id: z.string().min(1),
+      name: z.string().min(1).max(200),
+      description: z.string().max(10000),
+      category: z.string().min(1).max(64),
+      total_tokens_reward: z.number().nonnegative().default(0),
+      status: MutableFeatureStatus,
       created_by_id: z.string().min(1).optional(),
       discussions_url: z.string().url().nullable().optional(),
     })
@@ -160,11 +188,7 @@ export const validateUpsertFeatureParams = (params: any) => {
 };
 
 export const validateGetFeatureParams = (params: any) => {
-  return z
-    .object({
-      id: z.string().min(1),
-    })
-    .safeParse(params);
+  return validateIdParam(params);
 };
 
 export const validateGetFeaturesParams = (params: any) => {
@@ -183,11 +207,34 @@ export const validateGetFeaturesParams = (params: any) => {
 };
 
 export const validateDeleteFeatureParams = (params: any) => {
+  return validateIdParam(params);
+};
+
+export const validateCompleteFeatureParams = (params: any) => {
   return z
     .object({
       id: z.string().min(1),
+      completed_by_id: z.string().min(1),
     })
     .safeParse(params);
+};
+
+export const validateGetCompletedFeatureParams = (params: any) => {
+  return validateIdParam(params);
+};
+
+export const validateGetCompletedFeaturesParams = (params: any) => {
+  return z
+    .object({
+      filter: z
+        .object({
+          category: z.string().min(1).max(64).optional(),
+          created_by_id: z.string().min(1).optional(),
+          q: z.string().max(200).optional(),
+        })
+        .optional(),
+    })
+    .safeParse(params ?? {});
 };
 
 // Contributions
@@ -228,14 +275,12 @@ export const validateApproveContributionParams = (params: any) => {
             path: ["cp_awarded"],
           });
         }
-      } else {
-        if (cp !== null) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "cp_awarded must be null unless status is APPROVED",
-            path: ["cp_awarded"],
-          });
-        }
+      } else if (cp !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "cp_awarded must be null unless status is APPROVED",
+          path: ["cp_awarded"],
+        });
       }
     })
     .transform((data) => ({
@@ -247,11 +292,7 @@ export const validateApproveContributionParams = (params: any) => {
 };
 
 export const validateGetContributionParams = (params: any) => {
-  return z
-    .object({
-      id: z.string().min(1),
-    })
-    .safeParse(params);
+  return validateIdParam(params);
 };
 
 export const validateGetContributionsParams = (params: any) => {
@@ -275,9 +316,12 @@ export const validateUpsertDistributionParams = (params: any) => {
     .object({
       id: z.string().min(1).optional(),
       feature_id: z.string().min(1),
+      task_id: z.string().min(1),
+      contribution_id: z.string().min(1),
       contributor_id: z.string().min(1),
       cp_amount: z.number().nonnegative(),
       token_amount: z.number().nonnegative(),
+      token_amount_raw: z.string().min(1),
       arbitrum_tx_hash: z.string().min(1).max(100).nullable().optional(),
       approver_id: z.string().min(1),
       transaction_status: TransactionStatus,
@@ -310,6 +354,7 @@ export const validateGetDistributionsParams = (params: any) => {
       filter: z
         .object({
           feature_id: z.string().min(1).optional(),
+          task_id: z.string().min(1).optional(),
           contributor_id: z.string().min(1).optional(),
           transaction_status: TransactionStatus.optional(),
         })

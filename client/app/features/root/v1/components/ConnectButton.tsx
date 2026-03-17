@@ -4,8 +4,7 @@ import { useTranslations } from "next-intl";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { useReadContracts } from "wagmi";
 import { erc20Abi, formatUnits } from "viem";
-
-const USDC_ADDRESS = "0xaf88d065e77c8cc2239327c5edb3a432268e5831";
+import { USDC_ADDRESS } from "@/app/lib/contracts";
 
 export default function ConnectButton() {
   const t = useTranslations("home");

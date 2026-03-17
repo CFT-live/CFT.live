@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, XCircle, Loader2 } from "lucide-react";
-import type { Feature } from "../api/types";
+import type { Feature, MutableFeatureStatus } from "../api/types";
 import { EditableTextField, EditableOptionsField } from "../EditableField";
 import { updateFeature } from "../api/api";
 
@@ -28,7 +28,7 @@ export function FeatureDetailsCard({
   const [editingCategory, setEditingCategory] = useState(false);
   const [editCategory, setEditCategory] = useState("");
   const [editingStatus, setEditingStatus] = useState(false);
-  const [editStatus, setEditStatus] = useState<Feature["status"]>("OPEN");
+  const [editStatus, setEditStatus] = useState<MutableFeatureStatus>("OPEN");
   const [editingTokens, setEditingTokens] = useState(false);
   const [editTokens, setEditTokens] = useState("");
   const [editingDiscussion, setEditingDiscussion] = useState(false);
@@ -41,7 +41,9 @@ export function FeatureDetailsCard({
       setEditName(feature.name);
       setEditDescription(feature.description);
       setEditCategory(feature.category);
-      setEditStatus(feature.status);
+      setEditStatus(
+        feature.status === "COMPLETED" ? "CANCELLED" : feature.status,
+      );
       setEditTokens(String(feature.total_tokens_reward));
       setEditDiscussion(feature.discussions_url ?? "");
     }
@@ -59,7 +61,14 @@ export function FeatureDetailsCard({
     );
   }
 
-  const handleUpdateField = async (updates: Partial<Feature>) => {
+  const isEditable = isAdmin && feature.status !== "COMPLETED";
+  const statusBadge = getFeatureStatusBadge(feature.status);
+
+  const handleUpdateField = async (
+    updates: Partial<Omit<Feature, "status">> & {
+      status?: MutableFeatureStatus;
+    },
+  ) => {
     setSavingField(true);
     try {
       await updateFeature({
@@ -69,7 +78,9 @@ export function FeatureDetailsCard({
         category: updates.category ?? feature.category,
         total_tokens_reward:
           updates.total_tokens_reward ?? feature.total_tokens_reward,
-        status: updates.status ?? feature.status,
+        status:
+          updates.status ??
+          (feature.status === "COMPLETED" ? "CANCELLED" : feature.status),
         discussions_url: updates.discussions_url ?? feature.discussions_url,
       });
       await onUpdate();
@@ -89,7 +100,7 @@ export function FeatureDetailsCard({
         <EditableTextField
           title="Feature Name"
           value={editName}
-          isEditable={isAdmin}
+          isEditable={isEditable}
           isEditing={editingName}
           isSaving={savingField}
           onEdit={() => {
@@ -111,7 +122,7 @@ export function FeatureDetailsCard({
         <EditableTextField
           title="Description"
           value={editDescription}
-          isEditable={isAdmin}
+          isEditable={isEditable}
           isEditing={editingDescription}
           isSaving={savingField}
           onEdit={() => {
@@ -134,7 +145,7 @@ export function FeatureDetailsCard({
         <EditableTextField
           title="Discussion"
           value={editDiscussion}
-          isEditable={isAdmin}
+          isEditable={isEditable}
           isEditing={editingDiscussion}
           isSaving={savingField}
           onEdit={() => {
@@ -157,7 +168,7 @@ export function FeatureDetailsCard({
         <EditableTextField
           title="Category"
           value={editCategory}
-          isEditable={isAdmin}
+          isEditable={isEditable}
           isEditing={editingCategory}
           isSaving={savingField}
           onEdit={() => {
@@ -179,12 +190,14 @@ export function FeatureDetailsCard({
         <EditableOptionsField
           title="Status"
           value={editStatus}
-          options={["OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"] as const}
-          isEditable={isAdmin}
+          options={["OPEN", "IN_PROGRESS", "CANCELLED"] as const}
+          isEditable={isEditable}
           isEditing={editingStatus}
           isSaving={savingField}
           onEdit={() => {
-            setEditStatus(feature.status);
+            setEditStatus(
+              feature.status === "COMPLETED" ? "CANCELLED" : feature.status,
+            );
             setEditingStatus(true);
           }}
           onCancel={() => setEditingStatus(false)}
@@ -196,25 +209,8 @@ export function FeatureDetailsCard({
           }}
           renderDisplay={() => (
             <div className="mt-2">
-              <Badge
-                variant={
-                  feature.status === "COMPLETED"
-                    ? "default"
-                    : feature.status === "IN_PROGRESS"
-                      ? "secondary"
-                      : feature.status === "CANCELLED"
-                        ? "destructive"
-                        : "outline"
-                }
-                className="gap-1"
-              >
-                {feature.status === "COMPLETED" ? (
-                  <CheckCircle2 className="w-3 h-3" />
-                ) : feature.status === "IN_PROGRESS" ? (
-                  <Clock className="w-3 h-3" />
-                ) : feature.status === "CANCELLED" ? (
-                  <XCircle className="w-3 h-3" />
-                ) : null}
+              <Badge variant={statusBadge.variant} className="gap-1">
+                {statusBadge.icon}
                 {feature.status}
               </Badge>
             </div>
@@ -226,7 +222,7 @@ export function FeatureDetailsCard({
         <EditableTextField
           title="Total Token Reward"
           value={editTokens}
-          isEditable={isAdmin}
+          isEditable={isEditable}
           isEditing={editingTokens}
           isSaving={savingField}
           onEdit={() => {
@@ -251,4 +247,32 @@ export function FeatureDetailsCard({
       </div>
     </Card>
   );
+}
+
+function getFeatureStatusBadge(status: Feature["status"]): {
+  variant: "default" | "secondary" | "destructive" | "outline";
+  icon: React.ReactNode;
+} {
+  switch (status) {
+    case "COMPLETED":
+      return {
+        variant: "default",
+        icon: <CheckCircle2 className="w-3 h-3" />,
+      };
+    case "IN_PROGRESS":
+      return {
+        variant: "secondary",
+        icon: <Clock className="w-3 h-3" />,
+      };
+    case "CANCELLED":
+      return {
+        variant: "destructive",
+        icon: <XCircle className="w-3 h-3" />,
+      };
+    default:
+      return {
+        variant: "outline",
+        icon: null,
+      };
+  }
 }

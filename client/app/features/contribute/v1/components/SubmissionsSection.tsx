@@ -167,12 +167,6 @@ export function SubmissionsSection({
                     </pre>
                   ) : null}
 
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <Button variant="outline" asChild>
-                      <Link href={`/contribute/${c.task_id}`}>Open task</Link>
-                    </Button>
-                  </div>
-
                   {isAdmin ? (
                     <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
                       <h3 className="text-xs font-mono font-semibold uppercase tracking-wider">
@@ -241,7 +235,7 @@ export function SubmissionsSection({
                           Reject
                         </Button>
                         <Button
-                          disabled={loading || !address}
+                          disabled={loading || !address || c.status === "APPROVED"}
                           onClick={() => {
                             const cpText = (reviewCp[c.id] ?? "").trim();
                             if (!cpText) {

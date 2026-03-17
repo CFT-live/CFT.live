@@ -17,13 +17,15 @@ import {
 } from "@/components/ui/collapsible";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAddress } from "viem";
+import { useReadContract } from "wagmi";
 import { AdminSection } from "./AdminSection";
 import { useCloseDraw } from "../../../prediction/v1/hooks/useCloseDraw";
 import { useSafeWriteContractLotto } from "../../../prediction/v1/hooks/useSafeWriteContractLotto";
-import { MILLIS, usdcToWei } from "../../../../helpers";
+import { MILLIS, usdcToWei, weiToUsdcString } from "../../../../helpers";
 import { LOTTO_CONTRACT_METADATA_QUERY_KEY } from "../queries/keys";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { ContractButton } from "../../../root/v1/components/ContractButton";
+import { LOTTO_ABI, LOTTO_ADDRESS } from "@/app/lib/contracts";
 
 interface LottoAdminCardProps {
   readonly contractOwnerAddress: string;
@@ -33,18 +35,34 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const { address: userAddress } = useAppKitAccount();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const invalidateMetadata = useCallback(() => {
+  const isOwner = userAddress?.toLowerCase() === contractOwnerAddress.toLowerCase();
+  const {
+    data: feePool,
+    refetch: refetchFeePool,
+    isLoading: isFeePoolLoading,
+  } = useReadContract({
+    address: LOTTO_ADDRESS,
+    abi: LOTTO_ABI,
+    functionName: "getFeePool",
+    account: userAddress as `0x${string}` | undefined,
+    query: {
+      enabled: Boolean(isOwner && userAddress),
+    },
+  });
+
+  const refreshAdminData = useCallback(() => {
     setTimeout(() => {
       queryClient.invalidateQueries({
         queryKey: [LOTTO_CONTRACT_METADATA_QUERY_KEY],
       });
+      refetchFeePool();
     }, 3 * MILLIS.inSecond);
-  }, [queryClient]);
+  }, [queryClient, refetchFeePool]);
 
   // Close draw
   const onCloseSuccess = useCallback(() => {
-    invalidateMetadata();
-  }, [invalidateMetadata]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     closeDraw,
@@ -56,8 +74,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const [ticketPrice, setTicketPrice] = useState("");
   const onPriceSuccess = useCallback(() => {
     setTicketPrice("");
-    invalidateMetadata();
-  }, [invalidateMetadata]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: setPrice,
@@ -75,8 +93,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const [maxTickets, setMaxTickets] = useState("");
   const onMaxSuccess = useCallback(() => {
     setMaxTickets("");
-    invalidateMetadata();
-  }, [invalidateMetadata]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: setMaxAmount,
@@ -96,8 +114,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   const onFeeConfigSuccess = useCallback(() => {
     setFeeCollector("");
     setFeeBps("");
-    invalidateMetadata();
-  }, [invalidateMetadata]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: setFeeConfig,
@@ -122,8 +140,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
 
   // Withdraw fees
   const onWithdrawSuccess = useCallback(() => {
-    invalidateMetadata();
-  }, [invalidateMetadata]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: withdrawFees,
@@ -137,8 +155,8 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
 
   // Pause/Unpause
   const onPauseSuccess = useCallback(() => {
-    invalidateMetadata();
-  }, [invalidateMetadata]);
+    refreshAdminData();
+  }, [refreshAdminData]);
 
   const {
     writeToContract: togglePause,
@@ -155,7 +173,7 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
   };
 
   // Only show to owner
-  if (userAddress?.toLowerCase() !== contractOwnerAddress.toLowerCase()) {
+  if (!isOwner) {
     return null;
   }
 
@@ -348,14 +366,27 @@ export function LottoAdminCard({ contractOwnerAddress }: LottoAdminCardProps) {
               description="Withdraw accumulated fees to the fee collector address."
               errorMessage={withdrawError}
             >
-              <ContractButton
-                onClick={handleWithdrawFees}
-                disabled={isWithdrawing}
-                size="sm"
-                variant="default"
-              >
-                {isWithdrawing ? "Withdrawing..." : "Withdraw Fees"}
-              </ContractButton>
+              <div className="space-y-3">
+                <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Current Fee Pool
+                  </p>
+                  <p className="text-sm font-semibold sm:text-base">
+                    {isFeePoolLoading || feePool === undefined
+                      ? "Loading..."
+                      : `${weiToUsdcString(feePool)} USDC`}
+                  </p>
+                </div>
+
+                <ContractButton
+                  onClick={handleWithdrawFees}
+                  disabled={isWithdrawing}
+                  size="sm"
+                  variant="default"
+                >
+                  {isWithdrawing ? "Withdrawing..." : "Withdraw Fees"}
+                </ContractButton>
+              </div>
             </AdminSection>
 
             {/* Pause/Unpause */}

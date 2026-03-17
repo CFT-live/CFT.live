@@ -44,10 +44,7 @@ Notes:
 
 ## Environment Variables
 
-The app expects configuration via `.env` at the repo root (see `.env.example` for placeholders). Common variables include:
-
-- Client-side: `NEXT_PUBLIC_*` (safe to expose, but still treat as configuration)
-- Server-side only: `ARBITRUM_ONE_PRIVATE_KEY`, `ADVANCE_API_KEY`, `ADMIN_ADDRESS`, `CHAT_WORKER_URL`
+The app expects configuration via `.env` at the repo root (see `.env.example` for placeholders). 
 
 ## Cloudflare Workers
 

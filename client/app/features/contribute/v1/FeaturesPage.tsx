@@ -17,8 +17,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/i18n/routing";
 
-import { listFeatures } from "./api/api";
-import type { Feature } from "./api/types";
+import { listCompletedFeatures, listFeatures } from "./api/api";
+import type { CompletedFeature, Feature } from "./api/types";
 import { ACTIVE_STATUSES, ARCHIVED_STATUSES, CATEGORY_OPTIONS } from "./constants";
 import { useContributorProfile } from "./hooks/useContributorProfile";
 import { EmptyState } from "./components/EmptyState";
@@ -29,7 +29,8 @@ export default function FeaturesPage() {
   const { address } = useAppKitAccount();
   const { isAdmin } = useContributorProfile(address);
 
-  const [features, setFeatures] = useState<Feature[]>([]);
+  const [activeFeatures, setActiveFeatures] = useState<Feature[]>([]);
+  const [completedFeatures, setCompletedFeatures] = useState<CompletedFeature[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -40,7 +41,11 @@ export default function FeaturesPage() {
   // Apply search filter then split into active vs archived
   const { activeByCategory, archivedFeatures, totalActive, totalArchived } =
     useMemo(() => {
-      let filtered = features;
+      const combinedFeatures: Feature[] = [
+        ...activeFeatures,
+        ...completedFeatures,
+      ];
+      let filtered = combinedFeatures;
 
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
@@ -85,17 +90,50 @@ export default function FeaturesPage() {
         totalActive: active.length,
         totalArchived: archived.length,
       };
-    }, [features, searchQuery]);
+    }, [activeFeatures, completedFeatures, searchQuery]);
 
   const activeCategoryCount = activeByCategory.size;
   const hasResults = totalActive > 0 || totalArchived > 0;
+  const totalFeaturesCount = activeFeatures.length + completedFeatures.length;
+  const emptyTitle = searchQuery
+    ? "No features match your search"
+    : "No features found";
+
+  let emptyDescription = "Check back later for new contribution opportunities.";
+  if (searchQuery) {
+    emptyDescription = "Try adjusting your search to find what you're looking for.";
+  } else if (isAdmin) {
+    emptyDescription = "Create your first feature to begin accepting contributions.";
+  }
+
+  let emptyAction: React.ReactNode = null;
+  if (searchQuery) {
+    emptyAction = (
+      <Button variant="outline" onClick={() => setSearchQuery("")}> 
+        Clear search
+      </Button>
+    );
+  } else if (isAdmin) {
+    emptyAction = (
+      <Link href="/contribute/features/create">
+        <Button>
+          <Plus className="w-4 h-4 mr-2" />
+          Create first feature
+        </Button>
+      </Link>
+    );
+  }
 
   async function refresh() {
     setLoading(true);
     setError(null);
     try {
-      const res = await listFeatures();
-      setFeatures(res.features);
+      const [activeRes, completedRes] = await Promise.all([
+        listFeatures(),
+        listCompletedFeatures(),
+      ]);
+      setActiveFeatures(activeRes.features);
+      setCompletedFeatures(completedRes.features);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setError(message);
@@ -172,8 +210,8 @@ export default function FeaturesPage() {
         {searchQuery && (
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground font-mono">
             <span>
-              Showing {totalActive + totalArchived} of {features.length} feature
-              {features.length === 1 ? "" : "s"}
+              Showing {totalActive + totalArchived} of {totalFeaturesCount} feature
+              {totalFeaturesCount === 1 ? "" : "s"}
               {totalActive > 0 &&
                 ` · ${totalActive} active across ${activeCategoryCount} ${activeCategoryCount === 1 ? "category" : "categories"}`}
             </span>
@@ -238,35 +276,9 @@ export default function FeaturesPage() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_2px] opacity-10 pointer-events-none" />
           <EmptyState
             variant="features"
-            title={
-              searchQuery
-                ? "No features match your search"
-                : "No features found"
-            }
-            description={
-              searchQuery
-                ? "Try adjusting your search to find what you're looking for."
-                : isAdmin
-                  ? "Create your first feature to begin accepting contributions."
-                  : "Check back later for new contribution opportunities."
-            }
-            action={
-              searchQuery ? (
-                <Button
-                  variant="outline"
-                  onClick={() => setSearchQuery("")}
-                >
-                  Clear search
-                </Button>
-              ) : isAdmin ? (
-                <Link href="/contribute/features/create">
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create first feature
-                  </Button>
-                </Link>
-              ) : null
-            }
+            title={emptyTitle}
+            description={emptyDescription}
+            action={emptyAction}
           />
         </Card>
       )}

@@ -13,6 +13,8 @@ export const CFT_REDEMPTION_POOL_ADDRESS = process.env.NEXT_PUBLIC_CFT_REDEMPTIO
 export { abi as CFT_REDEMPTION_POOL_ABI } from './abis/RedemptionPool';
 export const CFT_TOKEN_ADDRESS = process.env.NEXT_PUBLIC_CFT_TOKEN_CONTRACT_ADDRESS! as `0x${string}`;
 export { abi as CFT_TOKEN_ABI } from './abis/CftToken';
+export const CONTRIBUTOR_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_CONTRIBUTOR_DISTRIBUTOR_CONTRACT_ADDRESS! as `0x${string}`;
+export { abi as CONTRIBUTOR_DISTRIBUTOR_ABI } from './abis/ContributorDistributor';
 
 // Arbitrum USDC address
 export const USDC_ADDRESS = '0xaf88d065e77c8cc2239327c5edb3a432268e5831' as const;

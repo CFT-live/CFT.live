@@ -1,6 +1,6 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { upsertFeature } from "./dynamo.helpers";
-import { validateUpsertFeatureParams } from "./validateParams";
+import { validateCreateFeatureParams } from "./validateParams";
 
 export const handler = async (event: any) => {
   /**
@@ -8,7 +8,7 @@ export const handler = async (event: any) => {
    */
   try {
     const params = event?.body ? JSON.parse(event.body) : {};
-    const paramsValidation = validateUpsertFeatureParams(params);
+    const paramsValidation = validateCreateFeatureParams(params);
     if (!paramsValidation.success) {
       return {
         statusCode: 400,

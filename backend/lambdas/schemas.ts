@@ -46,6 +46,12 @@ export const FeatureSchema = z.object({
   created_date: z.string().datetime(),
 });
 
+export const CompletedFeatureSchema = FeatureSchema.extend({
+  status: z.literal("COMPLETED"),
+  completed_by_id: z.string().min(1),
+  completed_date: z.string().datetime(),
+});
+
 // Tasks
 export const TaskStatus = z.enum([
   "OPEN",
@@ -107,9 +113,12 @@ export const TransactionStatus = z.enum(["Pending", "Confirmed", "Failed"]);
 export const FeatureDistributionSchema = z.object({
   id: z.string().min(1),
   feature_id: z.string().min(1),
+  task_id: z.string().min(1),
+  contribution_id: z.string().min(1),
   contributor_id: z.string().min(1),
   cp_amount: z.number().nonnegative(),
   token_amount: z.number().nonnegative(),
+  token_amount_raw: z.string().min(1),
   arbitrum_tx_hash: z.string().min(1).max(100).nullable(),
   distribution_date: z.string().datetime(),
   approver_id: z.string().min(1),

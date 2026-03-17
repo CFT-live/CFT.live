@@ -1,5 +1,5 @@
-import { randomUUID } from "crypto";
-import { getFeature, upsertDistribution } from "./dynamo.helpers";
+import { randomUUID } from "node:crypto";
+import { getCompletedFeature, getFeature, listDistributions, upsertDistribution } from "./dynamo.helpers";
 import { validateUpsertDistributionParams } from "./validateParams";
 
 export const handler = async (event: any) => {
@@ -18,25 +18,48 @@ export const handler = async (event: any) => {
       };
     }
 
-    const id = randomUUID();
-
-    const feature = await getFeature(paramsValidation.data.feature_id);
+    const feature =
+      (await getFeature(paramsValidation.data.feature_id)) ??
+      (await getCompletedFeature(paramsValidation.data.feature_id));
     if (!feature) {
-      return { statusCode: 404, body: JSON.stringify({ error: "Feature not found" }) };
-    }
-    if (feature.status !== "COMPLETED") {
       return {
-        statusCode: 409,
-        body: JSON.stringify({ error: "Feature must be COMPLETED before creating distributions" }),
+        statusCode: 404,
+        body: JSON.stringify({ error: "Feature not found" }),
       };
     }
+
+    const existingForTask = await listDistributions({
+      task_id: paramsValidation.data.task_id,
+    });
+    if (existingForTask.length > 1) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ error: "Multiple payout records found for task" }),
+      };
+    }
+
+    const existing = existingForTask[0] ?? null;
+    if (
+      existing &&
+      existing.transaction_status !== "Failed"
+    ) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ error: "Task payout record already exists" }),
+      };
+    }
+
+    const id = existing?.id ?? randomUUID();
 
     const distribution = await upsertDistribution({
       id,
       feature_id: paramsValidation.data.feature_id,
+      task_id: paramsValidation.data.task_id,
+      contribution_id: paramsValidation.data.contribution_id,
       contributor_id: paramsValidation.data.contributor_id,
       cp_amount: paramsValidation.data.cp_amount,
       token_amount: paramsValidation.data.token_amount,
+      token_amount_raw: paramsValidation.data.token_amount_raw,
       arbitrum_tx_hash: paramsValidation.data.arbitrum_tx_hash,
       approver_id: paramsValidation.data.approver_id,
       transaction_status: paramsValidation.data.transaction_status,

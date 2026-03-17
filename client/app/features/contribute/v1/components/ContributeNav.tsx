@@ -57,7 +57,7 @@ export default function ContributeNav() {
         onClick={() => (isConnected ? ensureProfile() : open())}
         variant="default"
       >
-        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
+        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Connect profile"}
       </Button>
     );
   };
