@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/i18n/routing";
 import {
   CheckCircle2,
   AlertCircle,
@@ -35,6 +34,29 @@ type SubmissionsSectionProps = {
   onSuccess: (message: string) => void;
 };
 
+function getContributionStatusIcon(status: Contribution["status"]) {
+  if (status === "APPROVED") {
+    return <CheckCircle2 className="w-3 h-3" />;
+  }
+  if (status === "CHANGES_REQUESTED") {
+    return <AlertCircle className="w-3 h-3" />;
+  }
+  if (status === "REJECTED") {
+    return <XCircle className="w-3 h-3" />;
+  }
+  return null;
+}
+
+function getContributionStatusVariant(status: Contribution["status"]) {
+  if (status === "APPROVED") {
+    return "default" as const;
+  }
+  if (status === "CHANGES_REQUESTED" || status === "REJECTED") {
+    return "destructive" as const;
+  }
+  return "outline" as const;
+}
+
 export function SubmissionsSection({
   contributions,
   contributorsById,
@@ -44,14 +66,21 @@ export function SubmissionsSection({
   onRefresh,
   onError,
   onSuccess,
-}: SubmissionsSectionProps) {
+}: Readonly<SubmissionsSectionProps>) {
   const { address } = useAppKitAccount();
   const [reviewCp, setReviewCp] = useState<Record<string, string>>({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
+  const isReviewerRewardContribution = (contribution: Contribution) =>
+    contribution.contribution_kind === "REVIEW_REWARD";
+
+  const canReviewContribution = (contribution: Contribution) =>
+    contribution.contribution_kind === "ORIGINAL" &&
+    contribution.status !== "APPROVED";
+
   const handleApprove = async (
     contributionId: string,
-    status: Contribution["status"],
+    status: Exclude<Contribution["status"], "SUBMITTED">,
     cpAwarded: number | null,
     approvalNotes: string | null,
   ) => {
@@ -69,7 +98,7 @@ export function SubmissionsSection({
       });
       await onRefresh();
       const successMessages = {
-        APPROVED: `Contribution approved with ${cpAwarded} CP!`,
+        APPROVED: `Contribution approved with ${cpAwarded} CP. Reviewer reward: 1 CP.`,
         CHANGES_REQUESTED: "Changes requested successfully!",
         REJECTED: "Contribution rejected!",
       };
@@ -110,22 +139,11 @@ export function SubmissionsSection({
             .sort((a, b) => (a.submission_date < b.submission_date ? 1 : -1))
             .map((c) => {
               const taskName = taskById.get(c.task_id)?.name ?? c.task_id;
-              const statusIcon =
-                c.status === "APPROVED" ? (
-                  <CheckCircle2 className="w-3 h-3" />
-                ) : c.status === "CHANGES_REQUESTED" ? (
-                  <AlertCircle className="w-3 h-3" />
-                ) : c.status === "REJECTED" ? (
-                  <XCircle className="w-3 h-3" />
-                ) : null;
-              const statusVariant =
-                c.status === "APPROVED"
-                  ? ("default" as const)
-                  : c.status === "CHANGES_REQUESTED"
-                    ? ("destructive" as const)
-                    : c.status === "REJECTED"
-                      ? ("destructive" as const)
-                      : ("outline" as const);
+              const isReviewerReward = isReviewerRewardContribution(c);
+              const statusIcon = getContributionStatusIcon(c.status);
+              const statusVariant = getContributionStatusVariant(c.status);
+              const cpInputId = `review-cp-${c.id}`;
+              const notesInputId = `review-notes-${c.id}`;
               return (
                 <div
                   key={c.id}
@@ -140,6 +158,9 @@ export function SubmissionsSection({
                       {typeof c.cp_awarded === "number" ? (
                         <Badge variant="secondary">{c.cp_awarded} CP</Badge>
                       ) : null}
+                      <Badge variant="outline">
+                        {isReviewerReward ? "Reviewer reward" : "Submission"}
+                      </Badge>
                       <Badge variant="outline">{taskName}</Badge>
                     </div>
                     <div className="text-xs text-muted-foreground font-mono">
@@ -149,17 +170,26 @@ export function SubmissionsSection({
                     </div>
                   </div>
 
-                  <div className="mt-2 text-sm font-mono">
-                    <a
-                      href={c.submitted_work_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:text-primary inline-flex items-center gap-1 group/link"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      {c.submitted_work_url}
-                    </a>
-                  </div>
+                  {isReviewerReward ? (
+                    <div className="mt-2 text-xs font-mono text-muted-foreground">
+                      Reviewer reward created for approved contribution{" "}
+                      {c.rewarded_for_contribution_id
+                        ? `${c.rewarded_for_contribution_id.slice(0, 8)}...`
+                        : "-"}
+                    </div>
+                  ) : (
+                    <div className="mt-2 text-sm font-mono">
+                      <a
+                        href={c.submitted_work_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:text-primary inline-flex items-center gap-1 group/link"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        {c.submitted_work_url}
+                      </a>
+                    </div>
+                  )}
 
                   {c.submission_notes ? (
                     <pre className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground font-mono">
@@ -167,17 +197,21 @@ export function SubmissionsSection({
                     </pre>
                   ) : null}
 
-                  {isAdmin ? (
+                  {isAdmin && canReviewContribution(c) ? (
                     <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
                       <h3 className="text-xs font-mono font-semibold uppercase tracking-wider">
                         <span>{">"}</span> ADMIN: REVIEW
                       </h3>
                       <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
-                          <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                          <label
+                            htmlFor={cpInputId}
+                            className="text-xs font-mono uppercase tracking-wider text-muted-foreground"
+                          >
                             CP (for APPROVED)
                           </label>
                           <Input
+                            id={cpInputId}
                             value={reviewCp[c.id] ?? ""}
                             onChange={(e) =>
                               setReviewCp((prev) => ({
@@ -189,10 +223,14 @@ export function SubmissionsSection({
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                          <label
+                            htmlFor={notesInputId}
+                            className="text-xs font-mono uppercase tracking-wider text-muted-foreground"
+                          >
                             Notes
                           </label>
                           <Input
+                            id={notesInputId}
                             value={reviewNotes[c.id] ?? ""}
                             onChange={(e) =>
                               setReviewNotes((prev) => ({
@@ -235,7 +273,7 @@ export function SubmissionsSection({
                           Reject
                         </Button>
                         <Button
-                          disabled={loading || !address || c.status === "APPROVED"}
+                          disabled={loading || !address}
                           onClick={() => {
                             const cpText = (reviewCp[c.id] ?? "").trim();
                             if (!cpText) {

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getCompletedFeature, getFeature, listDistributions, upsertDistribution } from "./dynamo.helpers";
+import { getCompletedFeature, getFeature, listDistributions, upsertDistribution } from "./dynamo/dynamo.helpers";
 import { validateUpsertDistributionParams } from "./validateParams";
 
 export const handler = async (event: any) => {
@@ -28,24 +28,57 @@ export const handler = async (event: any) => {
       };
     }
 
-    const existingForTask = await listDistributions({
-      task_id: paramsValidation.data.task_id,
+    const existingForContribution = await listDistributions({
+      contribution_id: paramsValidation.data.contribution_id,
     });
-    if (existingForTask.length > 1) {
+    if (existingForContribution.length > 1) {
       return {
         statusCode: 409,
-        body: JSON.stringify({ error: "Multiple payout records found for task" }),
+        body: JSON.stringify({ error: "Multiple payout records found for contribution" }),
       };
     }
 
-    const existing = existingForTask[0] ?? null;
+    const existingForPayoutKey = await listDistributions({
+      payout_key: paramsValidation.data.payout_key,
+    });
+    if (existingForPayoutKey.length > 1) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ error: "Multiple payout records found for payout key" }),
+      };
+    }
+
+    const existingByContribution = existingForContribution[0] ?? null;
+    const existingByPayoutKey = existingForPayoutKey[0] ?? null;
+
+    if (
+      existingByContribution?.payout_key &&
+      existingByContribution.payout_key !== paramsValidation.data.payout_key
+    ) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ error: "Contribution payout key does not match existing payout record" }),
+      };
+    }
+
+    if (
+      existingByPayoutKey &&
+      existingByPayoutKey.contribution_id !== paramsValidation.data.contribution_id
+    ) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ error: "Payout key already belongs to another contribution" }),
+      };
+    }
+
+    const existing = existingByContribution ?? existingByPayoutKey;
     if (
       existing &&
       existing.transaction_status !== "Failed"
     ) {
       return {
         statusCode: 409,
-        body: JSON.stringify({ error: "Task payout record already exists" }),
+        body: JSON.stringify({ error: "Contribution payout record already exists" }),
       };
     }
 
@@ -56,6 +89,7 @@ export const handler = async (event: any) => {
       feature_id: paramsValidation.data.feature_id,
       task_id: paramsValidation.data.task_id,
       contribution_id: paramsValidation.data.contribution_id,
+      payout_key: paramsValidation.data.payout_key,
       contributor_id: paramsValidation.data.contributor_id,
       cp_amount: paramsValidation.data.cp_amount,
       token_amount: paramsValidation.data.token_amount,

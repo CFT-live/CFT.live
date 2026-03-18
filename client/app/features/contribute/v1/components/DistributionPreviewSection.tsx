@@ -39,7 +39,11 @@ export function DistributionPreviewSection({
 
     const cpByContributor = new Map<string, number>();
     for (const c of contributions) {
-      if (c.status === "APPROVED" && c.cp_awarded !== null && c.cp_awarded > 0) {
+      if (
+        c.status === "APPROVED" &&
+        c.cp_awarded !== null &&
+        c.cp_awarded > 0
+      ) {
         const prev = cpByContributor.get(c.contributor_id) ?? 0;
         cpByContributor.set(c.contributor_id, prev + c.cp_awarded);
       }

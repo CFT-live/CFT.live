@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { createContribution, getTask, putTask } from "./dynamo.helpers";
+import { createContribution, getTask, putTask } from "./dynamo/dynamo.helpers";
 import { validateSubmitContributionParams } from "./validateParams";
 
 export const handler = async (event: any) => {

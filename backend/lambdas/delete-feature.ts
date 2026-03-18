@@ -1,4 +1,4 @@
-import { deleteFeature } from "./dynamo.helpers";
+import { deleteFeature } from "./dynamo/dynamo.helpers";
 import { validateDeleteFeatureParams } from "./validateParams";
 
 export const handler = async (event: any) => {

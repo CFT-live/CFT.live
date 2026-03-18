@@ -43,6 +43,7 @@ export type CompletionPayoutStatus =
   | "ready"
   | "in-progress"
   | "confirmed"
+  | "already-paid"
   | "failed";
 
 export type CompletionBackendStatus =
@@ -67,7 +68,7 @@ function shortenErrorMessage(error: unknown): string {
   }
 
   if (message.includes("TaskAlreadyPaid")) {
-    return "This task has already been paid on-chain.";
+    return "This payout key has already been paid on-chain.";
   }
 
   if (message.includes("AccessControlUnauthorizedAccount")) {
@@ -75,6 +76,11 @@ function shortenErrorMessage(error: unknown): string {
   }
 
   return message.split("\n").slice(0, 2).join(" ");
+}
+
+function isAlreadyPaidError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes("TaskAlreadyPaid");
 }
 
 function getCompletionPrecheckError(args: {
@@ -134,7 +140,7 @@ async function executeTaskPayout(args: {
     args: [
       row.contributor.wallet_address as `0x${string}`,
       BigInt(row.tokenAmountRaw),
-      row.taskIdBytes32,
+      row.payoutKeyBytes32,
     ],
   });
 
@@ -142,7 +148,7 @@ async function executeTaskPayout(args: {
   const receipt = await waitForTransactionReceipt(config, { hash: txHash });
 
   if (receipt.status !== "success") {
-    throw new Error(`Payout transaction failed for task ${row.task.name}.`);
+    throw new Error(`Payout transaction failed for contribution ${row.contribution.id}.`);
   }
 
   return txHash;
@@ -150,10 +156,12 @@ async function executeTaskPayout(args: {
 
 function updateRowInList(
   rows: CompletionPayoutRow[],
-  taskId: string,
+  contributionId: string,
   updater: (row: CompletionPayoutRow) => CompletionPayoutRow,
 ) {
-  return rows.map((row) => (row.task.id === taskId ? updater(row) : row));
+  return rows.map((row) =>
+    row.contribution.id === contributionId ? updater(row) : row,
+  );
 }
 
 export function useCompleteFeatureWithPayouts({
@@ -176,12 +184,17 @@ export function useCompleteFeatureWithPayouts({
   const [isPreparing, setIsPreparing] = useState(false);
   const [issues, setIssues] = useState<string[]>([]);
   const [rows, setRows] = useState<CompletionPayoutRow[]>([]);
-  const [runningTaskId, setRunningTaskId] = useState<string | null>(null);
+  const [runningContributionId, setRunningContributionId] = useState<string | null>(null);
 
-  const isCompleting = isPreparing || isFinalizing || runningTaskId !== null;
+  const isCompleting =
+    isPreparing || isFinalizing || runningContributionId !== null;
 
   const completedCount = useMemo(
-    () => rows.filter((row) => row.payoutStatus === "confirmed").length,
+    () =>
+      rows.filter(
+        (row) =>
+          row.payoutStatus === "confirmed" || row.payoutStatus === "already-paid",
+      ).length,
     [rows],
   );
   const totalCount = rows.length;
@@ -189,7 +202,10 @@ export function useCompleteFeatureWithPayouts({
     !isFinalized &&
     issues.length === 0 &&
     totalCount > 0 &&
-    rows.every((row) => row.payoutStatus === "confirmed");
+    rows.every(
+      (row) =>
+        row.payoutStatus === "confirmed" || row.payoutStatus === "already-paid",
+    );
 
   const openCompletionDialog = useCallback(async () => {
     onError(null);
@@ -240,7 +256,7 @@ export function useCompleteFeatureWithPayouts({
       setRows(createRowsFromPlan(plan));
 
       if (plan.items.length === 0) {
-        setDialogError("No eligible task payouts were found for this feature.");
+        setDialogError("No eligible contribution payouts were found for this feature.");
       }
     } catch (error) {
       setDialogError(shortenErrorMessage(error));
@@ -270,21 +286,25 @@ export function useCompleteFeatureWithPayouts({
     }
   }, [isCompleting]);
 
-  const runPayoutForTask = useCallback(async (taskId: string) => {
-    if (!address || runningTaskId !== null || isFinalizing) {
+  const runPayoutForContribution = useCallback(async (contributionId: string) => {
+    if (!address || runningContributionId !== null || isFinalizing) {
       return;
     }
 
-    const row = rows.find((entry) => entry.task.id === taskId);
-    if (!row || row.payoutStatus === "confirmed") {
+    const row = rows.find((entry) => entry.contribution.id === contributionId);
+    if (
+      !row ||
+      row.payoutStatus === "confirmed" ||
+      row.payoutStatus === "already-paid"
+    ) {
       return;
     }
 
     setDialogError(null);
     setDialogNotice(null);
-    setRunningTaskId(taskId);
+    setRunningContributionId(contributionId);
     setRows((currentRows) =>
-      updateRowInList(currentRows, taskId, (currentRow) => ({
+      updateRowInList(currentRows, contributionId, (currentRow) => ({
         ...currentRow,
         errorMessage: null,
         payoutStatus: "in-progress",
@@ -298,7 +318,7 @@ export function useCompleteFeatureWithPayouts({
       });
 
       setRows((currentRows) =>
-        updateRowInList(currentRows, taskId, (currentRow) => ({
+        updateRowInList(currentRows, contributionId, (currentRow) => ({
           ...currentRow,
           errorMessage: null,
           payoutStatus: "confirmed",
@@ -306,19 +326,31 @@ export function useCompleteFeatureWithPayouts({
         })),
       );
     } catch (error) {
-      const message = shortenErrorMessage(error);
-      setRows((currentRows) =>
-        updateRowInList(currentRows, taskId, (currentRow) => ({
-          ...currentRow,
-          errorMessage: message,
-          payoutStatus: "failed",
-        })),
-      );
-      setDialogError(message);
+      if (isAlreadyPaidError(error)) {
+        const message = "This contribution has already been paid on-chain.";
+        setRows((currentRows) =>
+          updateRowInList(currentRows, contributionId, (currentRow) => ({
+            ...currentRow,
+            errorMessage: null,
+            payoutStatus: "already-paid",
+          })),
+        );
+        setDialogNotice(message);
+      } else {
+        const message = shortenErrorMessage(error);
+        setRows((currentRows) =>
+          updateRowInList(currentRows, contributionId, (currentRow) => ({
+            ...currentRow,
+            errorMessage: message,
+            payoutStatus: "failed",
+          })),
+        );
+        setDialogError(message);
+      }
     } finally {
-      setRunningTaskId(null);
+      setRunningContributionId(null);
     }
-  }, [address, isFinalizing, rows, runningTaskId]);
+  }, [address, isFinalizing, rows, runningContributionId]);
 
   const payoutAll = useCallback(async () => {
     const targetRows = rows.filter(
@@ -327,9 +359,9 @@ export function useCompleteFeatureWithPayouts({
 
     for (const row of targetRows) {
       // eslint-disable-next-line no-await-in-loop
-      await runPayoutForTask(row.task.id);
+      await runPayoutForContribution(row.contribution.id);
     }
-  }, [rows, runPayoutForTask]);
+  }, [rows, runPayoutForContribution]);
 
   const finalizeCompletion = useCallback(async () => {
     if (!canFinalize || !feature) {
@@ -350,6 +382,7 @@ export function useCompleteFeatureWithPayouts({
             feature_id: feature.id,
             task_id: row.task.id,
             contribution_id: row.contribution.id,
+            payout_key: row.payoutKeyBytes32,
             contributor_id: row.contributor.id,
             cp_amount: row.cpAwarded,
             token_amount: row.tokenAmount,
@@ -359,16 +392,16 @@ export function useCompleteFeatureWithPayouts({
           });
 
           setRows((currentRows) =>
-            updateRowInList(currentRows, row.task.id, (currentRow) => ({
+            updateRowInList(currentRows, row.contribution.id, (currentRow) => ({
               ...currentRow,
               backendStatus: "saved",
             })),
           );
         } catch (error) {
           const message = shortenErrorMessage(error);
-          persistenceErrors.push(`${row.task.name}: ${message}`);
+          persistenceErrors.push(`${row.task.name} / ${row.contribution.id}: ${message}`);
           setRows((currentRows) =>
-            updateRowInList(currentRows, row.task.id, (currentRow) => ({
+            updateRowInList(currentRows, row.contribution.id, (currentRow) => ({
               ...currentRow,
               backendStatus: "failed",
               errorMessage: message,
@@ -417,8 +450,8 @@ export function useCompleteFeatureWithPayouts({
     openCompletionDialog,
     payoutAll,
     rows,
-    runPayoutForTask,
-    runningTaskId,
+    runPayoutForContribution,
+    runningContributionId,
     totalCount,
   };
 }

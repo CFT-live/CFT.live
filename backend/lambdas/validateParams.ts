@@ -261,7 +261,7 @@ export const validateApproveContributionParams = (params: any) => {
     .object({
       contribution_id: z.string().min(1),
       approver_id: z.string().min(1),
-      status: ContributionStatus,
+      status: z.enum(["APPROVED", "REJECTED", "CHANGES_REQUESTED"]),
       cp_awarded: z.number().nonnegative().nullable().optional(),
       approval_notes: z.string().max(5000).nullable().optional(),
     })
@@ -318,6 +318,7 @@ export const validateUpsertDistributionParams = (params: any) => {
       feature_id: z.string().min(1),
       task_id: z.string().min(1),
       contribution_id: z.string().min(1),
+      payout_key: z.string().min(1),
       contributor_id: z.string().min(1),
       cp_amount: z.number().nonnegative(),
       token_amount: z.number().nonnegative(),
@@ -355,7 +356,9 @@ export const validateGetDistributionsParams = (params: any) => {
         .object({
           feature_id: z.string().min(1).optional(),
           task_id: z.string().min(1).optional(),
+          contribution_id: z.string().min(1).optional(),
           contributor_id: z.string().min(1).optional(),
+          payout_key: z.string().min(1).optional(),
           transaction_status: TransactionStatus.optional(),
         })
         .optional(),

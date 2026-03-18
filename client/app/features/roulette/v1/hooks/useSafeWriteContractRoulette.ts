@@ -124,7 +124,7 @@ export function useSafeWriteContractRoulette(onSuccess?: () => void) {
     walletConfirmationIdRef.current = beginWalletConfirmation(
       "Confirm roulette transaction in your wallet…"
     );
-    mutate(simulateData.request, {
+    mutate(simulateData.request as never, {
       onError: clearWalletConfirmation,
       onSuccess: clearWalletConfirmation,
     });

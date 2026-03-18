@@ -1,4 +1,4 @@
-import { patchDistributionTx } from "./dynamo.helpers";
+import { patchDistributionTx } from "./dynamo/dynamo.helpers";
 import { validateUpdateDistributionTxParams } from "./validateParams";
 
 export const handler = async (event: any) => {

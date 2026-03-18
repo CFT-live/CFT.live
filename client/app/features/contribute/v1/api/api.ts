@@ -193,7 +193,7 @@ export async function listContributions(input: {
 
 export async function approveContribution(input: {
   contribution_id: string;
-  status: Contribution["status"];
+  status: Exclude<Contribution["status"], "SUBMITTED">;
   cp_awarded?: number | null;
   approval_notes?: string | null;
 }): Promise<{ contribution: Contribution }> {
@@ -319,7 +319,9 @@ export async function deleteFeature(featureId: string): Promise<{ feature: Featu
 export async function listDistributions(input?: {
   feature_id?: string;
   task_id?: string;
+  contribution_id?: string;
   contributor_id?: string;
+  payout_key?: string;
   transaction_status?: TransactionStatus;
 }): Promise<{ distributions: FeatureDistribution[] }> {
   return apiFetch("/api/distributions", {
@@ -327,7 +329,9 @@ export async function listDistributions(input?: {
       filter: {
         feature_id: input?.feature_id,
         task_id: input?.task_id,
+        contribution_id: input?.contribution_id,
         contributor_id: input?.contributor_id,
+        payout_key: input?.payout_key,
         transaction_status: input?.transaction_status,
       },
     },
@@ -338,6 +342,7 @@ export async function createDistribution(input: {
   feature_id: string;
   task_id: string;
   contribution_id: string;
+  payout_key: string;
   contributor_id: string;
   cp_amount: number;
   token_amount: number;
@@ -350,6 +355,7 @@ export async function createDistribution(input: {
       feature_id: input.feature_id,
       task_id: input.task_id,
       contribution_id: input.contribution_id,
+      payout_key: input.payout_key,
       contributor_id: input.contributor_id,
       cp_amount: input.cp_amount,
       token_amount: input.token_amount,

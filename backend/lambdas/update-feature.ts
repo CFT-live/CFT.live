@@ -1,4 +1,4 @@
-import { upsertFeature } from "./dynamo.helpers";
+import { upsertFeature } from "./dynamo/dynamo.helpers";
 import { validateUpdateFeatureParams } from "./validateParams";
 
 export const handler = async (event: any) => {

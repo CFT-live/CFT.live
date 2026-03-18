@@ -1,4 +1,4 @@
-import { listTasks } from "./dynamo.helpers";
+import { listTasks } from "./dynamo/dynamo.helpers";
 import { validateGetTasksParams } from "./validateParams";
 
 export const handler = async (event: any) => {

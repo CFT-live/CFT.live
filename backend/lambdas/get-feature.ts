@@ -1,4 +1,4 @@
-import { getFeature } from "./dynamo.helpers";
+import { getFeature } from "./dynamo/dynamo.helpers";
 import { validateGetFeatureParams } from "./validateParams";
 
 export const handler = async (event: any) => {

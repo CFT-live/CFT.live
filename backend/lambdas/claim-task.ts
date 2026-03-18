@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getContributor, getTask, putContributor, upsertTask } from "./dynamo.helpers";
+import { getContributor, getTask, putContributor, upsertTask } from "./dynamo/dynamo.helpers";
 
 const validateClaimTaskParams = (params: any) =>
   z

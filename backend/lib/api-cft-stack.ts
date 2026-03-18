@@ -163,6 +163,16 @@ export class ApiCFTStack extends cdk.Stack {
       sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
     });
     featureDistributionTable.addGlobalSecondaryIndex({
+      indexName: "contribution_id-index",
+      partitionKey: { name: "contribution_id", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
+    });
+    featureDistributionTable.addGlobalSecondaryIndex({
+      indexName: "payout_key-index",
+      partitionKey: { name: "payout_key", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
+    });
+    featureDistributionTable.addGlobalSecondaryIndex({
       indexName: "transaction_status-index",
       partitionKey: { name: "transaction_status", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
@@ -330,9 +340,11 @@ export class ApiCFTStack extends cdk.Stack {
       "delete-task.handler",
       {
         TASKS_TABLE_NAME: tasksTable.tableName,
+        CONTRIBUTIONS_TABLE_NAME: contributionsTable.tableName,
       },
     );
     tasksTable.grantReadWriteData(deleteTaskLambda);
+    contributionsTable.grantReadWriteData(deleteTaskLambda);
 
     // Contributions Lambda functions
     const submitContributionLambda = createLambda(
@@ -385,12 +397,14 @@ export class ApiCFTStack extends cdk.Stack {
       "create-distribution.handler",
       {
         FEATURE_DISTRIBUTION_TABLE_NAME: featureDistributionTable.tableName,
+        FEATURES_TABLE_NAME: featuresTable.tableName,
         COMPLETED_FEATURES_TABLE_NAME: completedFeaturesTable.tableName,
         CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
       },
       30, // Longer timeout for blockchain transactions
     );
     featureDistributionTable.grantReadWriteData(createDistributionLambda);
+    featuresTable.grantReadData(createDistributionLambda);
     completedFeaturesTable.grantReadData(createDistributionLambda);
     contributorsTable.grantReadWriteData(createDistributionLambda);
 

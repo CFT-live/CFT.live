@@ -120,7 +120,7 @@ export function useSafeWriteContract(onSuccess?: () => void) {
       walletConfirmationIdRef.current = beginWalletConfirmation(
         "Confirm prediction transaction in your wallet…"
       );
-      mutate(simulateData.request, {
+      mutate(simulateData.request as never, {
         onError: clearWalletConfirmation,
         onSuccess: clearWalletConfirmation,
       });

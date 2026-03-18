@@ -1,4 +1,4 @@
-import { getContribution } from "./dynamo.helpers";
+import { getContribution } from "./dynamo/dynamo.helpers";
 import { validateGetContributionParams } from "./validateParams";
 
 export const handler = async (event: any) => {

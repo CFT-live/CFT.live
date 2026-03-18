@@ -92,12 +92,16 @@ export const ContributionStatus = z.enum([
   "CHANGES_REQUESTED",
 ]);
 
+export const ContributionKind = z.enum(["ORIGINAL", "REVIEW_REWARD"]);
+
 export const ContributionSchema = z.object({
   id: z.string().min(1),
   task_id: z.string().min(1),
   contributor_id: z.string().min(1),
   submitted_work_url: z.string().url().max(2048),
   submission_notes: z.string().max(5000).nullable(),
+  contribution_kind: ContributionKind,
+  rewarded_for_contribution_id: z.string().min(1).nullable(),
   status: ContributionStatus,
   cp_awarded: z.number().nonnegative().nullable(),
   approver_id: z.string().min(1).nullable(),
@@ -115,6 +119,7 @@ export const FeatureDistributionSchema = z.object({
   feature_id: z.string().min(1),
   task_id: z.string().min(1),
   contribution_id: z.string().min(1),
+  payout_key: z.string().min(1).nullable(),
   contributor_id: z.string().min(1),
   cp_amount: z.number().nonnegative(),
   token_amount: z.number().nonnegative(),

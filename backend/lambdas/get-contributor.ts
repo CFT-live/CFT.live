@@ -1,4 +1,4 @@
-import { getContributor, getContributorByWalletAddress } from "./dynamo.helpers";
+import { getContributor, getContributorByWalletAddress } from "./dynamo/dynamo.helpers";
 import { validateGetContributorParams } from "./validateParams";
 
 export const handler = async (event: any) => {

@@ -31,7 +31,7 @@ export type TaskPayoutPlanItem = {
   tokenAmount: number;
   tokenAmountDisplay: string;
   tokenAmountRaw: string;
-  taskIdBytes32: `0x${string}`;
+  payoutKeyBytes32: `0x${string}`;
 };
 
 export type FeaturePayoutPlan = {
@@ -58,7 +58,7 @@ type PayoutEntry = {
   numerator: bigint;
   baseAmount: bigint;
   remainder: bigint;
-  taskIdBytes32: `0x${string}`;
+  payoutKeyBytes32: `0x${string}`;
 };
 
 function toSafeDisplayNumber(value: string): number {
@@ -66,53 +66,56 @@ function toSafeDisplayNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export function toDistributorTaskId(taskId: string): `0x${string}` {
-  return keccak256(stringToHex(taskId));
+export function toDistributorPayoutKey(contributionId: string): `0x${string}` {
+  return keccak256(stringToHex(contributionId));
 }
 
-function buildActiveDistributionsByTaskId(
+function buildActiveDistributionsByContributionId(
   existingDistributions: FeatureDistribution[],
 ) {
   return new Map(
     existingDistributions
       .filter((distribution) => distribution.transaction_status !== "Failed")
-      .map((distribution) => [distribution.task_id, distribution]),
+      .map((distribution) => [distribution.contribution_id, distribution]),
   );
 }
 
-function groupEligibleContributions(contributions: Contribution[]) {
-  const eligibleByTaskId = new Map<string, Contribution[]>();
-
-  for (const contribution of contributions) {
-    if (contribution.status !== "APPROVED") continue;
-    if (contribution.cp_awarded === null || contribution.cp_awarded <= 0) continue;
-
-    const current = eligibleByTaskId.get(contribution.task_id) ?? [];
-    current.push(contribution);
-    eligibleByTaskId.set(contribution.task_id, current);
-  }
-
-  return eligibleByTaskId;
+function buildActiveDistributionsByPayoutKey(
+  existingDistributions: FeatureDistribution[],
+) {
+  return new Map(
+    existingDistributions
+      .filter(
+        (distribution) =>
+          distribution.transaction_status !== "Failed" &&
+          typeof distribution.payout_key === "string" &&
+          distribution.payout_key.length > 0,
+      )
+      .map((distribution) => [distribution.payout_key as string, distribution]),
+  );
 }
 
-function getTaskValidationError(args: {
-  activeDistributionsByTaskId: Map<string, FeatureDistribution>;
+function getContributionValidationError(args: {
+  activeDistributionsByContributionId: Map<string, FeatureDistribution>;
+  activeDistributionsByPayoutKey: Map<string, FeatureDistribution>;
   contributor: PublicContributor | undefined;
-  eligible: Contribution[];
+  contribution: Contribution;
   task: Task;
 }) {
-  const { activeDistributionsByTaskId, contributor, eligible, task } = args;
+  const {
+    activeDistributionsByContributionId,
+    activeDistributionsByPayoutKey,
+    contribution,
+    contributor,
+  } = args;
+  const payoutKey = toDistributorPayoutKey(contribution.id);
 
-  if (eligible.length === 0) {
-    return "Task must have exactly one approved contribution with CP awarded.";
+  if (activeDistributionsByContributionId.has(contribution.id)) {
+    return "Contribution already has a non-failed payout record.";
   }
 
-  if (eligible.length > 1) {
-    return "Task has multiple approved contributions. Resolve to one final approved contribution before completion.";
-  }
-
-  if (activeDistributionsByTaskId.has(task.id)) {
-    return "Task already has a non-failed payout record.";
+  if (activeDistributionsByPayoutKey.has(payoutKey)) {
+    return "Payout key has already been used by a non-failed payout record.";
   }
 
   if (!contributor) {
@@ -128,24 +131,46 @@ function getTaskValidationError(args: {
 
 function collectPayoutEntries(args: {
   tasks: Task[];
-  eligibleByTaskId: Map<string, Contribution[]>;
+  contributions: Contribution[];
   contributorsById: Record<string, PublicContributor>;
-  activeDistributionsByTaskId: Map<string, FeatureDistribution>;
+  activeDistributionsByContributionId: Map<string, FeatureDistribution>;
+  activeDistributionsByPayoutKey: Map<string, FeatureDistribution>;
 }) {
-  const { tasks, eligibleByTaskId, contributorsById, activeDistributionsByTaskId } = args;
+  const {
+    tasks,
+    contributions,
+    contributorsById,
+    activeDistributionsByContributionId,
+    activeDistributionsByPayoutKey,
+  } = args;
   const issues: PayoutPlanIssue[] = [];
   const validEntries: PayoutEntry[] = [];
+  const taskById = new Map(tasks.map((task) => [task.id, task]));
 
-  for (const task of tasks) {
-    const eligible = eligibleByTaskId.get(task.id) ?? [];
-    const contribution = eligible[0];
-    const contributor = contribution
-      ? contributorsById[contribution.contributor_id]
-      : undefined;
-    const validationError = getTaskValidationError({
-      activeDistributionsByTaskId,
+  const eligibleContributions = contributions.filter(
+    (contribution) =>
+      contribution.status === "APPROVED" &&
+      contribution.cp_awarded !== null &&
+      contribution.cp_awarded > 0,
+  );
+
+  for (const contribution of eligibleContributions) {
+    const task = taskById.get(contribution.task_id);
+    if (!task) {
+      issues.push({
+        taskId: contribution.task_id,
+        taskName: contribution.task_id,
+        reason: "Task could not be resolved for approved contribution payout.",
+      });
+      continue;
+    }
+
+    const contributor = contributorsById[contribution.contributor_id];
+    const validationError = getContributionValidationError({
+      activeDistributionsByContributionId,
+      activeDistributionsByPayoutKey,
+      contribution,
       contributor,
-      eligible,
       task,
     });
 
@@ -158,6 +183,10 @@ function collectPayoutEntries(args: {
       continue;
     }
 
+    if (!contribution || !contributor) {
+      continue;
+    }
+
     validEntries.push({
       task,
       contribution,
@@ -166,7 +195,7 @@ function collectPayoutEntries(args: {
       numerator: BigInt(0),
       baseAmount: BigInt(0),
       remainder: BigInt(0),
-      taskIdBytes32: toDistributorTaskId(task.id),
+      payoutKeyBytes32: toDistributorPayoutKey(contribution.id),
     });
   }
 
@@ -194,7 +223,7 @@ function allocateRewardBaseUnits(args: {
   let remainderUnits = totalRewardRaw - allocated;
   const sortedForRemainder = [...entries].sort((left, right) => {
     if (left.remainder === right.remainder) {
-      return left.task.id.localeCompare(right.task.id);
+      return left.contribution.id.localeCompare(right.contribution.id);
     }
 
     return left.remainder > right.remainder ? -1 : 1;
@@ -226,10 +255,15 @@ function toTaskPayoutPlanItems(entries: PayoutEntry[], cftDecimals: number) {
         tokenAmount: toSafeDisplayNumber(tokenAmountDisplay),
         tokenAmountDisplay,
         tokenAmountRaw: entry.baseAmount.toString(),
-        taskIdBytes32: entry.taskIdBytes32,
+        payoutKeyBytes32: entry.payoutKeyBytes32,
       };
     })
-    .sort((left, right) => left.task.name.localeCompare(right.task.name));
+    .sort((left, right) => {
+      const byTaskName = left.task.name.localeCompare(right.task.name);
+      if (byTaskName !== 0) return byTaskName;
+
+      return left.contribution.id.localeCompare(right.contribution.id);
+    });
 }
 
 export function buildFeaturePayoutPlan({
@@ -240,15 +274,18 @@ export function buildFeaturePayoutPlan({
   existingDistributions,
   cftDecimals,
 }: BuildFeaturePayoutPlanArgs): FeaturePayoutPlan {
-  const activeDistributionsByTaskId = buildActiveDistributionsByTaskId(
+  const activeDistributionsByContributionId = buildActiveDistributionsByContributionId(
     existingDistributions,
   );
-  const eligibleByTaskId = groupEligibleContributions(contributions);
+  const activeDistributionsByPayoutKey = buildActiveDistributionsByPayoutKey(
+    existingDistributions,
+  );
   const { issues, validEntries } = collectPayoutEntries({
     tasks,
-    eligibleByTaskId,
+    contributions,
     contributorsById,
-    activeDistributionsByTaskId,
+    activeDistributionsByContributionId,
+    activeDistributionsByPayoutKey,
   });
 
   const totalCpAwarded = validEntries.reduce((sum, entry) => sum + entry.cpAwarded, 0);
@@ -286,19 +323,19 @@ export function formatPayoutIssues(issues: PayoutPlanIssue[]): string {
 export function buildPayoutConfirmationMessage(plan: FeaturePayoutPlan): string {
   const lines = plan.items.map(
     (item) =>
-      `- ${item.task.name}: ${item.contributor.username} gets ${item.tokenAmountDisplay} CFT for ${item.cpAwarded} CP`,
+      `- ${item.task.name}: ${item.contributor.username} gets ${item.tokenAmountDisplay} CFT for ${item.cpAwarded} CP (${item.contribution.contribution_kind})`,
   );
 
   return [
     "Mark this feature as COMPLETED and execute contributor payouts?",
     "",
-    `Tasks to pay: ${plan.items.length}`,
+    `Contributions to pay: ${plan.items.length}`,
     `Total CP: ${plan.totalCpAwarded}`,
     `Total payout: ${plan.totalTokenAmountDisplay} CFT`,
     "",
     ...lines,
     "",
-    "The admin wallet will be asked to confirm one payout transaction per task.",
+    "The admin wallet will be asked to confirm one payout transaction per contribution.",
     "The feature will be marked completed only after all payouts are confirmed.",
   ].join("\n");
 }

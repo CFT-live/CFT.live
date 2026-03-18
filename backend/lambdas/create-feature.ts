@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { upsertFeature } from "./dynamo.helpers";
+import { upsertFeature } from "./dynamo/dynamo.helpers";
 import { validateCreateFeatureParams } from "./validateParams";
 
 export const handler = async (event: any) => {

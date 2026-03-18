@@ -1,4 +1,4 @@
-import { listDistributions } from "./dynamo.helpers";
+import { listDistributions } from "./dynamo/dynamo.helpers";
 import { validateGetDistributionsParams } from "./validateParams";
 
 export const handler = async (event: any) => {

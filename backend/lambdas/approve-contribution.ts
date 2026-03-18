@@ -1,4 +1,4 @@
-import { approveContribution, getTask, putTask } from "./dynamo.helpers";
+import { approveContribution, getTask, putTask } from "./dynamo/dynamo.helpers";
 import { validateApproveContributionParams } from "./validateParams";
 
 export const handler = async (event: any) => {
@@ -53,6 +53,12 @@ export const handler = async (event: any) => {
       body: JSON.stringify({ contribution }),
     };
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify(err) };
+    const message = err instanceof Error ? err.message : String(err);
+    const statusCode = /cannot be changed|cannot be reviewed|already has a reviewer reward|not found/i.test(
+      message,
+    )
+      ? 409
+      : 500;
+    return { statusCode, body: JSON.stringify({ error: message }) };
   }
 };

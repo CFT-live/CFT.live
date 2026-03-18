@@ -57,12 +57,16 @@ export type ContributionStatus =
   | "REJECTED"
   | "CHANGES_REQUESTED";
 
+export type ContributionKind = "ORIGINAL" | "REVIEW_REWARD";
+
 export interface Contribution {
   id: string;
   task_id: string;
   contributor_id: string;
   submitted_work_url: string;
   submission_notes: string | null;
+  contribution_kind: ContributionKind;
+  rewarded_for_contribution_id: string | null;
   status: ContributionStatus;
   cp_awarded: number | null;
   approver_id: string | null;
@@ -101,6 +105,7 @@ export interface FeatureDistribution {
   feature_id: string;
   task_id: string;
   contribution_id: string;
+  payout_key: string | null;
   contributor_id: string;
   cp_amount: number;
   token_amount: number;

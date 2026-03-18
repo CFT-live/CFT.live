@@ -143,7 +143,12 @@ export default function FeaturePage({
   const totalCpAwarded = useMemo(
     () =>
       contributions
-        .filter((c) => c.status === "APPROVED" && c.cp_awarded !== null)
+        .filter(
+          (c) =>
+            c.status === "APPROVED" &&
+            c.cp_awarded !== null &&
+            c.cp_awarded > 0,
+        )
         .reduce((sum, c) => sum + (c.cp_awarded ?? 0), 0),
     [contributions],
   );
@@ -164,8 +169,8 @@ export default function FeaturePage({
     openCompletionDialog,
     payoutAll,
     rows,
-    runPayoutForTask,
-    runningTaskId,
+    runPayoutForContribution,
+    runningContributionId,
     totalCount,
   } =
     useCompleteFeatureWithPayouts({
@@ -299,10 +304,12 @@ export default function FeaturePage({
         onFinalize={() => void finalizeCompletion()}
         onOpenChange={closeCompletionDialog}
         onPayoutAll={() => void payoutAll()}
-        onRetryPayout={(taskId) => void runPayoutForTask(taskId)}
+        onRetryPayout={(contributionId) => {
+          runPayoutForContribution(contributionId);
+        }}
         open={dialogOpen}
         rows={rows}
-        runningTaskId={runningTaskId}
+        runningContributionId={runningContributionId}
         totalCount={totalCount}
       />
     </div>

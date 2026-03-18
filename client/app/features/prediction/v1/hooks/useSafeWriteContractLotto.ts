@@ -120,7 +120,7 @@ export function useSafeWriteContractLotto(onSuccess?: () => void) {
       walletConfirmationIdRef.current = beginWalletConfirmation(
         "Confirm lotto transaction in your wallet…"
       );
-      mutate(simulateData.request, {
+      mutate(simulateData.request as never, {
         onError: clearWalletConfirmation,
         onSuccess: clearWalletConfirmation,
       });

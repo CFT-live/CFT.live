@@ -42,10 +42,10 @@ type CompletionPayoutDialogProps = {
   onFinalize: () => void;
   onOpenChange: (open: boolean) => void;
   onPayoutAll: () => void;
-  onRetryPayout: (taskId: string) => void;
+  onRetryPayout: (contributionId: string) => void;
   open: boolean;
   rows: CompletionPayoutRow[];
-  runningTaskId: string | null;
+  runningContributionId: string | null;
   totalCount: number;
 };
 
@@ -53,6 +53,8 @@ function getPayoutStatusBadgeVariant(status: CompletionPayoutStatus) {
   switch (status) {
     case "confirmed":
       return "success" as const;
+    case "already-paid":
+      return "warning" as const;
     case "failed":
       return "destructive" as const;
     case "in-progress":
@@ -77,6 +79,8 @@ function formatPayoutStatus(status: CompletionPayoutStatus) {
   switch (status) {
     case "confirmed":
       return "Confirmed";
+    case "already-paid":
+      return "Already paid";
     case "failed":
       return "Failed";
     case "in-progress":
@@ -102,6 +106,10 @@ function truncateHash(hash: string | null) {
   return `${hash.slice(0, 8)}...${hash.slice(-6)}`;
 }
 
+function formatContributionKind(kind: CompletionPayoutRow["contribution"]["contribution_kind"]) {
+  return kind === "REVIEW_REWARD" ? "Review reward" : "Original contribution";
+}
+
 function getActionLabel(status: CompletionPayoutStatus) {
   if (status === "failed") {
     return "Retry payout";
@@ -109,6 +117,10 @@ function getActionLabel(status: CompletionPayoutStatus) {
 
   if (status === "confirmed") {
     return "Confirmed";
+  }
+
+  if (status === "already-paid") {
+    return "Already paid";
   }
 
   return "Make payout";
@@ -131,14 +143,13 @@ export function CompletionPayoutDialog({
   onRetryPayout,
   open,
   rows,
-  runningTaskId,
+  runningContributionId,
   totalCount,
 }: Readonly<CompletionPayoutDialogProps>) {
   const progressValue = totalCount === 0 ? 0 : completedCount;
   const hasRunnableRows = rows.some(
     (row) => row.payoutStatus === "ready" || row.payoutStatus === "failed",
   );
-
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90vh] overflow-hidden p-0">
@@ -167,9 +178,9 @@ export function CompletionPayoutDialog({
               <Button
                 variant="outline"
                 onClick={onPayoutAll}
-                disabled={!hasRunnableRows || isPreparing || isFinalizing || runningTaskId !== null}
+                disabled={!hasRunnableRows || isPreparing || isFinalizing || runningContributionId !== null}
               >
-                {runningTaskId ? (
+                {runningContributionId ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Processing payout
@@ -242,6 +253,7 @@ export function CompletionPayoutDialog({
                 <TableHead>Task</TableHead>
                 <TableHead>Contributor</TableHead>
                 <TableHead>Contribution</TableHead>
+                <TableHead>Payout Key</TableHead>
                 <TableHead className="text-right">CP</TableHead>
                 <TableHead className="text-right">Reward</TableHead>
                 <TableHead>Payout</TableHead>
@@ -252,11 +264,11 @@ export function CompletionPayoutDialog({
             </TableHeader>
             <TableBody>
               {rows.map((row) => {
-                const isRowRunning = runningTaskId === row.task.id;
+                const isRowRunning = runningContributionId === row.contribution.id;
                 const actionLabel = getActionLabel(row.payoutStatus);
 
                 return (
-                  <TableRow key={row.task.id}>
+                  <TableRow key={row.contribution.id}>
                     <TableCell className="max-w-[220px]">
                       <div className="truncate font-medium" title={row.task.name}>
                         {row.task.name}
@@ -270,15 +282,24 @@ export function CompletionPayoutDialog({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <a
-                        href={row.contribution.submitted_work_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-primary hover:underline"
-                      >
-                        Open
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
+                      <div className="space-y-1">
+                        <Badge variant="outline">{formatContributionKind(row.contribution.contribution_kind)}</Badge>
+                        <div className="font-mono text-xs text-muted-foreground">
+                          {row.contribution.id}
+                        </div>
+                        <a
+                          href={row.contribution.submitted_work_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-primary hover:underline"
+                        >
+                          Open
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {truncateHash(row.payoutKeyBytes32)}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">
                       {row.cpAwarded}
@@ -318,13 +339,18 @@ export function CompletionPayoutDialog({
                     <TableCell className="text-right">
                       <Button
                         size="sm"
-                        variant={row.payoutStatus === "confirmed" ? "outline" : "default"}
-                        onClick={() => onRetryPayout(row.task.id)}
+                        variant={
+                          row.payoutStatus === "confirmed" || row.payoutStatus === "already-paid"
+                            ? "outline"
+                            : "default"
+                        }
+                        onClick={() => onRetryPayout(row.contribution.id)}
                         disabled={
                           isPreparing ||
                           isFinalizing ||
                           isRowRunning ||
                           row.payoutStatus === "confirmed" ||
+                          row.payoutStatus === "already-paid" ||
                           isFinalized
                         }
                       >

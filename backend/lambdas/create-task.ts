@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { upsertTask } from "./dynamo.helpers";
+import { upsertTask } from "./dynamo/dynamo.helpers";
 import { validateUpdateTaskParams } from "./validateParams";
 
 export const handler = async (event: any) => {

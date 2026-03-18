@@ -1,5 +1,5 @@
 import { validateUpdateContributorParams } from "./validateParams";
-import { upsertContributor } from "./dynamo.helpers";
+import { upsertContributor } from "./dynamo/dynamo.helpers";
 
 export const handler = async (event: any) => {
   try {

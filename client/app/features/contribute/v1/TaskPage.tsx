@@ -9,7 +9,6 @@ import {
   Clock,
   AlertCircle,
   Trash2,
-  User,
   XCircle,
   ExternalLink,
 } from "lucide-react";
@@ -24,7 +23,6 @@ import {
   getTask,
   patchTask,
   submitContribution,
-  claimTask,
   listContributions,
   approveContribution,
 } from "@/app/features/contribute/v1/api/api";
@@ -61,6 +59,17 @@ function formatIsoTime(iso: string | null | undefined): string {
   } catch {
     return String(iso);
   }
+}
+
+function isReviewerRewardContribution(contribution: Contribution): boolean {
+  return contribution.contribution_kind === "REVIEW_REWARD";
+}
+
+function canReviewContribution(contribution: Contribution): boolean {
+  return (
+    contribution.contribution_kind === "ORIGINAL" &&
+    contribution.status !== "APPROVED"
+  );
 }
 
 export default function TaskPage({ taskId }: { taskId: string }) {
@@ -272,21 +281,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          {address && hasProfile === null ? (
-            <Button
-              variant="outline"
-              onClick={() => void ensureProfile()}
-              disabled={profileLoading}
-            >
-              {profileLoading ? "Connecting…" : "Connect profile"}
-            </Button>
-          ) : address && hasProfile === true && contributor ? (
-            <Button variant="outline" disabled>
-              Profile: {contributor.username}
-            </Button>
-          ) : null}
           {isAdmin ? (
-            <>
               <Button
                 variant="destructive"
                 disabled={!task || loading || deleting}
@@ -325,7 +320,6 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                   </>
                 )}
               </Button>
-            </>
           ) : null}
           <Button
             variant="outline"
@@ -785,6 +779,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                   a.submission_date < b.submission_date ? 1 : -1,
                 )
                 .map((c) => {
+                  const isReviewerReward = isReviewerRewardContribution(c);
                   const statusIcon =
                     c.status === "APPROVED" ? (
                       <CheckCircle2 className="w-3 h-3" />
@@ -816,6 +811,9 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                           {typeof c.cp_awarded === "number" ? (
                             <Badge variant="secondary">{c.cp_awarded} CP</Badge>
                           ) : null}
+                          <Badge variant="outline">
+                            {isReviewerReward ? "Reviewer reward" : "Submission"}
+                          </Badge>
                         </div>
                         <div className="text-xs text-muted-foreground font-mono">
                           {`${c.contributor_id.slice(0, 6)}…${c.contributor_id.slice(-4)}`}{" "}
@@ -823,17 +821,26 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                         </div>
                       </div>
 
-                      <div className="mt-2 text-sm font-mono">
-                        <a
-                          href={c.submitted_work_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="hover:text-primary inline-flex items-center gap-1 group/link"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          {c.submitted_work_url}
-                        </a>
-                      </div>
+                      {isReviewerReward ? (
+                        <div className="mt-2 text-xs font-mono text-muted-foreground">
+                          Reviewer reward created for approved contribution{" "}
+                          {c.rewarded_for_contribution_id
+                            ? `${c.rewarded_for_contribution_id.slice(0, 8)}...`
+                            : "-"}
+                        </div>
+                      ) : (
+                        <div className="mt-2 text-sm font-mono">
+                          <a
+                            href={c.submitted_work_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:text-primary inline-flex items-center gap-1 group/link"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            {c.submitted_work_url}
+                          </a>
+                        </div>
+                      )}
 
                       {c.submission_notes ? (
                         <pre className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground font-mono">
@@ -852,7 +859,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                         </div>
                       ) : null}
 
-                      {isAdmin && c.status !== "APPROVED" ? (
+                      {isAdmin && canReviewContribution(c) ? (
                         <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
                           <h3 className="text-xs font-mono font-semibold uppercase tracking-wider">
                             <span>{">"}</span> ADMIN: REVIEW
@@ -982,7 +989,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                                   });
                                   await refresh();
                                   setSuccessMessage(
-                                    `Contribution approved with ${cpValue} CP!`,
+                                    `Contribution approved with ${cpValue} CP. Reviewer reward: 1 CP.`,
                                   );
                                 } catch (e) {
                                   setError(

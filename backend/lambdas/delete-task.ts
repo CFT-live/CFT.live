@@ -1,4 +1,4 @@
-import { deleteTask } from "./dynamo.helpers";
+import { deleteTask } from "./dynamo/dynamo.helpers";
 import { validateDeleteTaskParams } from "./validateParams";
 
 export const handler = async (event: any) => {

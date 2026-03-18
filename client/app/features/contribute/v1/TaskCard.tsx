@@ -28,6 +28,7 @@ export function TaskCard({
   statusVariant,
 }: TaskCardProps) {
   const isClaimed = !!task.claimed_by_id;
+  const claimedById = task.claimed_by_id;
   const cardBorderClass = isClaimed
     ? "border-primary/20 bg-primary/5"
     : "border-border/60 bg-card/80";
@@ -54,10 +55,10 @@ export function TaskCard({
                 {task.status}
               </Badge>
               <Badge variant="secondary">{task.task_type}</Badge>
-              {isClaimed && (
+              {claimedById && (
                 <Badge variant="outline" className="gap-1 text-xs">
                   <User className="w-3 h-3" />
-                  {task.claimed_by_id.slice(0, 6)}…{task.claimed_by_id.slice(-4)}
+                  {claimedById.slice(0, 6)}…{claimedById.slice(-4)}
                   {task.claimed_date && (
                     <span className="text-xs text-muted-foreground ml-1">
                       · {formatClaimDate(task.claimed_date)}
