@@ -22,12 +22,16 @@ import {
   CONTRACT_METADATA_QUERY_KEY,
   CONTRACT_PRICE_FEEDS_QUERY_KEY,
   USER_BETS_QUERY_KEY,
+} from "../features/prediction/v1/queries/keys";
+import {
   // Lotto query keys
   LOTTO_OPEN_DRAWS_QUERY_KEY,
   LOTTO_CLOSED_DRAWS_QUERY_KEY,
   LOTTO_WINNER_DRAWS_QUERY_KEY,
   LOTTO_CONTRACT_METADATA_QUERY_KEY,
   LOTTO_USER_TICKETS_QUERY_KEY,
+} from "../features/lotto/v1/queries/keys";
+import {
   // Roulette query keys
   ROULETTE_OPEN_TABLES_QUERY_KEY,
   ROULETTE_IN_PROGRESS_TABLES_QUERY_KEY,
@@ -36,7 +40,7 @@ import {
   ROULETTE_CONTRACT_METADATA_QUERY_KEY,
   ROULETTE_GLOBAL_STATS_QUERY_KEY,
   ROULETTE_TABLE_DETAIL_QUERY_KEY,
-} from "@/app/queries/keys";
+} from "../features/roulette/v1/queries/keys";
 
 type GraphType = "prediction" | "lotto" | "roulette";
 

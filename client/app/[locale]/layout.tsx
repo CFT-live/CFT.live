@@ -3,14 +3,14 @@ import { IBM_Plex_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { Github } from "lucide-react";
 
 import { ContextProvider } from "@/app/context";
 import Providers from "@/app/providers/Providers";
-import { UserCounter } from "@/app/components/UserCounter";
-import { ChatContainer } from "@/app/components/chat";
-import ConnectButton from "@/app/components/ConnectButton";
-import LanguageSwitcher from "@/app/components/LanguageSwitcher";
-import { Breadcrumb } from "@/app/components/Breadcrumb";
+import { UserCounter } from "@/app/features/root/v1/components/UserCounter";
+import ConnectButton from "@/app/features/root/v1/components/ConnectButton";
+import LanguageSwitcher from "@/app/features/root/v1/components/LanguageSwitcher";
+import { Breadcrumb } from "@/app/features/root/v1/components/Breadcrumb";
 import { Locale, Link } from "@/i18n/routing";
 
 import "@/app/globals.css";
@@ -21,6 +21,17 @@ const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-mono",
   display: "swap",
 });
+
+const XLogo = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.cft.live"),
@@ -193,14 +204,41 @@ export default async function RootLayout({
               <main className="flex-1">
                 {children}
               </main>
-              <footer className="border-t border-border bg-background py-4">
+              <footer className="border-t border-border bg-background py-6 pb-24 md:pb-6">
                 <div className="container mx-auto px-4">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                    © 2025 CFT.LIVE. All lives reserved.
-                  </p>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-4">
+                      <a
+                        href="https://github.com/CFT-live/CFT.live"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-2 group"
+                        aria-label="GitHub"
+                      >
+                        <Github className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                        <span className="text-xs font-mono uppercase tracking-wider hidden sm:inline">
+                          GitHub
+                        </span>
+                      </a>
+                      <a
+                        href="https://x.com/cftlive"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-2 group"
+                        aria-label="X"
+                      >
+                        <XLogo className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                        <span className="text-xs font-mono uppercase tracking-wider hidden sm:inline">
+                          X
+                        </span>
+                      </a>
+                    </div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                      © 2026 CFT.LIVE. All lives reserved.
+                    </p>
+                  </div>
                 </div>
               </footer>
-              <ChatContainer />
             </div>
             </Providers>
           </NextIntlClientProvider>

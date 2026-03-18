@@ -1,4 +1,8 @@
-import * as keys from '../queries/keys';
+import * as predictionKeys from '../features/prediction/v1/queries/keys';
+import * as lottoKeys from '../features/lotto/v1/queries/keys';
+import * as rouletteKeys from '../features/roulette/v1/queries/keys';
+
+const keys = { ...predictionKeys, ...lottoKeys, ...rouletteKeys };
 import { Asset, Bet, ContractMetadata, Position, Round, User } from '../types';
 
 // Type definitions for mock data

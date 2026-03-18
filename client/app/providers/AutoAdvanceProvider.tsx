@@ -3,7 +3,7 @@
 // TODO: This should only be used in local mode, not in production deployments.
 
 import { useCallback, useEffect, useRef } from "react";
-import { runAdvanceCheck } from "../lib/api/actions";
+import { runAdvanceCheck } from "../features/prediction/v1/api/actions";
 import { MILLIS } from "../helpers";
 
 export const AutoAdvanceProvider = ({

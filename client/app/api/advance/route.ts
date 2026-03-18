@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { runAdvanceCheck } from "@/app/lib/api/actions";
+import { runAdvanceCheck } from "@/app/features/prediction/v1/api/actions";
 
 // Simple in-memory lock to prevent concurrent advance operations
 let isAdvanceInProgress = false;

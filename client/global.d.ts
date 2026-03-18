@@ -5,8 +5,9 @@ type HomeMessages = typeof import("./messages/en/home.json");
 type PredictionMessages = typeof import("./messages/en/prediction.json");
 type RouletteMessages = typeof import("./messages/en/roulette.json");
 type LottoMessages = typeof import("./messages/en/lotto.json");
+type RedeemMessages = typeof import("./messages/en/redeem.json");
 
-type Messages = HomeMessages & PredictionMessages & RouletteMessages & LottoMessages;
+type Messages = HomeMessages & PredictionMessages & RouletteMessages & LottoMessages & RedeemMessages;
 
 type IMessage<Namespace extends keyof Messages> = keyof Messages[Namespace];
 
