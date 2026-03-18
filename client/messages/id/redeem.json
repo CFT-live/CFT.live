@@ -37,6 +37,8 @@
     "how_it_works_title": "Cara kerjanya",
     "how_it_works_line_1": "Pool penukaran menghitung jumlah USDC secara proporsional untuk CFT yang Anda pilih.",
     "how_it_works_line_2": "Mode permit menandatangani pesan allowance secara off-chain lalu mengirim redeemWithPermit on-chain dalam satu aksi.",
-    "how_it_works_line_3": "Mode cadangan menggunakan ERC-20 approve terlebih dahulu, dengan opsi tak terbatas jika Anda tidak ingin mengulang persetujuan di kemudian hari."
+    "how_it_works_line_3": "Mode cadangan menggunakan ERC-20 approve terlebih dahulu, dengan opsi tak terbatas jika Anda tidak ingin mengulang persetujuan di kemudian hari.",
+    "wallet_asset_title": "Add CFT before redeeming",
+    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
   }
 }

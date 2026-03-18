@@ -37,6 +37,8 @@
     "how_it_works_title": "Como funciona",
     "how_it_works_line_1": "O pool de resgate calcula um valor proporcional em USDC para o CFT que você selecionar.",
     "how_it_works_line_2": "No modo permit, uma mensagem de permissão é assinada off-chain e depois redeemWithPermit é enviado on-chain em uma única ação.",
-    "how_it_works_line_3": "O modo alternativo usa primeiro ERC-20 approve, com uma opção ilimitada se você não quiser repetir aprovações no futuro."
+    "how_it_works_line_3": "O modo alternativo usa primeiro ERC-20 approve, com uma opção ilimitada se você não quiser repetir aprovações no futuro.",
+    "wallet_asset_title": "Add CFT before redeeming",
+    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
   }
 }

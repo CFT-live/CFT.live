@@ -37,6 +37,8 @@
     "how_it_works_title": "How It Works",
     "how_it_works_line_1": "The redemption pool quotes a pro-rata USDC amount for the CFT you select.",
     "how_it_works_line_2": "Permit mode signs an allowance message off-chain and submits redeemWithPermit on-chain in one action.",
-    "how_it_works_line_3": "Fallback mode uses ERC-20 approve first, with an unlimited option if you do not want to repeat approvals later."
+    "how_it_works_line_3": "Fallback mode uses ERC-20 approve first, with an unlimited option if you do not want to repeat approvals later.",
+    "wallet_asset_title": "Add CFT before redeeming",
+    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
   }
 }

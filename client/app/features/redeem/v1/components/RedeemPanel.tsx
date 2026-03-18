@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AlertTriangleIcon, ArrowRightLeftIcon, ShieldCheckIcon, WalletIcon } from "lucide-react";
+import { AlertTriangleIcon, ArrowRightLeftIcon, WalletIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { AddCftToWallet } from "@/app/features/root/v1/components/AddCftToWallet";
 import { AutoClearingAlert } from "@/app/features/root/v1/components/AutoClearingAlert";
 import { ContractButton } from "@/app/features/root/v1/components/ContractButton";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const QUICK_SELECT_VALUES = [25, 50, 75, 100] as const;
 
 export default function RedeemPanel() {
   const t = useTranslations("redeem");
+  const homeT = useTranslations("home");
   const [amount, setAmount] = useState("");
   const redemption = useRedeemCft(amount);
 
@@ -285,6 +287,25 @@ export default function RedeemPanel() {
           </Card>
 
           <div className="space-y-6">
+            <AddCftToWallet
+              compact
+              copy={{
+                title: t("wallet_asset_title"),
+                description: t("wallet_asset_description"),
+                actionLabel: homeT("Wallet_Add_CTA"),
+                pendingLabel: homeT("Wallet_Add_Pending"),
+                successLabel: homeT("Wallet_Add_Success"),
+                unsupportedLabel: homeT("Wallet_Add_Unsupported"),
+                rejectedLabel: homeT("Wallet_Add_Rejected"),
+                switchNetworkLabel: homeT("Wallet_Switch_Network"),
+                copyAddressLabel: homeT("Wallet_Copy_Address"),
+                copiedLabel: homeT("Wallet_Copied"),
+                viewContractLabel: homeT("Wallet_View_Contract"),
+                configMissingLabel: homeT("Wallet_Config_Missing"),
+                connectLabel: homeT("Connect_Wallet"),
+              }}
+            />
+
             <Card className="border-border/60 bg-card/50">
               <CardHeader>
                 <CardTitle className="font-mono text-lg text-primary">

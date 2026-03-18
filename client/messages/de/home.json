@@ -37,6 +37,18 @@
         "Redeem_Status": "CFT-Redemption-Pool",
         "Redeem_Title": "Verdiente CFT in gedeckte USDC umwandeln.",
         "Redeem_Description": "Öffne den Einlösefluss, um dein Wallet-Guthaben zu prüfen, eine Ein-Transaktions-Permit-Einlösung zu signieren oder den Freigabe-Fallback mit unbegrenzter Freigabe zu nutzen.",
-        "Redeem_CTA": "EINLÖSEFLUSS ÖFFNEN"
+        "Redeem_CTA": "EINLÖSEFLUSS ÖFFNEN",
+        "Wallet_Asset_Title": "Add CFT to your wallet",
+        "Wallet_Asset_Description": "Make CFT visible in MetaMask and other supported wallets with one confirmation. If automatic asset tracking is unavailable, copy the token contract instead.",
+        "Wallet_Add_CTA": "ADD CFT TO WALLET",
+        "Wallet_Add_Pending": "UPDATING WALLET...",
+        "Wallet_Add_Success": "CFT was added to your wallet.",
+        "Wallet_Add_Unsupported": "This wallet does not support automatic asset tracking. Copy the contract address and add CFT manually.",
+        "Wallet_Add_Rejected": "Wallet request cancelled.",
+        "Wallet_Switch_Network": "SWITCH TO ARBITRUM",
+        "Wallet_Copy_Address": "COPY ADDRESS",
+        "Wallet_Copied": "ADDRESS COPIED",
+        "Wallet_View_Contract": "VIEW CONTRACT",
+        "Wallet_Config_Missing": "CFT token address is not configured."
     }
 }

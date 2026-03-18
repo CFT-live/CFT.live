@@ -37,6 +37,8 @@
     "how_it_works_title": "So funktioniert es",
     "how_it_works_line_1": "Der Redemption Pool berechnet einen anteiligen USDC-Betrag für das von dir gewählte CFT.",
     "how_it_works_line_2": "Im Permit-Modus wird eine Freigabenachricht off-chain signiert und anschließend redeemWithPermit in einer Aktion on-chain ausgeführt.",
-    "how_it_works_line_3": "Der Fallback-Modus nutzt zuerst ERC-20 approve, optional mit unbegrenzter Freigabe, damit du spätere Freigaben nicht wiederholen musst."
+    "how_it_works_line_3": "Der Fallback-Modus nutzt zuerst ERC-20 approve, optional mit unbegrenzter Freigabe, damit du spätere Freigaben nicht wiederholen musst.",
+    "wallet_asset_title": "Add CFT before redeeming",
+    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
   }
 }

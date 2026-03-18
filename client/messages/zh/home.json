@@ -37,6 +37,18 @@
         "Redeem_Status": "CFT 兑换池",
         "Redeem_Title": "将赚取的 CFT 转换为有支撑的 USDC。",
         "Redeem_Description": "打开兑换流程，查看你的钱包余额，签署单笔 permit 兑换，或使用支持无限授权的备用授权流程。",
-        "Redeem_CTA": "打开兑换流程"
+        "Redeem_CTA": "打开兑换流程",
+        "Wallet_Asset_Title": "Add CFT to your wallet",
+        "Wallet_Asset_Description": "Make CFT visible in MetaMask and other supported wallets with one confirmation. If automatic asset tracking is unavailable, copy the token contract instead.",
+        "Wallet_Add_CTA": "ADD CFT TO WALLET",
+        "Wallet_Add_Pending": "UPDATING WALLET...",
+        "Wallet_Add_Success": "CFT was added to your wallet.",
+        "Wallet_Add_Unsupported": "This wallet does not support automatic asset tracking. Copy the contract address and add CFT manually.",
+        "Wallet_Add_Rejected": "Wallet request cancelled.",
+        "Wallet_Switch_Network": "SWITCH TO ARBITRUM",
+        "Wallet_Copy_Address": "COPY ADDRESS",
+        "Wallet_Copied": "ADDRESS COPIED",
+        "Wallet_View_Contract": "VIEW CONTRACT",
+        "Wallet_Config_Missing": "CFT token address is not configured."
     }
 }

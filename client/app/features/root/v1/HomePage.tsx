@@ -7,6 +7,7 @@ import { Typewriter } from "@/app/features/root/v1/components/Typewriter";
 import { VideoPreview } from "@/app/features/root/v1/components/VideoPreview";
 import { ConnectionStatusText } from "@/app/features/root/v1/components/ConnectionStatusText";
 import { MaskedRevealImage } from "@/app/features/root/v1/components/MaskedRevealImage";
+import { AddCftToWallet } from "@/app/features/root/v1/components/AddCftToWallet";
 
 import { version } from "../../../../package.json";
 import { ContributeSection } from "./components/ContributeSection";
@@ -295,7 +296,7 @@ export default async function HomePage() {
 
           <div className="glow-orange relative overflow-hidden rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,hsl(var(--primary)/0.12),transparent_65%)] p-6 md:p-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_38%)]" />
-            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl space-y-3">
                 <div className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
                   {t("Redeem_Status")}
@@ -308,14 +309,32 @@ export default async function HomePage() {
                 </p>
               </div>
 
-              <div className="shrink-0">
+              <div className="w-full shrink-0 space-y-4 lg:max-w-md">
                 <Link
                   href="/redeem"
-                  className="group inline-flex items-center justify-center gap-2 rounded border border-primary bg-primary px-8 py-4 font-mono text-sm font-bold tracking-wide text-primary-foreground transition-all duration-200 hover:bg-primary/90 glow-orange-strong"
+                  className="group inline-flex w-full items-center justify-center gap-2 rounded border border-primary bg-primary px-8 py-4 font-mono text-sm font-bold tracking-wide text-primary-foreground transition-all duration-200 hover:bg-primary/90 glow-orange-strong"
                 >
                   {t("Redeem_CTA")}
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
+
+                <AddCftToWallet
+                  copy={{
+                    title: t("Wallet_Asset_Title"),
+                    description: t("Wallet_Asset_Description"),
+                    actionLabel: t("Wallet_Add_CTA"),
+                    pendingLabel: t("Wallet_Add_Pending"),
+                    successLabel: t("Wallet_Add_Success"),
+                    unsupportedLabel: t("Wallet_Add_Unsupported"),
+                    rejectedLabel: t("Wallet_Add_Rejected"),
+                    switchNetworkLabel: t("Wallet_Switch_Network"),
+                    copyAddressLabel: t("Wallet_Copy_Address"),
+                    copiedLabel: t("Wallet_Copied"),
+                    viewContractLabel: t("Wallet_View_Contract"),
+                    configMissingLabel: t("Wallet_Config_Missing"),
+                    connectLabel: t("Connect_Wallet"),
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -37,6 +37,18 @@
         "Redeem_Status": "Pool de resgate CFT",
         "Redeem_Title": "Converta CFT ganhos em USDC com lastro.",
         "Redeem_Description": "Abra o fluxo de resgate para revisar o saldo da sua carteira, assinar um resgate com permit em uma transação ou usar o fluxo alternativo com permissão ilimitada.",
-        "Redeem_CTA": "ABRIR FLUXO DE RESGATE"
+        "Redeem_CTA": "ABRIR FLUXO DE RESGATE",
+        "Wallet_Asset_Title": "Add CFT to your wallet",
+        "Wallet_Asset_Description": "Make CFT visible in MetaMask and other supported wallets with one confirmation. If automatic asset tracking is unavailable, copy the token contract instead.",
+        "Wallet_Add_CTA": "ADD CFT TO WALLET",
+        "Wallet_Add_Pending": "UPDATING WALLET...",
+        "Wallet_Add_Success": "CFT was added to your wallet.",
+        "Wallet_Add_Unsupported": "This wallet does not support automatic asset tracking. Copy the contract address and add CFT manually.",
+        "Wallet_Add_Rejected": "Wallet request cancelled.",
+        "Wallet_Switch_Network": "SWITCH TO ARBITRUM",
+        "Wallet_Copy_Address": "COPY ADDRESS",
+        "Wallet_Copied": "ADDRESS COPIED",
+        "Wallet_View_Contract": "VIEW CONTRACT",
+        "Wallet_Config_Missing": "CFT token address is not configured."
     }
 }

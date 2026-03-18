@@ -37,6 +37,8 @@
     "how_it_works_title": "运作方式",
     "how_it_works_line_1": "兑换池会根据你选择的 CFT 数量，计算按比例可获得的 USDC。",
     "how_it_works_line_2": "Permit 模式会先在链下签署授权消息，然后通过一次链上操作调用 redeemWithPermit。",
-    "how_it_works_line_3": "备用模式会先执行 ERC-20 approve，如果你不想以后重复授权，也可以选择无限授权。"
+    "how_it_works_line_3": "备用模式会先执行 ERC-20 approve，如果你不想以后重复授权，也可以选择无限授权。",
+    "wallet_asset_title": "Add CFT before redeeming",
+    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
   }
 }

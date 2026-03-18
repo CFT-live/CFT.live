@@ -37,6 +37,8 @@
     "how_it_works_title": "仕組み",
     "how_it_works_line_1": "換金プールは、選択したCFTに対して比例したUSDC額を見積もります。",
     "how_it_works_line_2": "permitモードでは、許可メッセージをオフチェーンで署名し、その後 redeemWithPermit を1回の操作でオンチェーン送信します。",
-    "how_it_works_line_3": "代替モードではまず ERC-20 approve を使い、後で承認を繰り返したくない場合は無制限オプションも選べます。"
+    "how_it_works_line_3": "代替モードではまず ERC-20 approve を使い、後で承認を繰り返したくない場合は無制限オプションも選べます。",
+    "wallet_asset_title": "Add CFT before redeeming",
+    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
   }
 }
