@@ -75,13 +75,7 @@ function canReviewContribution(contribution: Contribution): boolean {
 export default function TaskPage({ taskId }: { taskId: string }) {
   const { address } = useAppKitAccount();
   const router = useRouter();
-  const {
-    isAdmin,
-    hasProfile,
-    contributor,
-    isLoading: profileLoading,
-    ensureProfile,
-  } = useContributorProfile(address);
+  const { isAdmin, hasProfile, ensureProfile } = useContributorProfile(address);
 
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
@@ -105,14 +99,24 @@ export default function TaskPage({ taskId }: { taskId: string }) {
   const [submitNotes, setSubmitNotes] = useState("");
   const [submitPrNumber, setSubmitPrNumber] = useState<string>("");
 
-  const [claiming, setClaiming] = useState(false);
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [contributionsLoading, setContributionsLoading] = useState(false);
-  const [claimerUsername, setClaimerUsername] = useState<string | null>(null);
   const [submittingWork, setSubmittingWork] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [reviewCp, setReviewCp] = useState<Record<string, string>>({});
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
+
+  const refreshContributions = useCallback(async () => {
+    setContributionsLoading(true);
+    try {
+      const res = await listContributions({ task_id: taskId });
+      setContributions(res.contributions);
+    } catch (e) {
+      console.error("Failed to load contributions:", e);
+    } finally {
+      setContributionsLoading(false);
+    }
+  }, [taskId]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -130,24 +134,15 @@ export default function TaskPage({ taskId }: { taskId: string }) {
       // Fetch claimer username if task is claimed
       if (res.task.claimed_by_id) {
         try {
-          const claimerRes = await fetch("/api/public/contributors/get", {
+          await fetch("/api/public/contributors/get", {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ id: res.task.claimed_by_id }),
           });
-          if (claimerRes.ok) {
-            const claimerData = (await claimerRes.json()) as {
-              contributor: { username: string };
-            };
-            setClaimerUsername(claimerData.contributor.username);
-          }
         } catch {
           // Fail silently, will show address instead
         }
-      } else {
-        setClaimerUsername(null);
       }
-
       // Load contributions
       await refreshContributions();
     } catch (e) {
@@ -155,19 +150,7 @@ export default function TaskPage({ taskId }: { taskId: string }) {
     } finally {
       setLoading(false);
     }
-  }, [taskId]);
-
-  const refreshContributions = useCallback(async () => {
-    setContributionsLoading(true);
-    try {
-      const res = await listContributions({ task_id: taskId });
-      setContributions(res.contributions);
-    } catch (e) {
-      console.error("Failed to load contributions:", e);
-    } finally {
-      setContributionsLoading(false);
-    }
-  }, [taskId]);
+  }, [refreshContributions, taskId]);
 
   useEffect(() => {
     refresh();
@@ -282,44 +265,44 @@ export default function TaskPage({ taskId }: { taskId: string }) {
 
         <div className="flex items-center gap-2">
           {isAdmin ? (
-              <Button
-                variant="destructive"
-                disabled={!task || loading || deleting}
-                onClick={async () => {
-                  if (!task) return;
-                  const ok = window.confirm(
-                    `Delete this task? This cannot be undone.\n\n${task.name}`,
-                  );
-                  if (!ok) return;
+            <Button
+              variant="destructive"
+              disabled={!task || loading || deleting}
+              onClick={async () => {
+                if (!task) return;
+                const ok = globalThis.confirm(
+                  `Delete this task? This cannot be undone.\n\n${task.name}`,
+                );
+                if (!ok) return;
 
-                  setError(null);
-                  const canProceed = await handleAuthenticatedAction();
-                  if (!canProceed) return;
+                setError(null);
+                const canProceed = await handleAuthenticatedAction();
+                if (!canProceed) return;
 
-                  setDeleting(true);
-                  try {
-                    await deleteTask(taskId);
-                    router.push("/contribute/features" as never);
-                    router.refresh();
-                  } catch (e) {
-                    setError(e instanceof Error ? e.message : String(e));
-                  } finally {
-                    setDeleting(false);
-                  }
-                }}
-              >
-                {deleting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Deleting
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                  </>
-                )}
-              </Button>
+                setDeleting(true);
+                try {
+                  await deleteTask(taskId);
+                  router.push("/contribute/features" as never);
+                  router.refresh();
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setDeleting(false);
+                }
+              }}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Deleting
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </>
+              )}
+            </Button>
           ) : null}
           <Button
             variant="outline"
@@ -812,7 +795,9 @@ export default function TaskPage({ taskId }: { taskId: string }) {
                             <Badge variant="secondary">{c.cp_awarded} CP</Badge>
                           ) : null}
                           <Badge variant="outline">
-                            {isReviewerReward ? "Reviewer reward" : "Submission"}
+                            {isReviewerReward
+                              ? "Reviewer reward"
+                              : "Submission"}
                           </Badge>
                         </div>
                         <div className="text-xs text-muted-foreground font-mono">
