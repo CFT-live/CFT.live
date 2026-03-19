@@ -4,8 +4,6 @@ import {
   requireContributorAdmin,
 } from "@/app/features/contribute/v1/api/sessionAuth";
 
-export const runtime = "edge";
-
 export async function POST(request: Request) {
   const bodyText = await request.text();
   try {

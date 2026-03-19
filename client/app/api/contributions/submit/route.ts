@@ -1,8 +1,6 @@
 import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
 import { requireAuthenticatedSession } from "@/app/features/contribute/v1/api/sessionAuth";
 
-export const runtime = "edge";
-
 export async function POST(request: Request) {
   const bodyText = await request.text();
   try {

@@ -9,8 +9,6 @@ import type {
   TeamRole,
 } from "@/app/features/contribute/v1/api/types";
 
-export const runtime = "edge";
-
 export async function POST(request: Request) {
   const bodyText = await request.text();
 
