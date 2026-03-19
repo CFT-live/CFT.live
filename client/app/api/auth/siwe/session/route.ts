@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { readSessionFromRequest } from "@/app/lib/siwe/session";
 
-export const runtime = "edge";
-
 export async function GET(request: Request) {
   try {
     const session = await readSessionFromRequest(request);

@@ -6,8 +6,6 @@ import {
   SIWE_NONCE_COOKIE,
 } from "@/app/lib/siwe/session";
 
-export const runtime = "edge";
-
 export async function GET(request: Request) {
   try {
     const nonce = createSiweNonce();

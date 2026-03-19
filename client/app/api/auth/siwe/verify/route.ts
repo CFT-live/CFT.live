@@ -9,8 +9,6 @@ import {
   SIWE_SESSION_COOKIE,
 } from "@/app/lib/siwe/session";
 
-export const runtime = "edge";
-
 type VerifyBody = {
   message?: string;
   signature?: string;

@@ -5,8 +5,6 @@ import {
 } from "@/app/features/contribute/v1/api/sessionAuth";
 import type { Contributor } from "@/app/features/contribute/v1/api/types";
 
-export const runtime = "edge";
-
 export async function POST(request: Request) {
   const bodyText = await request.text();
 

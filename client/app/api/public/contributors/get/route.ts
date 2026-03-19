@@ -1,8 +1,6 @@
 import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
 import type { Contributor } from "@/app/features/contribute/v1/api/types";
 
-export const runtime = "edge";
-
 type PublicContributor = Pick<
   Contributor,
   "id" | "wallet_address" | "username" | "github_username" | "telegram_handle" | "roles" | "status"
