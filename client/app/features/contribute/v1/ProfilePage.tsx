@@ -5,7 +5,6 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import { upsertMyContributor } from "./api/api";

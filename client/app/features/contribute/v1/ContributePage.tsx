@@ -23,12 +23,8 @@ import type {
   TaskStatus,
   TaskType,
 } from "./api/types";
-import { useAppKitAccount } from "@reown/appkit/react";
-
 
 export default function ContributePage() {
-  const { address } = useAppKitAccount();
-
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

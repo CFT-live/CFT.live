@@ -76,12 +76,6 @@ const valueLoop = [
   },
 ];
 
-const stats = [
-  { value: "142+", label: "Contributors" },
-  { value: "1,847", label: "Tasks Completed" },
-  { value: "520K", label: "CFT Distributed" },
-];
-
 function CtaLink({
   className = "",
 }: Readonly<{ className?: string }>) {
@@ -309,23 +303,6 @@ export function ContributeSection() {
               increasing the value backing contributor rewards over time.
             </p>
           </div>
-
-          {/* Social Proof */}
-          {/* <div className="mb-10 grid grid-cols-3 gap-3">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-xl border border-border/60 bg-card/40 px-5 py-4 text-center"
-              >
-                <div className="font-mono text-3xl font-bold text-primary text-glow-orange">
-                  {stat.value}
-                </div>
-                <div className="mt-2 text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div> */}
 
           {/* Final CTA Block */}
           <div className="rounded-2xl border border-primary/30 bg-[linear-gradient(135deg,hsl(var(--primary)/0.14),transparent_60%)] px-5 py-8 text-center md:px-8">

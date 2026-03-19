@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Database, FileX, Users, FolderX, Inbox } from "lucide-react";
+import { Database, FileX, FolderX, Inbox } from "lucide-react";
 
 interface EmptyStateProps {
   icon?: ReactNode;
