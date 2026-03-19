@@ -7,7 +7,7 @@ const __dirname = dirname(__filename);
 
 // Load environment variables from .env file
 function loadEnv() {
-  const envPath = join(__dirname, '..', '.env');
+  const envPath = join(__dirname, '../../../', '.env');
   
   if (!existsSync(envPath)) {
     console.error('❌ Error: .env file not found. Run "npm run setup" first.');
@@ -32,7 +32,7 @@ function loadEnv() {
 
 // Validate required environment variables
 function validateEnv(env) {
-  const required = ['NEXT_PUBLIC_PREDICTION_MARKET_CONTRACT_ADDRESS', 'START_BLOCK', 'NETWORK'];
+  const required = ['NEXT_PUBLIC_PREDICTION_MARKET_CONTRACT_ADDRESS', 'PREDICTION_MARKET_START_BLOCK', 'NETWORK'];
   const missing = required.filter(key => !env[key] || env[key] === '0x0000000000000000000000000000000000000000' || env[key] === '0');
   
   if (missing.length > 0) {
@@ -62,7 +62,7 @@ function updateSubgraphConfig(env) {
   // Replace start block
   content = content.replace(
     /startBlock: \d+/,
-    `startBlock: ${env.START_BLOCK}`
+    `startBlock: ${env.PREDICTION_MARKET_START_BLOCK}`
   );
   
   // Replace network
@@ -85,7 +85,7 @@ function configure() {
     
     console.log('✅ Subgraph configured successfully!');
     console.log(`📝 Contract Address: ${env.NEXT_PUBLIC_PREDICTION_MARKET_CONTRACT_ADDRESS}`);
-    console.log(`📝 Start Block: ${env.START_BLOCK}`);
+    console.log(`📝 Start Block: ${env.PREDICTION_MARKET_START_BLOCK}`);
     console.log(`📝 Network: ${env.NETWORK}`);
     
   } catch (error) {

@@ -138,14 +138,6 @@ export const ContractMetadata: React.FC = () => {
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">
-                  {t("contract_metadata.fee_collector_address")}
-                </p>
-                <p className="font-mono text-sm break-all">
-                  {metadata.feeCollectorAddress}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-sm">
                   {t("contract_metadata.bet_lock_buffer_seconds")}
                 </p>
                 <p>{metadata.betLockBufferInSeconds}</p>

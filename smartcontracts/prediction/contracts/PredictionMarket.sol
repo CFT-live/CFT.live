@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.34;
 import "@pythnetwork/pyth-sdk-solidity/IPyth.sol";
 import "@pythnetwork/pyth-sdk-solidity/PythStructs.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -267,12 +267,6 @@ constructor(
         _;
     }
 
-    modifier notContract() {
-        require(!_isContract(msg.sender), "Contract not allowed");
-        require(msg.sender == tx.origin, "Proxy contract not allowed");
-        _;
-    }
-
     // ************ Public Functions ************
     function deposit(uint128 amount) external whenNotPaused nonReentrant {
         _deposit(msg.sender, amount);
@@ -291,7 +285,7 @@ constructor(
         Asset asset,
         Position position,
         uint128 amount
-    ) external whenNotPaused nonReentrant notContract {
+    ) external whenNotPaused nonReentrant {
         if (amount < minBetAmount || amount > maxBetAmount) revert InvalidAmount();
         if (balanceOf[msg.sender] < amount) revert NotEnoughBalance();
         // Count how many open rounds this user has already created and limit to prevent spam
@@ -318,7 +312,7 @@ constructor(
         uint128 roundId,
         Position position,
         uint128 amount
-    ) external whenNotPaused nonReentrant notContract {
+    ) external whenNotPaused nonReentrant {
         _placeBet(roundId, position, amount, msg.sender);
     }
     
@@ -888,11 +882,4 @@ constructor(
         }
     }
 
-    function _isContract(address account) internal view returns (bool) {
-        uint256 size;
-        assembly {
-            size := extcodesize(account)
-        }
-        return size > 0;
-    }
 }

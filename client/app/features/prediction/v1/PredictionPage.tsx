@@ -209,10 +209,7 @@ export default async function PredictionPage() {
 
         {/* Admin section */}
         <AdvanceState contractOwnerAddress={contractMetadata.ownerAddress} />
-        <FeeCollectorInfo
-          feeCollectorAddress={contractMetadata.feeCollectorAddress}
-          contractOwnerAddress={contractMetadata.ownerAddress}
-        />
+        <FeeCollectorInfo contractOwnerAddress={contractMetadata.ownerAddress} />
         <ShowUserBets contractOwnerAddress={contractMetadata.ownerAddress} />
         <ShowUserBalance contractOwnerAddress={contractMetadata.ownerAddress} />
 

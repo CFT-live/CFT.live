@@ -12,7 +12,7 @@ export default buildModule("LottoModule", (m) => {
   const ticketPrice = m.getParameter("ticketPrice", "1000000"); // 1 USDC
   const maxTicketAmount = m.getParameter("maxTicketAmount", 1000); // 1000 tickets
   const minRoundDurationSeconds = m.getParameter("minRoundDurationSeconds", 600); // 10 minutes
-  const feeCollector = m.getParameter("feeCollector", "0x919bd4C3B37B4Ffbb1566DFD8D83E1F087c659F4");
+  const feeCollector = m.getParameter("feeCollector", "0x63D13cf54B20224d57Ba218979E110f56f29f014");
   const feeBps = m.getParameter("feeBps", 100); // 1%
   const callbackGasLimit = m.getParameter("callbackGasLimit", 500000); // 500,000 gas
 
