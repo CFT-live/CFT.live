@@ -20,13 +20,24 @@ import { weiToUsdcString } from "../../../../../helpers";
 import { ContractButton } from "../../../../root/v1/components/ContractButton";
 
 export const FeeCollectorInfo = ({
-  feeCollectorAddress,
   contractOwnerAddress,
 }: {
-  feeCollectorAddress: string;
   contractOwnerAddress: string;
 }) => {
   const { address: userAddress } = useAppKitAccount();
+  const isOwner =
+    userAddress?.toLowerCase() === contractOwnerAddress.toLowerCase();
+
+  const {
+    data: feeCollectorAddress,
+    refetch: refetchFeeCollectorAddress,
+  } = useReadContract({
+    address: PREDICTION_MARKET_ADDRESS,
+    abi: PREDICTION_MARKET_ABI,
+    functionName: "feeCollector",
+    account: userAddress as `0x${string}` | undefined,
+    query: { enabled: Boolean(isOwner && userAddress) },
+  });
 
   const {
     data: feePool,
@@ -36,9 +47,8 @@ export const FeeCollectorInfo = ({
     address: PREDICTION_MARKET_ADDRESS,
     abi: PREDICTION_MARKET_ABI,
     functionName: "getFeePool",
-    account: userAddress as `0x${string}`,
-
-    query: { enabled: Boolean(userAddress) },
+    account: userAddress as `0x${string}` | undefined,
+    query: { enabled: Boolean(isOwner && userAddress) },
   });
 
   const { writeToContract, isLoading, isSuccess, errorMessage } =
@@ -50,11 +60,12 @@ export const FeeCollectorInfo = ({
 
   useEffect(() => {
     if (isSuccess) {
+      refetchFeeCollectorAddress();
       refetchFeePool();
     }
-  }, [isSuccess, refetchFeePool]);
+  }, [isSuccess, refetchFeeCollectorAddress, refetchFeePool]);
 
-  if (userAddress !== contractOwnerAddress) {
+  if (!isOwner) {
     return null;
   }
 
@@ -97,7 +108,7 @@ export const FeeCollectorInfo = ({
                 Fee Collector Address
               </p>
               <p className="font-mono text-sm break-all">
-                {feeCollectorAddress}
+                {feeCollectorAddress ?? "Loading..."}
               </p>
             </div>
             <div>
@@ -111,9 +122,9 @@ export const FeeCollectorInfo = ({
             <div>
               <p className="text-muted-foreground text-sm">Accumulated Fees</p>
               <p className="font-semibold text-lg">
-                {!!feePool !== undefined
-                  ? `${weiToUsdcString(feePool as bigint)} USDC`
-                  : "Loading..."}
+                {feePool === undefined
+                  ? "Loading..."
+                  : `${weiToUsdcString(feePool)} USDC`}
               </p>
             </div>
           </div>
@@ -146,7 +157,7 @@ export const FeeCollectorInfo = ({
             className="border-destructive bg-destructive/10"
           >
             <svg
-              className="w-4 h-4 flex-shrink-0"
+              className="w-4 h-4 shrink-0"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -163,7 +174,10 @@ export const FeeCollectorInfo = ({
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <ContractButton
-            onClick={() => refetchFeePool()}
+            onClick={() => {
+              refetchFeeCollectorAddress();
+              refetchFeePool();
+            }}
             variant="outline"
             className="flex-1"
           >

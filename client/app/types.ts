@@ -53,7 +53,6 @@ export interface ContractMetadata {
   paymentTokenAddress: string;
   betLockBufferInSeconds: number;
   dataWaitWindowInSeconds: number;
-  feeCollectorAddress: string;
   feeBpsPercentage: number;
   minBetAmount: number;
   maxBetAmount: number;

@@ -772,39 +772,6 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint128",
-        "name": "amount",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint8",
-        "name": "v",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "r",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "s",
-        "type": "bytes32"
-      }
-    ],
-    "name": "depositWithPermit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "feeBps",
     "outputs": [
@@ -995,11 +962,6 @@ export const abi = [
         "internalType": "uint64",
         "name": "_dataWaitWindow",
         "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "_feeCollector",
-        "type": "address"
       },
       {
         "internalType": "uint32",
