@@ -506,7 +506,7 @@ For production usage, the following practices are recommended:
 5. Publish transparent policies for ties, stale oracle handling, and canceled-round refunds.
 6. Track all owner parameter changes off-chain.
 7. Use conservative `priceMaxAge` and wait-window settings appropriate to each asset's oracle behavior.
-8. Consider whether `notContract` restrictions align with the intended wallet support policy.
+8. Contract wallets and account abstraction are supported for betting and round creation, subject to the same balance and timing rules as EOAs.
 9. Index all round, bet, claim, and refund events for analytics and support tooling.
 10. Complete an external security review before scaled mainnet operation.
 

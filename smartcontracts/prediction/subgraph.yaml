@@ -7,9 +7,9 @@ dataSources:
     name: CFTPredictionMarket
     network: arbitrum-one
     source:
-      address: "0x99efABC9Ff3B414daC01Bc9cD3b6c27E42D330B9"
+      address: "0x6Af797C8db20d756C5672357Dd28fB2c1B2dd6f1"
       abi: CFTPredictionMarket
-      startBlock: 394030494
+      startBlock: 443495597
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

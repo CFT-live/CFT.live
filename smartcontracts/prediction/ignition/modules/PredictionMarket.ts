@@ -26,7 +26,7 @@ export default buildModule("PredictionMarketModule", (m) => {
   const dataWaitWindow = m.getParameter("dataWaitWindow", 15);
 
   // Fee collector address
-  const feeCollector = m.getParameter("feeCollector", "0x919bd4C3B37B4Ffbb1566DFD8D83E1F087c659F4");
+  const feeCollector = m.getParameter("feeCollector", "0x63D13cf54B20224d57Ba218979E110f56f29f014");
 
   // Fee in basis points (100 = 1%)
   const feeBps = m.getParameter("feeBps", 100);

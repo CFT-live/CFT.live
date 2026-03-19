@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
   solidity: {
     profiles: {
       default: {
-        version: "0.8.30",
+        version: "0.8.34",
         settings: {
           viaIR: true,
           optimizer: {
@@ -22,7 +22,7 @@ const config: HardhatUserConfig = {
         },
       },
       production: {
-        version: "0.8.30",
+        version: "0.8.34",
         settings: {
           viaIR: true,
           optimizer: {
