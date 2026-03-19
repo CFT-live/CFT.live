@@ -48,7 +48,6 @@ export const MOCK_DATA: MockDataStructure = {
     paymentTokenAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC on Arbitrum
     betLockBufferInSeconds: 30,
     dataWaitWindowInSeconds: 60,
-    feeCollectorAddress: "0x9876543210987654321098765432109876543210",
     feeBpsPercentage: 2.5, // 2.5%
     minBetAmount: 1, // $1
     maxBetAmount: 1000, // $1000
