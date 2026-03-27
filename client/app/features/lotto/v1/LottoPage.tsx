@@ -54,18 +54,18 @@ export default async function LottoPage() {
     t("instructions_step_check_closed"),
   ];
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
     name: t("meta_title"),
-    applicationCategory: 'GameApplication',
-    operatingSystem: 'Any',
+    applicationCategory: "GameApplication",
+    operatingSystem: "Any",
     description: t("meta_description"),
     offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'ETH'
-    }
-  }
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "ETH",
+    },
+  };
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -87,7 +87,7 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getOpenDrawsQuery,
           { first: 10, skip: 0 },
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -99,7 +99,7 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getClosedDrawsQuery,
           { first: 10, skip: 0 },
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -111,7 +111,7 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getDrawsWithWinnerQuery,
           { first: 10, skip: 0 },
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -123,7 +123,7 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getGlobalStatsQuery,
           {},
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -174,12 +174,10 @@ export default async function LottoPage() {
             toggleOpenLabel={t("instructions_read_file")}
             toggleCloseLabel={t("instructions_close_file")}
             footerLeftLabel={t("instructions_end_of_file")}
-            footerRightLabel={t("instructions_lines", { count: instructions.length })}
+            footerRightLabel={t("instructions_lines", {
+              count: instructions.length,
+            })}
           />
-        </div>
-        {/* Contract Metadata */}
-        <div className="mt-6 sm:mt-8">
-          <ContractMetadata />
         </div>
         <HydrationBoundary state={dehydrate(queryClient)}>
           {/* Hero: animated prize pool + CTA */}
@@ -206,6 +204,10 @@ export default async function LottoPage() {
             <ClosedDraws />
           </div>
         </HydrationBoundary>
+        {/* Contract Metadata */}
+        <div className="mt-6 sm:mt-8">
+          <ContractMetadata />
+        </div>
         {/* Admin section */}
         <LottoAdminCard contractOwnerAddress={contractMetadata.ownerAddress} />
       </div>

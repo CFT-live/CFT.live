@@ -32,6 +32,9 @@ import {
 } from "./queries/keys";
 import { ShowUserBets } from "@/app/features/prediction/v1/components/admin/ShowUserBets";
 import { PriceData } from "@/app/features/prediction/v1/components/PriceData";
+import { PlatformStats } from "@/app/features/prediction/v1/components/PlatformStats";
+import { RecentActivity } from "@/app/features/prediction/v1/components/RecentActivity";
+import { UserPerformance } from "@/app/features/prediction/v1/components/UserPerformance";
 import { ShowUserBalance } from "@/app/features/prediction/v1/components/admin/ShowUserBalance";
 import { SetMinLockTime } from "@/app/features/prediction/v1/components/admin/SetMinLockTime";
 import { SetMinOpenTime } from "@/app/features/prediction/v1/components/admin/SetMinOpenTime";
@@ -151,13 +154,14 @@ export default async function PredictionPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Header */}
-        <div className="text-center mb-8 border-b border-border pb-8">
-          <div className="inline-flex items-center justify-center mb-4">
+
+      {/* Hero Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+        <div className="text-center mb-6 border-b border-border pb-6">
+          <div className="inline-flex items-center justify-center mb-3">
             <div className="text-primary">
               <svg
-                className="w-12 h-12 mx-auto"
+                className="w-10 h-10 mx-auto"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 strokeWidth="1"
@@ -166,10 +170,10 @@ export default async function PredictionPage() {
               </svg>
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-3 uppercase tracking-wider">
+          <h1 className="text-4xl font-bold text-foreground mb-2 uppercase tracking-wider">
             {t("title")}
           </h1>
-          <p className="text-sm text-muted-foreground mb-6 max-w-2xl mx-auto uppercase tracking-wide">
+          <p className="text-sm text-muted-foreground mb-4 max-w-2xl mx-auto uppercase tracking-wide">
             {t("description")}
           </p>
           <Instructions
@@ -185,31 +189,63 @@ export default async function PredictionPage() {
             ]}
           />
         </div>
-        <ContractMetadata />
-        <PriceData />
-        <ContractBalance />
 
-        {/* Create Actions */}
+        {/* Platform stats bar */}
+        <PlatformStats />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        {/* Live price ticker — full width */}
+        <PriceData />
+      </div>
+      {/* User balance + Create Round — side by side on wide screens */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6 px-4 sm:px-6 lg:px-8 pb-8">
+        <ContractBalance />
         <CreateRound
           minOpenTime={contractMetadata.minOpenTimeInSeconds}
           minLockTime={contractMetadata.minLockTimeInSeconds}
           minBetAmount={contractMetadata.minBetAmount}
           maxBetAmount={contractMetadata.maxBetAmount}
         />
-
-        {/* Rounds Display */}
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        {/* Primary CTA — Rounds (most important section first) */}
         <HydrationBoundary state={dehydrate(queryClient)}>
           <div className="space-y-6">
             <OpenRounds />
             <LiveRounds />
-            <ClosedRounds />
-            <UserBets />
           </div>
         </HydrationBoundary>
 
+        {/* Closed rounds + Leaderboard + Recent activity */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+          <div className="xl:col-span-2">
+            <HydrationBoundary state={dehydrate(queryClient)}>
+              <ClosedRounds />
+            </HydrationBoundary>
+          </div>
+          <div className="space-y-6">
+            <RecentActivity />
+          </div>
+        </div>
+
+        {/* User bets + personal performance */}
+        <div className="mt-6 space-y-4">
+          <UserPerformance />
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <UserBets />
+          </HydrationBoundary>
+        </div>
+
+        {/* Contract metadata — collapsed at bottom */}
+        <div className="mt-6">
+          <ContractMetadata />
+        </div>
+
         {/* Admin section */}
         <AdvanceState contractOwnerAddress={contractMetadata.ownerAddress} />
-        <FeeCollectorInfo contractOwnerAddress={contractMetadata.ownerAddress} />
+        <FeeCollectorInfo
+          contractOwnerAddress={contractMetadata.ownerAddress}
+        />
         <ShowUserBets contractOwnerAddress={contractMetadata.ownerAddress} />
         <ShowUserBalance contractOwnerAddress={contractMetadata.ownerAddress} />
 

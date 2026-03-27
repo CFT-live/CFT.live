@@ -87,6 +87,22 @@ export const DepositToContract = () => {
 
   return (
     <div className="flex flex-col space-y-3">
+      <div className="flex gap-1.5 flex-wrap">
+        {["10", "50", "100", "250"].map((val) => (
+          <button
+            key={val}
+            type="button"
+            onClick={() => setAmount(val)}
+            className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+              amount === val
+                ? "border-primary bg-primary/20 text-primary"
+                : "border-border text-muted-foreground hover:border-primary/50"
+            }`}
+          >
+            ${val}
+          </button>
+        ))}
+      </div>
       <Input
         type="number"
         placeholder={t("Amount_to_deposit")}
