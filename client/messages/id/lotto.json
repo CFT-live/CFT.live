@@ -100,6 +100,32 @@
         "metadata_hide_details": "Sembunyikan detail",
         "metadata_show_details": "Tampilkan detail",
         "metadata_max_tickets_per_buy": "Maks Tiket per Pembelian",
-        "metadata_min_round_duration_seconds": "Durasi Minimum Putaran (d)"
+        "metadata_min_round_duration_seconds": "Durasi Minimum Putaran (d)",
+
+        "hero_draw_label": "UNDIAN",
+        "hero_ticket_price_label": "Tiket",
+        "hero_tickets_sold_label": "Terjual",
+        "hero_your_odds_label": "Peluang Anda",
+        "hero_tickets_unit": "tiket",
+        "hero_connect_to_play": "Hubungkan dompet untuk bermain",
+
+        "open_draws_your_win_odds": "Peluang menang Anda",
+        "open_draws_draw_opens_in": "Undian ditutup dalam",
+        "open_draws_no_tickets_to_close": "Belum ada tiket terjual — beli tiket pertama!",
+
+        "buy_dialog_odds_preview": "~{odds}% peluang menang",
+
+        "global_stats_total_draws": "Total Undian",
+        "global_stats_total_volume": "Volume Total",
+        "global_stats_total_players": "Pemain",
+        "global_stats_total_tickets": "Tiket Terjual",
+
+        "user_stats_title": "Statistik Anda",
+        "user_stats_tickets_bought": "Tiket Dibeli",
+        "user_stats_total_spent": "Total Dibelanjakan",
+        "user_stats_total_winnings": "Kemenangan",
+        "user_stats_net_pnl": "L&R Bersih",
+
+        "recent_winners_title": "Pemenang Terbaru"
     }
 }

@@ -100,6 +100,32 @@
         "metadata_hide_details": "Masquer les détails",
         "metadata_show_details": "Afficher les détails",
         "metadata_max_tickets_per_buy": "Nombre Max de Billets par Achat",
-        "metadata_min_round_duration_seconds": "Durée Minimale du Tour (s)"
+        "metadata_min_round_duration_seconds": "Durée Minimale du Tour (s)",
+
+        "hero_draw_label": "TIRAGE",
+        "hero_ticket_price_label": "Ticket",
+        "hero_tickets_sold_label": "Vendus",
+        "hero_your_odds_label": "Vos chances",
+        "hero_tickets_unit": "tickets",
+        "hero_connect_to_play": "Connectez votre portefeuille pour jouer",
+
+        "open_draws_your_win_odds": "Vos chances de gagner",
+        "open_draws_draw_opens_in": "Le tirage ferme dans",
+        "open_draws_no_tickets_to_close": "Pas encore de tickets — achetez le premier !",
+
+        "buy_dialog_odds_preview": "~{odds}% de chance",
+
+        "global_stats_total_draws": "Tirages Totaux",
+        "global_stats_total_volume": "Volume Total",
+        "global_stats_total_players": "Joueurs",
+        "global_stats_total_tickets": "Tickets Vendus",
+
+        "user_stats_title": "Vos Statistiques",
+        "user_stats_tickets_bought": "Tickets Achetés",
+        "user_stats_total_spent": "Total Dépensé",
+        "user_stats_total_winnings": "Gains",
+        "user_stats_net_pnl": "P&G Net",
+
+        "recent_winners_title": "Gagnants Récents"
     }
 }

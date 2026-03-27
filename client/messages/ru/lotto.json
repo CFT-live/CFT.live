@@ -100,6 +100,32 @@
         "metadata_hide_details": "Скрыть детали",
         "metadata_show_details": "Показать детали",
         "metadata_max_tickets_per_buy": "Макс. билетов за покупку",
-        "metadata_min_round_duration_seconds": "Мин. длительность раунда (с)"
+        "metadata_min_round_duration_seconds": "Мин. длительность раунда (с)",
+
+        "hero_draw_label": "РОЗЫГРЫШ",
+        "hero_ticket_price_label": "Билет",
+        "hero_tickets_sold_label": "Продано",
+        "hero_your_odds_label": "Ваши шансы",
+        "hero_tickets_unit": "билетов",
+        "hero_connect_to_play": "Подключите кошелёк для игры",
+
+        "open_draws_your_win_odds": "Ваши шансы выиграть",
+        "open_draws_draw_opens_in": "Розыгрыш закрывается через",
+        "open_draws_no_tickets_to_close": "Билетов ещё нет — купите первый!",
+
+        "buy_dialog_odds_preview": "~{odds}% шанс выиграть",
+
+        "global_stats_total_draws": "Всего розыгрышей",
+        "global_stats_total_volume": "Общий объём",
+        "global_stats_total_players": "Игроков",
+        "global_stats_total_tickets": "Продано билетов",
+
+        "user_stats_title": "Ваша статистика",
+        "user_stats_tickets_bought": "Куплено билетов",
+        "user_stats_total_spent": "Потрачено",
+        "user_stats_total_winnings": "Выигрыши",
+        "user_stats_net_pnl": "Чистая прибыль",
+
+        "recent_winners_title": "Последние победители"
     }
 }

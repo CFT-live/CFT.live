@@ -100,6 +100,32 @@
         "metadata_hide_details": "詳細を非表示",
         "metadata_show_details": "詳細を表示",
         "metadata_max_tickets_per_buy": "1回の購入あたりの最大チケット数",
-        "metadata_min_round_duration_seconds": "最小ラウンド時間（秒）"
+        "metadata_min_round_duration_seconds": "最小ラウンド時間（秒）",
+
+        "hero_draw_label": "抽選",
+        "hero_ticket_price_label": "チケット",
+        "hero_tickets_sold_label": "販売数",
+        "hero_your_odds_label": "当選確率",
+        "hero_tickets_unit": "枚",
+        "hero_connect_to_play": "ウォレットを接続してプレイ",
+
+        "open_draws_your_win_odds": "あなたの当選確率",
+        "open_draws_draw_opens_in": "抽選まであと",
+        "open_draws_no_tickets_to_close": "まだチケットが売れていません — 最初のチケットを購入しましょう！",
+
+        "buy_dialog_odds_preview": "~{odds}% の当選確率",
+
+        "global_stats_total_draws": "総抽選数",
+        "global_stats_total_volume": "総取引量",
+        "global_stats_total_players": "プレイヤー数",
+        "global_stats_total_tickets": "販売チケット数",
+
+        "user_stats_title": "あなたの統計",
+        "user_stats_tickets_bought": "購入チケット数",
+        "user_stats_total_spent": "総支出",
+        "user_stats_total_winnings": "獲得賞金",
+        "user_stats_net_pnl": "純損益",
+
+        "recent_winners_title": "最近の当選者"
     }
 }

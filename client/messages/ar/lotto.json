@@ -100,6 +100,32 @@
         "metadata_hide_details": "إخفاء التفاصيل",
         "metadata_show_details": "عرض التفاصيل",
         "metadata_max_tickets_per_buy": "الحد الأقصى للتذاكر لكل عملية شراء",
-        "metadata_min_round_duration_seconds": "الحد الأدنى لمدة الجولة (ث)"
+        "metadata_min_round_duration_seconds": "الحد الأدنى لمدة الجولة (ث)",
+
+        "hero_draw_label": "سحب",
+        "hero_ticket_price_label": "تذكرة",
+        "hero_tickets_sold_label": "مُباع",
+        "hero_your_odds_label": "حظوظك",
+        "hero_tickets_unit": "تذاكر",
+        "hero_connect_to_play": "اربط محفظتك للعب",
+
+        "open_draws_your_win_odds": "حظوظك في الفوز",
+        "open_draws_draw_opens_in": "السحب يغلق خلال",
+        "open_draws_no_tickets_to_close": "لم يتم بيع تذاكر بعد — اشترِ أول تذكرة!",
+
+        "buy_dialog_odds_preview": "~{odds}% نسبة فوز",
+
+        "global_stats_total_draws": "إجمالي السحوبات",
+        "global_stats_total_volume": "الحجم الكلي",
+        "global_stats_total_players": "اللاعبون",
+        "global_stats_total_tickets": "التذاكر المباعة",
+
+        "user_stats_title": "إحصاءاتك",
+        "user_stats_tickets_bought": "التذاكر المشتراة",
+        "user_stats_total_spent": "الإجمالي المنفق",
+        "user_stats_total_winnings": "الأرباح",
+        "user_stats_net_pnl": "الربح والخسارة الصافي",
+
+        "recent_winners_title": "الفائزون الأخيرون"
     }
 }

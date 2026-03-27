@@ -28,6 +28,8 @@ interface BuyTicketsDialogProps {
   onOpenChange: (open: boolean) => void;
   drawId: string;
   ticketPrice: number;
+  currentTicketCount: number;
+  maxTicketAmount: number;
   onBuyTickets: (amount: number, total: bigint) => void;
   isLoading: boolean;
   errorMessage: string | undefined;
@@ -39,6 +41,8 @@ export function BuyTicketsDialog({
   onOpenChange,
   drawId,
   ticketPrice,
+  currentTicketCount,
+  maxTicketAmount,
   onBuyTickets,
   isLoading,
   errorMessage,
@@ -122,21 +126,38 @@ export function BuyTicketsDialog({
                 price: ticketPrice.toFixed(2),
               })}
             </Label>
+            {/* Quick-select presets */}
+            <div className="flex gap-1.5 flex-wrap">
+              {[1, 5, 10, 25].filter((n) => n <= maxTicketAmount).map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => setTicketAmount(String(preset))}
+                  className={`px-2.5 py-1 text-xs font-mono rounded border transition-colors ${
+                    ticketAmount === String(preset)
+                      ? "border-primary bg-primary/20 text-primary"
+                      : "border-border bg-muted/30 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                  }`}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
             <Input
               id="ticketAmount"
               type="number"
               min="1"
+              max={maxTicketAmount}
               step="1"
               value={ticketAmount}
               onChange={(e) => setTicketAmount(e.target.value)}
               placeholder={t("buy_dialog_ticket_amount_placeholder")}
               disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground">
-              {t("buy_dialog_total_cost", {
-                cost: (Number.parseFloat(ticketAmount || "0") * ticketPrice).toFixed(2),
-              })}
-            </p>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{t("buy_dialog_total_cost", { cost: (Number.parseFloat(ticketAmount || "0") * ticketPrice).toFixed(2) })}</span>
+            </div>
           </div>
           <AutoClearingAlert message={errorMessage} variant="destructive" />
           {isLoading && (

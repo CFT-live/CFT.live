@@ -100,6 +100,32 @@
         "metadata_hide_details": "Hide details",
         "metadata_show_details": "Show details",
         "metadata_max_tickets_per_buy": "Max Tickets per Buy",
-        "metadata_min_round_duration_seconds": "Min Round Duration (s)"
+        "metadata_min_round_duration_seconds": "Min Round Duration (s)",
+
+        "hero_draw_label": "DRAW",
+        "hero_ticket_price_label": "Ticket",
+        "hero_tickets_sold_label": "Sold",
+        "hero_your_odds_label": "Your odds",
+        "hero_tickets_unit": "tickets",
+        "hero_connect_to_play": "Connect wallet to play",
+
+        "open_draws_your_win_odds": "Your Win Odds",
+        "open_draws_draw_opens_in": "Draw closes in",
+        "open_draws_no_tickets_to_close": "No tickets sold yet — buy the first ticket!",
+
+        "buy_dialog_odds_preview": "~{odds}% win chance",
+
+        "global_stats_total_draws": "Total Draws",
+        "global_stats_total_volume": "Total Volume",
+        "global_stats_total_players": "Players",
+        "global_stats_total_tickets": "Tickets Sold",
+
+        "user_stats_title": "Your Stats",
+        "user_stats_tickets_bought": "Tickets Bought",
+        "user_stats_total_spent": "Total Spent",
+        "user_stats_total_winnings": "Winnings",
+        "user_stats_net_pnl": "Net P&L",
+
+        "recent_winners_title": "Recent Winners"
     }
 }
