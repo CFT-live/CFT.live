@@ -118,6 +118,7 @@
         "create_table_submit": "Criar Mesa",
         "global_stats_total_users": "Total de Usuários",
         "global_stats_total_tables": "Total de Mesas",
+        "global_stats_active_tables": "Mesas ativas",
         "global_stats_tables_breakdown": "{open} abertas, {active} ativas",
         "global_stats_total_volume": "Volume Total",
         "global_stats_total_winnings": "Ganhos Totais",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "Durante o seu turno, escolha um número de 0-9 e sua aposta. Em seguida, jogue sua rodada. Se o seu número corresponder ao resultado aleatório da roleta, você será eliminado.",
         "instructions_step_next_player": "A vez do próximo jogador começa após o jogador anterior ter feito sua jogada. Ele deve igualar o mesmo valor de aposta do jogador anterior (ou aumentar a aposta) para permanecer no jogo.",
         "instructions_step_until_one_left": "O jogo continua até restar apenas um jogador. O último jogador restante ganha o pote inteiro.",
-        "instructions_step_claim_winnings": "Se você vencer, lembre-se de resgatar seus ganhos na seção Apostas do Usuário!"
+        "instructions_step_claim_winnings": "Se você vencer, lembre-se de resgatar seus ganhos na seção Apostas do Usuário!",
+        "hero_cta": "Criar uma Mesa",
+        "hero_cta_browse": "Ver Mesas",
+        "hero_subtitle": "Escolha um número. Faça sua aposta. Sobreviva.",
+        "hero_live_badge": "Ao vivo na Arbitrum",
+        "tables_open_seats": "{count} lugares disponíveis",
+        "tables_pot_label": "Pote",
+        "active_table_status_label": "Status"
     }
 }

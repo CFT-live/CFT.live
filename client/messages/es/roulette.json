@@ -118,6 +118,7 @@
         "create_table_submit": "Crear Mesa",
         "global_stats_total_users": "Usuarios totales",
         "global_stats_total_tables": "Mesas totales",
+        "global_stats_active_tables": "Mesas activas",
         "global_stats_tables_breakdown": "{open} abiertas, {active} activas",
         "global_stats_total_volume": "Volumen total",
         "global_stats_total_winnings": "Ganancias totales",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "Durante tu turno, elige un número del 0 al 9 y tu apuesta. Luego realiza tu jugada. Si tu número coincide con el resultado aleatorio de la ruleta, serás eliminado.",
         "instructions_step_next_player": "El turno del siguiente jugador comienza después de que el jugador anterior haya realizado su jugada. Debe igualar el mismo monto de apuesta del jugador anterior (o aumentar la apuesta) para seguir en el juego.",
         "instructions_step_until_one_left": "El juego continúa hasta que solo quede un jugador. El último jugador en pie gana el bote completo.",
-        "instructions_step_claim_winnings": "Si ganas, recuerda reclamar tus ganancias desde la sección Apuestas del Usuario."
+        "instructions_step_claim_winnings": "Si ganas, recuerda reclamar tus ganancias desde la sección Apuestas del Usuario.",
+        "hero_cta": "Crear una mesa",
+        "hero_cta_browse": "Ver mesas",
+        "hero_subtitle": "Elige un número. Haz tu apuesta. Sobrevive.",
+        "hero_live_badge": "En vivo en Arbitrum",
+        "tables_open_seats": "{count} lugares disponibles",
+        "tables_pot_label": "Bote",
+        "active_table_status_label": "Estado"
     }
 }

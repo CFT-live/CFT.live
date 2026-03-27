@@ -118,6 +118,7 @@
         "create_table_submit": "Create Table",
         "global_stats_total_users": "Total Users",
         "global_stats_total_tables": "Total Tables",
+        "global_stats_active_tables": "Active Tables",
         "global_stats_tables_breakdown": "{open} open, {active} active",
         "global_stats_total_volume": "Total Volume",
         "global_stats_total_winnings": "Total Winnings",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "During your turn, pick a number 0-9 and your bet. Then play your move. If your number matches the roulette random outcome, you are eliminated.",
         "instructions_step_next_player": "The next player's turn begins after the previous player has played their move. They must match the same bet amount as the previous player (or increase the bet) to stay in the game.",
         "instructions_step_until_one_left": "The game continues until only one player remains. The last player standing wins the entire pot.",
-        "instructions_step_claim_winnings": "If you win, remember to claim your winnings from the User Bets section!"
+        "instructions_step_claim_winnings": "If you win, remember to claim your winnings from the User Bets section!",
+        "hero_cta": "Create a Table",
+        "hero_cta_browse": "Browse Tables",
+        "hero_subtitle": "Pick a number. Place your bet. Survive.",
+        "hero_live_badge": "Live on Arbitrum",
+        "tables_open_seats": "{count} seats open",
+        "tables_pot_label": "Pot",
+        "active_table_status_label": "Status"
     }
 }

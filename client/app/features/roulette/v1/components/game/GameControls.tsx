@@ -11,10 +11,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { AlertCircle, CheckCircle, Clock, Trophy, LogOut, AlertTriangle, RefreshCcw, ChevronDown, Flag } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, Trophy, LogOut, AlertTriangle, RefreshCcw, ChevronDown, Flag, Crosshair } from "lucide-react";
 import { usdcToWei, weiToUsdc } from "@/app/helpers";
 import { useReadContract, useWriteContract } from "wagmi";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { cn } from "@/lib/utils";
 
 // Import hooks
 import { useJoinTable } from "@/app/features/roulette/v1/hooks/useJoinTable";
@@ -345,21 +346,30 @@ export const GameControls: React.FC<GameControlsProps> = ({
                 </p>
               </div>
 
-              {/* Random Number Selection */}
-              <div className="space-y-1.5">
-                <Label className="text-xs sm:text-sm">
+              {/* Random Number Selection - Chamber Grid */}
+              <div className="space-y-2">
+                <Label className="text-xs sm:text-sm flex items-center gap-1.5">
+                  <Crosshair className="h-3.5 w-3.5 text-primary" />
                   {t("game_controls_select_number")}
                 </Label>
                 <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                    <Button
+                    <button
                       key={num}
-                      variant={selectedRandom === num ? "default" : "outline"}
+                      type="button"
                       onClick={() => setSelectedRandom(num)}
-                      className="w-full h-9 sm:h-10 text-sm sm:text-base"
+                      className={cn(
+                        "relative w-full aspect-square rounded-full border-2 font-bold text-sm sm:text-base transition-all duration-200 flex items-center justify-center",
+                        selectedRandom === num
+                          ? "border-primary bg-primary/20 text-primary animate-chamber-glow scale-110"
+                          : "border-zinc-600/50 bg-zinc-900/50 text-zinc-400 hover:border-primary/50 hover:text-primary/80 hover:scale-105"
+                      )}
                     >
                       {num}
-                    </Button>
+                      {selectedRandom === num && (
+                        <span className="absolute inset-0 rounded-full border border-primary/30 animate-ping pointer-events-none" />
+                      )}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -376,8 +386,8 @@ export const GameControls: React.FC<GameControlsProps> = ({
                   selectedRandom === null ||
                   playTurnHook.isLoading
                 }
-                className="w-full"
-                size="default"
+                className="w-full text-base sm:text-lg py-3 sm:py-4 font-bold uppercase tracking-wider shadow-[0_0_20px_hsl(23_100%_50%/0.25)] hover:shadow-[0_0_30px_hsl(23_100%_50%/0.4)] transition-shadow"
+                size="lg"
               >
                 {playTurnHook.isLoading
                   ? t("game_controls_playing")

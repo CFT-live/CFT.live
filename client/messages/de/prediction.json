@@ -102,7 +102,14 @@
                 "amount_required": "Betrag ist erforderlich.",
                 "amount_must_be_integer": "Betrag muss eine ganze Zahl sein (keine Dezimalstellen).",
                 "amount_invalid": "Ungültiger Betrag. Verwende einen ganzzahligen Wert."
-            }
+            },
+            "presets_label": "Schnelle Voreinstellungen",
+            "preset_5m_eth": "5m ETH",
+            "preset_15m_btc": "15m BTC",
+            "preset_1h_eth": "1h ETH",
+            "preset_1h_arb": "1h ARB",
+            "advanced_options": "Erweiterte Optionen (eigene Zeitauswahl)",
+            "closes_at": "Endet um"
         },
         "rounds": {
             "titles": {
@@ -167,7 +174,9 @@
                 "confirm": "Wette bestätigen",
                 "processing": "Wird verarbeitet...",
                 "processing_title": "Transaktion wird verarbeitet",
-                "processing_description": "Bitte bestätige die Transaktion in deinem Wallet und warte auf die Bestätigung."
+                "processing_description": "Bitte bestätige die Transaktion in deinem Wallet und warte auf die Bestätigung.",
+                "potential_payout": "Möglicher Gewinn",
+                "quick_amounts": "Schnell:"
             },
             "status": {
                 "open": "OFFEN",
@@ -194,7 +203,9 @@
                 "close_price_label": "Ende:",
                 "now_price_label": "Jetzt:",
                 "result": "Ergebnis",
-                "trend": "Trend"
+                "trend": "Trend",
+                "closing_soon": "Schließt bald!",
+                "pool_ratio": "Pool Verhältnis"
             },
             "time": {
                 "days_short": "t",
@@ -202,6 +213,43 @@
                 "minutes_short": "m",
                 "seconds_short": "s"
             }
+        },
+        "platform_stats": {
+            "title": "Plattform Statistiken",
+            "total_volume": "Gesamtvolumen",
+            "total_rounds": "Gesamtrunden",
+            "total_users": "Spieler",
+            "live_rounds": "Jetzt live",
+            "open_rounds": "Offene Runden"
+        },
+        "leaderboard": {
+            "title": "Rangliste",
+            "by_volume": "Nach Volumen",
+            "by_profit": "Nach Gewinn",
+            "rank": "#",
+            "player": "Spieler",
+            "volume": "Volumen",
+            "profit": "Gewinn",
+            "win_rate": "Gewinnrate",
+            "bets": "Wetten",
+            "no_data": "Noch keine Ranglisten Daten."
+        },
+        "recent_activity": {
+            "title": "Letzte Aktivitäten",
+            "placed_bet": "hat {amount} USDC auf",
+            "no_activity": "Noch keine Aktivitäten.",
+            "just_now": "gerade eben",
+            "ago": "vor {time}"
+        },
+        "user_performance": {
+            "title": "Deine Statistiken",
+            "total_bets": "Gesamtwetten",
+            "win_rate": "Gewinnrate",
+            "profit_loss": "G/V",
+            "total_volume": "Volumen",
+            "won": "Gewonnen",
+            "lost": "Verloren",
+            "connect_prompt": "Wallet verbinden, um deine Statistiken zu sehen."
         }
     }
 }

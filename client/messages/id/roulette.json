@@ -118,6 +118,7 @@
         "create_table_submit": "Buat Meja",
         "global_stats_total_users": "Total Pengguna",
         "global_stats_total_tables": "Total Meja",
+        "global_stats_active_tables": "Meja Aktif",
         "global_stats_tables_breakdown": "{open} terbuka, {active} aktif",
         "global_stats_total_volume": "Total Volume",
         "global_stats_total_winnings": "Total Kemenangan",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "Pada giliran Anda, pilih angka 0-9 dan taruhan Anda. Lalu mainkan langkah Anda. Jika angka Anda cocok dengan hasil acak roulette, Anda akan dieliminasi.",
         "instructions_step_next_player": "Giliran pemain berikutnya dimulai setelah pemain sebelumnya memainkan langkahnya. Mereka harus menyamai jumlah taruhan yang sama seperti pemain sebelumnya (atau menaikkan taruhan) untuk tetap berada dalam permainan.",
         "instructions_step_until_one_left": "Permainan berlanjut hingga hanya satu pemain yang tersisa. Pemain terakhir yang bertahan memenangkan seluruh pot.",
-        "instructions_step_claim_winnings": "Jika Anda menang, ingat untuk mengklaim kemenangan Anda dari bagian Taruhan Pengguna."
+        "instructions_step_claim_winnings": "Jika Anda menang, ingat untuk mengklaim kemenangan Anda dari bagian Taruhan Pengguna.",
+        "hero_cta": "Buat Meja",
+        "hero_cta_browse": "Jelajahi Meja",
+        "hero_subtitle": "Pilih angka. Pasang taruhan. Survive.",
+        "hero_live_badge": "Live di Arbitrum",
+        "tables_open_seats": "{count} kursi tersedia",
+        "tables_pot_label": "Pot",
+        "active_table_status_label": "Status"
     }
 }

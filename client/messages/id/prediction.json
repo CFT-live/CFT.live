@@ -102,7 +102,14 @@
                 "amount_required": "Jumlah wajib diisi.",
                 "amount_must_be_integer": "Jumlah harus berupa bilangan bulat (tanpa desimal).",
                 "amount_invalid": "Jumlah tidak valid. Gunakan nilai bilangan bulat."
-            }
+            },
+            "presets_label": "Preset Cepat",
+            "preset_5m_eth": "5m ETH",
+            "preset_15m_btc": "15m BTC",
+            "preset_1h_eth": "1j ETH",
+            "preset_1h_arb": "1j ARB",
+            "advanced_options": "Opsi lanjutan (pemilih waktu kustom)",
+            "closes_at": "Ditutup pada"
         },
         "rounds": {
             "titles": {
@@ -167,7 +174,9 @@
                 "confirm": "Konfirmasi Taruhan",
                 "processing": "Memproses...",
                 "processing_title": "Memproses Transaksi",
-                "processing_description": "Silakan konfirmasi transaksi di dompet Anda dan tunggu konfirmasi..."
+                "processing_description": "Silakan konfirmasi transaksi di dompet Anda dan tunggu konfirmasi...",
+                "potential_payout": "Pembayaran Potensial",
+                "quick_amounts": "Cepat:"
             },
             "status": {
                 "open": "TERBUKA",
@@ -194,7 +203,9 @@
                 "close_price_label": "Tutup:",
                 "now_price_label": "Sekarang:",
                 "result": "Hasil",
-                "trend": "Tren"
+                "trend": "Tren",
+                "closing_soon": "Segera ditutup!",
+                "pool_ratio": "Rasio pool"
             },
             "time": {
                 "days_short": "h",
@@ -202,6 +213,43 @@
                 "minutes_short": "m",
                 "seconds_short": "d"
             }
+        },
+        "platform_stats": {
+            "title": "Statistik Platform",
+            "total_volume": "Total Volume",
+            "total_rounds": "Total Ronde",
+            "total_users": "Pemain",
+            "live_rounds": "Sedang Live",
+            "open_rounds": "Ronde Terbuka"
+        },
+        "leaderboard": {
+            "title": "Papan Peringkat",
+            "by_volume": "Berdasarkan Volume",
+            "by_profit": "Berdasarkan Profit",
+            "rank": "#",
+            "player": "Pemain",
+            "volume": "Volume",
+            "profit": "Profit",
+            "win_rate": "Win Rate",
+            "bets": "Taruhan",
+            "no_data": "Belum ada data papan peringkat."
+        },
+        "recent_activity": {
+            "title": "Aktivitas Terbaru",
+            "placed_bet": "memasang {amount} USDC pada",
+            "no_activity": "Belum ada aktivitas terbaru.",
+            "just_now": "baru saja",
+            "ago": "{time} yang lalu"
+        },
+        "user_performance": {
+            "title": "Statistik Anda",
+            "total_bets": "Total Taruhan",
+            "win_rate": "Win Rate",
+            "profit_loss": "U/R",
+            "total_volume": "Volume",
+            "won": "Menang",
+            "lost": "Kalah",
+            "connect_prompt": "Hubungkan wallet untuk melihat statistik Anda."
         }
     }
 }

@@ -2,9 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import { Users } from "lucide-react";
+import { Users, Skull, Zap } from "lucide-react";
 import { weiToUsdc } from "@/app/helpers";
 import { Table, TablePlayer } from "@/app/features/roulette/v1/queries/roulette.types";
+import { cn } from "@/lib/utils";
 
 export const PlayerList = ({
   table,
@@ -39,18 +40,27 @@ export const PlayerList = ({
             const isCurrentTurn =
               table.status === "InProgress" && idx === table.currentPlayerIndex;
             const isYou =
-              currentUserAddress &&
-              player.user.id.toLowerCase() === currentUserAddress.toLowerCase();
+              currentUserAddress?.toLowerCase() === player.user.id.toLowerCase();
+            const isDead = player.status === "Dead";
+
+            let containerClass = "border-border/40 bg-background/20";
+            if (isCurrentTurn) {
+              containerClass = "border-primary/70 bg-primary/10 shadow-[0_0_12px_hsl(23_100%_50%/0.15)]";
+            } else if (isDead) {
+              containerClass = "border-red-500/20 bg-red-950/10 opacity-60";
+            }
 
             let avatarClass = "bg-gray-500/10 text-gray-500";
-            if (player.status === "Dead") {
-              avatarClass = "bg-red-500/10 text-red-500";
+            if (isDead) {
+              avatarClass = "bg-red-500/20 text-red-500";
+            } else if (isCurrentTurn) {
+              avatarClass = "bg-primary/20 text-primary shadow-[0_0_8px_hsl(23_100%_50%/0.3)]";
             } else if (player.status === "Playing") {
               avatarClass = "bg-green-500/10 text-green-500";
             }
 
             let statusClass = "text-gray-500";
-            if (player.status === "Dead") {
+            if (isDead) {
               statusClass = "text-red-500";
             } else if (player.status === "Playing") {
               statusClass = "text-green-500";
@@ -59,41 +69,48 @@ export const PlayerList = ({
             return (
               <div
                 key={player.id}
-                className={`rounded-md px-2.5 py-2 sm:px-3 sm:py-2.5 border ${
-                  isCurrentTurn
-                    ? "border-primary/70 bg-primary/10"
-                    : "border-border/40 bg-background/20"
-                }`}
+                className={cn(
+                  "rounded-md px-2.5 py-2 sm:px-3 sm:py-2.5 border transition-all duration-200",
+                  containerClass
+                )}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    {/* Avatar with status-based styling */}
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${avatarClass}`}
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 transition-all",
+                        avatarClass
+                      )}
                     >
-                      {idx + 1}
+                      {isDead ? <Skull className="h-4 w-4" /> : idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                        <p className="font-semibold text-xs sm:text-sm truncate">
+                        <p className={cn(
+                          "font-semibold text-xs sm:text-sm truncate",
+                          isDead && "line-through text-red-500/70"
+                        )}>
                           {player.user.id.slice(0, 6)}...{player.user.id.slice(-4)}
                         </p>
                         {isYou && (
-                          <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5">
+                          <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5 border-primary/50 text-primary">
                             {t("badge_you")}
                           </Badge>
                         )}
                         {isCurrentTurn && (
                           <Badge
                             variant="default"
-                            className="text-[10px] sm:text-xs animate-pulse px-1 sm:px-1.5"
+                            className="text-[10px] sm:text-xs px-1 sm:px-1.5 shadow-[0_0_6px_hsl(23_100%_50%/0.4)]"
                           >
+                            <Zap className="h-2.5 w-2.5 mr-0.5" />
                             {t("badge_turn")}
                           </Badge>
                         )}
                       </div>
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-0.5 sm:mt-1">
                         <p className="text-xs sm:text-sm text-muted-foreground">
-                          <span className={`font-semibold ${statusClass}`}>
+                          <span className={cn("font-semibold", statusClass)}>
                             {getPlayerStatusLabel(player.status)}
                           </span>
                         </p>
@@ -119,7 +136,10 @@ export const PlayerList = ({
                     <p className="text-[10px] sm:text-sm text-muted-foreground">
                       {t("player_bets_label")}
                     </p>
-                    <p className="text-sm sm:text-lg font-bold">
+                    <p className={cn(
+                      "text-sm sm:text-lg font-bold",
+                      isDead && "text-red-500/60"
+                    )}>
                       ${weiToUsdc(player.totalBetAmount ?? "0").toFixed(2)}
                     </p>
                     <p className="text-[10px] sm:text-xs text-muted-foreground">

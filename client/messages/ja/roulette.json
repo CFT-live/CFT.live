@@ -118,6 +118,7 @@
         "create_table_submit": "テーブルを作成",
         "global_stats_total_users": "総ユーザー数",
         "global_stats_total_tables": "総テーブル数",
+        "global_stats_active_tables": "アクティブテーブル",
         "global_stats_tables_breakdown": "オープン {open}、アクティブ {active}",
         "global_stats_total_volume": "総出来高",
         "global_stats_total_winnings": "総獲得額",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "あなたのターンでは、0-9の番号とベット額を選んで手番を実行します。あなたの番号がルーレットの乱数結果と一致すると脱落します。",
         "instructions_step_next_player": "前のプレイヤーが手番を終えると次のプレイヤーのターンが始まります。ゲームに残るには、前のプレイヤーと同じベット額に合わせるか、ベット額を増やす必要があります。",
         "instructions_step_until_one_left": "プレイヤーが1人になるまでゲームは続きます。最後まで残ったプレイヤーがポットを全額獲得します。",
-        "instructions_step_claim_winnings": "勝利した場合は、ユーザーベットセクションから賞金を請求することを忘れないでください。"
+        "instructions_step_claim_winnings": "勝利した場合は、ユーザーベットセクションから賞金を請求することを忘れないでください。",
+        "hero_cta": "テーブルを作成",
+        "hero_cta_browse": "テーブルを探す",
+        "hero_subtitle": "数字を選んで。ベットして。生き残れ。",
+        "hero_live_badge": "Arbitrumでライブ",
+        "tables_open_seats": "{count}席空き",
+        "tables_pot_label": "ポット",
+        "active_table_status_label": "ステータス"
     }
 }

@@ -118,6 +118,7 @@
         "create_table_submit": "Создать стол",
         "global_stats_total_users": "Всего пользователей",
         "global_stats_total_tables": "Всего столов",
+        "global_stats_active_tables": "Активные столы",
         "global_stats_tables_breakdown": "{open} открытых, {active} активных",
         "global_stats_total_volume": "Общий объем",
         "global_stats_total_winnings": "Всего выигрышей",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "Во время своего хода выберите число 0-9 и сумму ставки. Затем сделайте ход. Если ваше число совпадет со случайным результатом рулетки, вы выбываете.",
         "instructions_step_next_player": "Ход следующего игрока начинается после того, как предыдущий игрок сделал ход. Чтобы остаться в игре, он должен поставить ту же сумму, что и предыдущий игрок, или увеличить ставку.",
         "instructions_step_until_one_left": "Игра продолжается, пока не останется один игрок. Последний выживший забирает весь банк.",
-        "instructions_step_claim_winnings": "Если вы победили, не забудьте получить свой выигрыш в разделе User Bets."
+        "instructions_step_claim_winnings": "Если вы победили, не забудьте получить свой выигрыш в разделе User Bets.",
+        "hero_cta": "Создать стол",
+        "hero_cta_browse": "Просмотр столов",
+        "hero_subtitle": "Выберите число. Сделайте ставку. Выживите.",
+        "hero_live_badge": "В эфире на Arbitrum",
+        "tables_open_seats": "{count} мест свободно",
+        "tables_pot_label": "Банк",
+        "active_table_status_label": "Статус"
     }
 }

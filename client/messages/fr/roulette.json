@@ -118,6 +118,7 @@
         "create_table_submit": "Créer la Table",
         "global_stats_total_users": "Total Utilisateurs",
         "global_stats_total_tables": "Total Tables",
+        "global_stats_active_tables": "Tables actives",
         "global_stats_tables_breakdown": "{open} ouvertes, {active} actives",
         "global_stats_total_volume": "Volume Total",
         "global_stats_total_winnings": "Gains Totaux",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "Pendant votre tour, choisissez un nombre de 0 à 9 et votre mise. Ensuite, jouez votre coup. Si votre nombre correspond au résultat aléatoire de la roulette, vous êtes éliminé.",
         "instructions_step_next_player": "Le tour du joueur suivant commence après que le joueur précédent a joué son coup. Il doit miser le même montant que le joueur précédent (ou augmenter la mise) pour rester dans la partie.",
         "instructions_step_until_one_left": "La partie continue jusqu’à ce qu’il ne reste qu’un seul joueur. Le dernier joueur encore en lice remporte toute la cagnotte.",
-        "instructions_step_claim_winnings": "Si vous gagnez, pensez à réclamer vos gains dans la section Paris Utilisateur."
+        "instructions_step_claim_winnings": "Si vous gagnez, pensez à réclamer vos gains dans la section Paris Utilisateur.",
+        "hero_cta": "Créer une table",
+        "hero_cta_browse": "Parcourir les tables",
+        "hero_subtitle": "Choisissez un nombre. Placez votre pari. Survivez.",
+        "hero_live_badge": "En direct sur Arbitrum",
+        "tables_open_seats": "{count} places disponibles",
+        "tables_pot_label": "Cagnotte",
+        "active_table_status_label": "Statut"
     }
 }
