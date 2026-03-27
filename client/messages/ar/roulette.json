@@ -118,6 +118,7 @@
         "create_table_submit": "إنشاء طاولة",
         "global_stats_total_users": "إجمالي المستخدمين",
         "global_stats_total_tables": "إجمالي الطاولات",
+        "global_stats_active_tables": "الطاولات النشطة",
         "global_stats_tables_breakdown": "{open} مفتوحة، {active} نشطة",
         "global_stats_total_volume": "إجمالي الحجم",
         "global_stats_total_winnings": "إجمالي الأرباح",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "أثناء دورك، اختر رقما من 0 إلى 9 ومبلغ رهانك، ثم نفذ حركتك. إذا طابق رقمك نتيجة الروليت العشوائية، سيتم إقصاؤك.",
         "instructions_step_next_player": "يبدأ دور اللاعب التالي بعد أن ينفذ اللاعب السابق حركته. يجب عليه مطابقة نفس مبلغ الرهان للاعب السابق (أو زيادة الرهان) للبقاء في اللعبة.",
         "instructions_step_until_one_left": "تستمر اللعبة حتى يبقى لاعب واحد فقط. آخر لاعب يبقى يفوز بكامل الوعاء.",
-        "instructions_step_claim_winnings": "إذا فزت، تذكر المطالبة بأرباحك من قسم رهانات المستخدم."
+        "instructions_step_claim_winnings": "إذا فزت، تذكر المطالبة بأرباحك من قسم رهانات المستخدم.",
+        "hero_cta": "إنشاء طاولة",
+        "hero_cta_browse": "تصفح الطاولات",
+        "hero_subtitle": "اختر رقما. ضع رهانك. انجو.",
+        "hero_live_badge": "مباشر على Arbitrum",
+        "tables_open_seats": "{count} مقاعد متاحة",
+        "tables_pot_label": "الوعاء",
+        "active_table_status_label": "الحالة"
     }
 }

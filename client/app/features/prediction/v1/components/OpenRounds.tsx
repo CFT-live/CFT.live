@@ -53,11 +53,17 @@ export default function OpenRounds() {
   const queryClient = useQueryClient();
   const { isConnected } = useAppKitAccount();
   const { open } = useAppKit();
-  const [betAmount, setBetAmount] = useState("1");
+  const [betAmount, setBetAmount] = useState(() => {
+    if (globalThis.window !== undefined) {
+      return globalThis.localStorage.getItem("prediction_last_bet_amount") ?? "1";
+    }
+    return "1";
+  });
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(
     null
   );
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
+  const [selectedRound, setSelectedRound] = useState<Round | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -96,9 +102,9 @@ export default function OpenRounds() {
 
   const onSuccess = useCallback(() => {
     setDialogOpen(false);
-    setBetAmount("1");
     setSelectedPosition(null);
     setSelectedRoundId(null);
+    setSelectedRound(null);
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     reset();
     setTimeout(() => {
@@ -131,7 +137,16 @@ export default function OpenRounds() {
   const openBetDialog = (position: Position, roundId: string) => {
     setSelectedPosition(position);
     setSelectedRoundId(roundId);
+    const round = data?.rounds.find((r) => r.id === roundId) ?? null;
+    setSelectedRound(round);
     setDialogOpen(true);
+  };
+
+  const handleSetBetAmount = (val: string) => {
+    setBetAmount(val);
+    if (globalThis.window !== undefined) {
+      globalThis.localStorage.setItem("prediction_last_bet_amount", val);
+    }
   };
 
   const confirmBet = () => {
@@ -145,6 +160,9 @@ export default function OpenRounds() {
       return;
     }
 
+    if (globalThis.window !== undefined) {
+      globalThis.localStorage.setItem("prediction_last_bet_amount", betAmount);
+    }
     writeToContract("placeBet", [
       selectedRoundId,
       POSITION_ENUM[selectedPosition],
@@ -271,16 +289,38 @@ export default function OpenRounds() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="betAmount">
-                {t("rounds.bet_dialog.amount_label")}
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="betAmount">
+                  {t("rounds.bet_dialog.amount_label")}
+                </Label>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  {t("rounds.bet_dialog.quick_amounts")}
+                </span>
+              </div>
+              <div className="flex gap-1.5 mb-1.5">
+                {["1", "5", "10", "25", "50"].map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => handleSetBetAmount(val)}
+                    disabled={isLoadingBet}
+                    className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                      betAmount === val
+                        ? "border-primary bg-primary/20 text-primary"
+                        : "border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    ${val}
+                  </button>
+                ))}
+              </div>
               <Input
                 id="betAmount"
                 type="number"
                 min="1"
                 step="1"
                 value={betAmount}
-                onChange={(e) => setBetAmount(e.target.value)}
+                onChange={(e) => handleSetBetAmount(e.target.value)}
                 placeholder={t("rounds.bet_dialog.amount_placeholder")}
                 disabled={isLoadingBet}
               />

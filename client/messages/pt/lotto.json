@@ -100,6 +100,32 @@
         "metadata_hide_details": "Ocultar detalhes",
         "metadata_show_details": "Mostrar detalhes",
         "metadata_max_tickets_per_buy": "Máximo de Bilhetes por Compra",
-        "metadata_min_round_duration_seconds": "Duração Mínima da Rodada (s)"
+        "metadata_min_round_duration_seconds": "Duração Mínima da Rodada (s)",
+
+        "hero_draw_label": "SORTEIO",
+        "hero_ticket_price_label": "Bilhete",
+        "hero_tickets_sold_label": "Vendidos",
+        "hero_your_odds_label": "Suas chances",
+        "hero_tickets_unit": "bilhetes",
+        "hero_connect_to_play": "Conecte sua carteira para jogar",
+
+        "open_draws_your_win_odds": "Suas chances de ganhar",
+        "open_draws_draw_opens_in": "O sorteio fecha em",
+        "open_draws_no_tickets_to_close": "Nenhum bilhete vendido ainda — compre o primeiro!",
+
+        "buy_dialog_odds_preview": "~{odds}% de chance",
+
+        "global_stats_total_draws": "Total de Sorteios",
+        "global_stats_total_volume": "Volume Total",
+        "global_stats_total_players": "Jogadores",
+        "global_stats_total_tickets": "Bilhetes Vendidos",
+
+        "user_stats_title": "Suas Estatísticas",
+        "user_stats_tickets_bought": "Bilhetes Comprados",
+        "user_stats_total_spent": "Total Gasto",
+        "user_stats_total_winnings": "Ganhos",
+        "user_stats_net_pnl": "L&P Líquido",
+
+        "recent_winners_title": "Vencedores Recentes"
     }
 }

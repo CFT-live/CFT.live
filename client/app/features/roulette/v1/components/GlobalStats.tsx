@@ -3,12 +3,12 @@
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { request } from "graphql-request";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import NumberFlow from "@number-flow/react";
 import { ROULETTE_GLOBAL_STATS_QUERY_KEY } from "../queries/keys";
 import { getGlobalStatsQuery } from "@/app/features/roulette/v1/queries/roulette";
 import { DEFAULT_HEADERS } from "@/app/queries/headers";
 import { REFRESH_INTERVAL_MILLIS, weiToUsdc } from "@/app/helpers";
-import { Users, Trophy, DollarSign, TableIcon } from "lucide-react";
 
 export const GlobalStats: React.FC = () => {
   const t = useTranslations("roulette");
@@ -20,7 +20,7 @@ export const GlobalStats: React.FC = () => {
         process.env.NEXT_PUBLIC_ROULETTE_THE_GRAPH_API_URL!,
         getGlobalStatsQuery,
         {},
-        DEFAULT_HEADERS
+        DEFAULT_HEADERS,
       );
     },
     staleTime: REFRESH_INTERVAL_MILLIS.medium,
@@ -33,65 +33,63 @@ export const GlobalStats: React.FC = () => {
 
   const stats = data.globalStats;
 
+  const items = [
+    // { label: t("global_stats_total_users"), value: Number(stats.totalUsers), prefix: "" },
+    {
+      label: t("global_stats_total_tables"),
+      value: Number(stats.totalTables),
+      prefix: "",
+    },
+    {
+      label: t("global_stats_active_tables"),
+      value: undefined,
+      prefix: t("global_stats_tables_breakdown", {
+        open: stats.openTables,
+        active: stats.inProgressTables,
+      }),
+    },
+    {
+      label: t("global_stats_total_volume"),
+      value: weiToUsdc(stats.totalVolume),
+      prefix: "$",
+    },
+    {
+      label: t("global_stats_total_winnings"),
+      value: weiToUsdc(stats.totalWinnings),
+      prefix: "$",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("global_stats_total_users")}
-          </CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalUsers}</div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("global_stats_total_tables")}
-          </CardTitle>
-          <TableIcon className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalTables}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {t("global_stats_tables_breakdown", {
-              open: stats.openTables,
-              active: stats.inProgressTables,
-            })}
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: 0.1 }}
+      className="grid grid-cols-2 sm:grid-cols-4 gap-px border border-border/60 rounded-sm overflow-hidden mb-6 sm:mb-8"
+    >
+      {items.map((item) => (
+        <div
+          key={item.label}
+          className="bg-muted/20 px-4 py-3 sm:py-4 text-center"
+        >
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+            {item.label}
           </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("global_stats_total_volume")}
-          </CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            ${weiToUsdc(stats.totalVolume).toLocaleString()}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("global_stats_total_winnings")}
-          </CardTitle>
-          <Trophy className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            ${weiToUsdc(stats.totalWinnings).toLocaleString()}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          <p className="font-mono font-bold text-base sm:text-xl text-foreground">
+            {item.prefix}
+            {!!item.value && (
+              <NumberFlow
+                value={item.value}
+                format={
+                  item.prefix === "$"
+                    ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                    : { maximumFractionDigits: 0 }
+                }
+              />
+            )}
+          </p>
+        </div>
+      ))}
+    </motion.div>
   );
 };

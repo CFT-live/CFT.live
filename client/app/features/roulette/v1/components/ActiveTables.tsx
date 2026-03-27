@@ -11,10 +11,11 @@ import { ROULETTE_USER_ACTIVE_TABLES_QUERY_KEY } from "../queries/keys";
 import { getUserActiveTablesQuery } from "@/app/features/roulette/v1/queries/roulette";
 import { DEFAULT_HEADERS } from "@/app/queries/headers";
 import { REFRESH_INTERVAL_MILLIS, weiToUsdc } from "@/app/helpers";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, DollarSign, Target, Users } from "lucide-react";
 import { CardTemplate } from "@/app/features/root/v1/components/CardTemplate";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TablePlayer } from "@/app/features/roulette/v1/queries/roulette.types";
+import { cn } from "@/lib/utils";
 
 export const ActiveTables: React.FC = () => {
   const t = useTranslations("roulette");
@@ -135,13 +136,15 @@ export const ActiveTables: React.FC = () => {
             <button
               key={tablePlayer.id}
               type="button"
-              className={`w-full text-left p-3 sm:p-4 border rounded-lg cursor-pointer transition-all ${
-                isYourTurn ? "border-primary bg-primary/5" : "border-border"
-              } ${
+              className={cn(
+                "w-full text-left p-3 sm:p-4 border rounded-lg cursor-pointer transition-all duration-200",
+                isYourTurn
+                  ? "animate-pulse-border bg-primary/5"
+                  : "border-border hover:border-primary/40",
                 selectedTableId === table.id
-                  ? "ring-2 ring-primary shadow-md"
-                  : "hover:shadow-sm"
-              }`}
+                  ? "ring-2 ring-primary shadow-[0_0_20px_hsl(23_100%_50%/0.15)]"
+                  : "hover:shadow-[0_0_12px_hsl(23_100%_50%/0.08)]"
+              )}
               onClick={() => handleTableClick(table.id)}
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
@@ -150,54 +153,54 @@ export const ActiveTables: React.FC = () => {
                     <h4 className="font-bold text-sm sm:text-base">
                       {t("table_label")} #{table.id}
                     </h4>
-                    <Badge variant={getBadgeVariant()} className="text-xs">
+                    <Badge variant={getBadgeVariant()} className={cn(
+                      "text-[10px] sm:text-xs",
+                      table.status === "WaitingRandom" && "animate-pulse"
+                    )}>
                       {getStatusLabel(table.status)}
                     </Badge>
                     {isYourTurn && (
-                      <Badge variant="destructive" className="animate-pulse text-xs">
+                      <Badge variant="destructive" className="text-[10px] sm:text-xs shadow-[0_0_10px_hsl(3_85%_46%/0.4)]">
                         <AlertCircle className="h-3 w-3 mr-1" />
                         {t("active_table_your_turn")}
                       </Badge>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:text-sm mb-2 sm:mb-3">
-                    <div>
-                      <span className="text-muted-foreground">
-                        {t("active_table_field_pot")}{" "}
-                      </span>
-                      <span className="font-semibold">
-                        ${weiToUsdc(table.totalPool)}
-                      </span>
+                  {/* Stats row with icons */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <DollarSign className="h-3 w-3 text-green-500 shrink-0" />
+                      <div>
+                        <p className="text-[10px] text-muted-foreground leading-none">{t("active_table_field_pot")}</p>
+                        <p className="text-xs sm:text-sm font-bold text-green-500">${weiToUsdc(table.totalPool)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">
-                        {t("active_table_field_bet")}{" "}
-                      </span>
-                      <span className="font-semibold">
-                        ${weiToUsdc(table.currentBetAmount)}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      <Target className="h-3 w-3 text-primary shrink-0" />
+                      <div>
+                        <p className="text-[10px] text-muted-foreground leading-none">{t("active_table_field_bet")}</p>
+                        <p className="text-xs sm:text-sm font-bold">${weiToUsdc(table.currentBetAmount)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">
-                        {t("active_table_field_your_bets")}{" "}
-                      </span>
-                      <span className="font-semibold">
-                        ${weiToUsdc(tablePlayer.totalBetAmount ?? "0")}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      <DollarSign className="h-3 w-3 text-blue-500 shrink-0" />
+                      <div>
+                        <p className="text-[10px] text-muted-foreground leading-none">{t("active_table_field_your_bets")}</p>
+                        <p className="text-xs sm:text-sm font-bold">${weiToUsdc(tablePlayer.totalBetAmount ?? "0")}</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">
-                        {t("active_table_field_players")}{" "}
-                      </span>
-                      <span className="font-semibold">
-                        {table.players.length}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      <Users className="h-3 w-3 text-muted-foreground shrink-0" />
+                      <div>
+                        <p className="text-[10px] text-muted-foreground leading-none">{t("active_table_field_players")}</p>
+                        <p className="text-xs sm:text-sm font-bold">{table.players.length}</p>
+                      </div>
                     </div>
                   </div>
 
                   {table.status === "Open" && !tablePlayer.isReady && (
-                    <p className="text-xs sm:text-sm text-muted-foreground">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-2">
                       {t("active_table_waiting_ready")}
                     </p>
                   )}

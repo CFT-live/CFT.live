@@ -17,7 +17,7 @@ import {
 import { getInProgressTablesQuery, getOpenTablesQuery } from "@/app/features/roulette/v1/queries/roulette";
 import { DEFAULT_HEADERS } from "@/app/queries/headers";
 import { REFRESH_INTERVAL_MILLIS, weiToUsdc } from "@/app/helpers";
-import { Users } from "lucide-react";
+import { Users, Plus, DollarSign, TrendingUp } from "lucide-react";
 import { CreateTableDialog } from "./CreateTableDialog";
 import {
   GetInProgressTablesResponse,
@@ -145,6 +145,24 @@ export const OpenTables: React.FC = () => {
       ? t("tables_empty_open")
       : t("tables_empty_playing");
 
+  const renderPlayerDots = (playerCount: number, maxPlayers: number) => {
+    return (
+      <div className="flex items-center gap-1">
+        {Array.from({ length: maxPlayers }, (_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "w-2.5 h-2.5 rounded-full transition-colors",
+              i < playerCount
+                ? "bg-primary shadow-[0_0_4px_hsl(23_100%_50%/0.5)]"
+                : "bg-zinc-700/50"
+            )}
+          />
+        ))}
+      </div>
+    );
+  };
+
   const gridContent =
     selectedList === "open" ? (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -154,17 +172,20 @@ export const OpenTables: React.FC = () => {
           );
           const readyCount = table.players.filter((p) => p.isReady).length;
           const createdAt = formatRelativeTimeFromSeconds(t, table.createdAt);
+          const seatsOpen = table.maxPlayers - table.players.length;
 
           return (
             <Card
               key={table.id}
               role="button"
               tabIndex={0}
-              className={`relative transition-shadow cursor-pointer ${
+              className={cn(
+                "relative cursor-pointer transition-all duration-200 group",
                 selectedTableId === table.id
-                  ? "ring-2 ring-primary shadow-md"
-                  : "hover:shadow-md"
-              }`}
+                  ? "ring-2 ring-primary shadow-[0_0_20px_hsl(23_100%_50%/0.15)]"
+                  : "hover:shadow-[0_0_16px_hsl(23_100%_50%/0.1)] hover:border-primary/40",
+                isPlayerInTable && "border-primary/50"
+              )}
               onClick={() => handleTableClick(table.id)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -173,63 +194,56 @@ export const OpenTables: React.FC = () => {
                 }
               }}
             >
-              <CardContent className="p-4 sm:pt-6">
-                <div className="flex justify-between items-start mb-3 sm:mb-4">
-                  <div>
-                    <h3 className="font-bold text-base sm:text-lg">
-                      {t("table_label")} #{table.id}
-                    </h3>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
+              <CardContent className="p-4 sm:pt-5">
+                {/* Header row */}
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
+                    {t("table_label")} #{table.id}
+                  </h3>
+                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
                     {t("table_status_open")}
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:space-y-2 sm:block mb-3 sm:mb-4">
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_created")}
-                    </span>
-                    <span className="font-semibold" title={createdAt.full}>
-                      {createdAt.label}
-                    </span>
+                {/* Bet info - prominent */}
+                <div className="flex items-center gap-3 mb-3 p-2 rounded-md bg-muted/30 border border-border/40">
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <DollarSign className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">{t("table_field_initial_bet")}</p>
+                      <p className="text-sm font-bold">${weiToUsdc(table.initialBetAmount)}</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_initial_bet")}
-                    </span>
-                    <span className="font-semibold">
-                      ${weiToUsdc(table.initialBetAmount)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_max_incr")}
-                    </span>
-                    <span className="font-semibold">${weiToUsdc(table.maxIncrement)}</span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_players")}
-                    </span>
-                    <span className="font-semibold">
-                      {table.players.length}/{table.maxPlayers}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_ready")}
-                    </span>
-                    <span className="font-semibold">
-                      {readyCount}/{table.players.length}
-                    </span>
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <TrendingUp className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">{t("table_field_max_incr")}</p>
+                      <p className="text-sm font-bold">${weiToUsdc(table.maxIncrement)}</p>
+                    </div>
                   </div>
                 </div>
 
+                {/* Players visual */}
+                <div className="flex items-center justify-between mb-2">
+                  {renderPlayerDots(table.players.length, table.maxPlayers)}
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">
+                    {t("tables_open_seats", { count: seatsOpen })}
+                  </span>
+                </div>
+
+                {/* Ready status */}
+                <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
+                  <span>{t("table_field_ready")} {readyCount}/{table.players.length}</span>
+                  <span title={createdAt.full}>{createdAt.label}</span>
+                </div>
+
+                {/* You're in badge */}
                 {isPlayerInTable && (
-                  <Badge variant="secondary" className="mb-2 text-xs">
-                    {t("table_badge_youre_in")}
-                  </Badge>
+                  <div className="mt-2.5 pt-2.5 border-t border-border/40">
+                    <Badge variant="default" className="text-[10px] sm:text-xs w-full justify-center">
+                      {t("table_badge_youre_in")}
+                    </Badge>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -245,12 +259,14 @@ export const OpenTables: React.FC = () => {
           const createdAt = formatRelativeTimeFromSeconds(t, table.createdAt);
 
           let statusLabel: string = table.status;
+          let statusVariant: "default" | "secondary" | "destructive" = "secondary";
           if (table.status === TableStatus.InProgress) {
             statusLabel = t("table_status_in_progress");
+            statusVariant = "default";
           }
-
           if (table.status === TableStatus.WaitingRandom) {
             statusLabel = t("table_status_waiting_rng");
+            statusVariant = "destructive";
           }
 
           return (
@@ -258,11 +274,14 @@ export const OpenTables: React.FC = () => {
               key={table.id}
               role="button"
               tabIndex={0}
-              className={`relative transition-shadow cursor-pointer ${
+              className={cn(
+                "relative cursor-pointer transition-all duration-200 group",
                 selectedTableId === table.id
-                  ? "ring-2 ring-primary shadow-md"
-                  : "hover:shadow-md"
-              }`}
+                  ? "ring-2 ring-primary shadow-[0_0_20px_hsl(23_100%_50%/0.15)]"
+                  : "hover:shadow-[0_0_16px_hsl(23_100%_50%/0.1)] hover:border-primary/40",
+                table.status === TableStatus.InProgress && "border-green-500/30",
+                table.status === TableStatus.WaitingRandom && "border-yellow-500/30"
+              )}
               onClick={() => handleTableClick(table.id)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -271,55 +290,55 @@ export const OpenTables: React.FC = () => {
                 }
               }}
             >
-              <CardContent className="p-4 sm:pt-6">
-                <div className="flex justify-between items-start mb-3 sm:mb-4">
-                  <div>
-                    <h3 className="font-bold text-base sm:text-lg">
-                      {t("table_label")} #{table.id}
-                    </h3>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
+              <CardContent className="p-4 sm:pt-5">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
+                    {t("table_label")} #{table.id}
+                  </h3>
+                  <Badge variant={statusVariant} className={cn(
+                    "text-[10px] sm:text-xs",
+                    table.status === TableStatus.WaitingRandom && "animate-pulse"
+                  )}>
                     {statusLabel}
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:space-y-2 sm:block mb-3 sm:mb-4">
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_created")}
-                    </span>
-                    <span className="font-semibold" title={createdAt.full}>
-                      {createdAt.label}
-                    </span>
+                {/* Pot + Bet info */}
+                <div className="flex items-center gap-3 mb-3 p-2 rounded-md bg-muted/30 border border-border/40">
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <DollarSign className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">{t("tables_pot_label")}</p>
+                      <p className="text-sm font-bold text-green-500">${weiToUsdc(table.totalPool)}</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_initial_bet")}
-                    </span>
-                    <span className="font-semibold">
-                      ${weiToUsdc(table.initialBetAmount)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_max_incr")}
-                    </span>
-                    <span className="font-semibold">${weiToUsdc(table.maxIncrement)}</span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-muted-foreground">
-                      {t("table_field_players")}
-                    </span>
-                    <span className="font-semibold">
-                      {table.players.length}/{table.maxPlayers}
-                    </span>
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <TrendingUp className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">{t("table_field_initial_bet")}</p>
+                      <p className="text-sm font-bold">${weiToUsdc(table.initialBetAmount)}</p>
+                    </div>
                   </div>
                 </div>
 
+                {/* Players */}
+                <div className="flex items-center justify-between mb-1">
+                  {renderPlayerDots(table.players.length, table.maxPlayers)}
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">
+                    {table.players.length}/{table.maxPlayers}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground mt-1">
+                  <span title={createdAt.full}>{createdAt.label}</span>
+                </div>
+
                 {isPlayerInTable && (
-                  <Badge variant="secondary" className="mb-2 text-xs">
-                    {t("table_badge_youre_in")}
-                  </Badge>
+                  <div className="mt-2.5 pt-2.5 border-t border-border/40">
+                    <Badge variant="default" className="text-[10px] sm:text-xs w-full justify-center">
+                      {t("table_badge_youre_in")}
+                    </Badge>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -341,11 +360,18 @@ export const OpenTables: React.FC = () => {
 
     if (isActiveEmpty) {
       return (
-        <div className="text-center py-12">
-          <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <div className="text-center py-12 border border-dashed border-border/60 rounded-lg">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Users className="h-8 w-8 text-primary" />
+          </div>
           <p className="text-muted-foreground mb-4">{emptyMessage}</p>
           {selectedList === "open" && (
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Button
+              size="lg"
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="shadow-[0_0_20px_hsl(23_100%_50%/0.2)]"
+            >
+              <Plus className="h-4 w-4 mr-2" />
               {t("tables_create")}
             </Button>
           )}
@@ -402,9 +428,10 @@ export const OpenTables: React.FC = () => {
             </div>
 
             <Button
-              className="self-stretch sm:self-auto"
+              className="self-stretch sm:self-auto shadow-[0_0_16px_hsl(23_100%_50%/0.2)] hover:shadow-[0_0_24px_hsl(23_100%_50%/0.3)]"
               onClick={() => setIsCreateDialogOpen(true)}
             >
+              <Plus className="h-4 w-4 mr-1.5" />
               {t("tables_create_new")}
             </Button>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Round, Position } from "../../../../types";
-import RoundRow from "./RoundRow";
+import RoundRow from "./round-row";
 
 interface RoundsTableProps {
   rounds: Round[];

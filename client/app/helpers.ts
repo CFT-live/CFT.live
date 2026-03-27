@@ -1,5 +1,5 @@
 import { formatUnits, parseUnits } from "viem";
-import { Bet } from "./types";
+import { Asset, Bet } from "./types";
 
 export const MILLIS = {
   inSecond: 1000,
@@ -44,12 +44,31 @@ export const weiToUsdcString = (weiAmount: bigint | string): string => {
   return weiToUsdc(weiAmount).toFixed(2);
 };
 
+// Pyth oracle price feed decimals (absolute value of expo per asset)
+export const PYTH_PRICE_DECIMALS: Record<string, number> = {
+  ETH: 8,
+  ARB: 8,
+  AAVE: 8,
+  BTC: 8,
+  SOL: 8,
+  XRP: 8,
+  BNB: 8,
+  DOGE: 8,
+  PEPE: 10,
+  SHIB: 10,
+};
+
+export const getPythDecimals = (asset: Asset): number =>
+  PYTH_PRICE_DECIMALS[asset] ?? 8;
+
 export const priceToString = (
   price: bigint | undefined,
-  decimals: number = 8,
+  assetOrDecimals: Asset | number,
   outputDecimals?: number | undefined
 ): string => {
   if (!price) return "-";
+  const decimals =
+    typeof assetOrDecimals === "number" ? assetOrDecimals : getPythDecimals(assetOrDecimals);
   const formatted = formatUnits(price, decimals);
   if (outputDecimals !== undefined) {
     const num = Number.parseFloat(formatted);

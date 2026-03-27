@@ -317,6 +317,7 @@ query GetRecentActivity($first: Int!) {
     }
     round {
       id
+      asset
       status
       lockAt
       closeAt

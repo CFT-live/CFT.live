@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorStateLotto } from "./ErrorStateLotto";
 import { BuyTicketsDialog } from "./BuyTicketsDialog";
@@ -20,7 +20,7 @@ import { CardTemplate } from "../../../root/v1/components/CardTemplate";
 import { useCloseDraw } from "@/app/features/prediction/v1/hooks/useCloseDraw";
 import { useUserTicketCounts } from "@/app/features/lotto/v1/hooks/useUserTicketCounts";
 import { AutoClearingAlert } from "../../../root/v1/components/AutoClearingAlert";
-import { Trophy, Ticket, Users } from "lucide-react";
+import { Ticket, Users, Clock } from "lucide-react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { ContractButton } from "../../../root/v1/components/ContractButton";
 import { useTranslations } from "next-intl";
@@ -118,6 +118,22 @@ export default function OpenDraws() {
     buyTickets(amount, total);
   };
 
+  // Countdown: must be before any early return (Rules of Hooks)
+  const drawStartTime = data?.draws[0]?.startTime ?? "0";
+  const minDuration = metadata?.minRoundDurationSeconds ?? 0;
+  const canCloseAt = Number(drawStartTime) + minDuration;
+  const [secondsUntilClose, setSecondsUntilClose] = useState<number>(() =>
+    Math.max(0, canCloseAt - Math.floor(Date.now() / 1000))
+  );
+  useEffect(() => {
+    if (canCloseAt <= 0) return;
+    const tick = () =>
+      setSecondsUntilClose(Math.max(0, canCloseAt - Math.floor(Date.now() / 1000)));
+    tick();
+    const id = setInterval(tick, MILLIS.inSecond);
+    return () => clearInterval(id);
+  }, [canCloseAt]);
+
   if (isLoading || isLoadingMetadata) {
     return (
       <CardTemplate
@@ -169,6 +185,27 @@ export default function OpenDraws() {
   const ticketPriceNumber = Number.parseFloat(
     weiToUsdcString(draw.ticketPrice)
   );
+  const currentTicketCount = Number(draw.ticketCount);
+  const maxTicketAmount = metadata?.maxTicketAmount ?? 100;
+
+  const canClose = secondsUntilClose === 0 && currentTicketCount > 0;
+
+  const formatCountdown = (secs: number) => {
+    if (secs <= 0) return null;
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    if (h > 0) return `${h}h ${m}m ${s}s`;
+    if (m > 0) return `${m}m ${s}s`;
+    return `${s}s`;
+  };
+
+  // Win odds for connected user
+  const userTickets = Number(ticketCountsByDraw[draw.id] ?? BigInt(0));
+  const winOddsLabel =
+    userTickets > 0 && currentTicketCount > 0
+      ? `${((userTickets / currentTicketCount) * 100).toFixed(1)}%`
+      : null;
 
   return (
     <CardTemplate
@@ -177,30 +214,26 @@ export default function OpenDraws() {
       isRefreshing={isLoading}
       refresh={refetch}
     >
-      <div className="space-y-6">
-        {/* Header with Draw ID and Status */}
-        <div className="flex items-center justify-between border-b border-border pb-4">
-          <div className="space-y-1">
+      <div className="space-y-4">
+        {/* Header row: draw ID + status dot */}
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div className="space-y-0.5">
             <div className="text-[10px] text-muted-foreground uppercase tracking-widest">{t("open_draws_current_draw")}</div>
             <div className="text-xl font-mono text-foreground flex items-center gap-2">
               #{draw.id}
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
               </span>
             </div>
           </div>
-        </div>
-
-        {/* Prize Pool - Hero Section */}
-        <div className="bg-muted/20 border border-primary/20 rounded-sm p-4 relative overflow-hidden group">
-          <div className="absolute top-2 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Trophy className="w-12 h-12 text-primary" />
-          </div>
-          <div className="text-[10px] text-primary/80 uppercase tracking-widest mb-1">{t("open_draws_estimated_prize_pool")}</div>
-          <div className="text-3xl font-bold text-primary tracking-tighter font-mono">
-            ${weiToUsdcString(draw.potSize)}
-          </div>
+          {/* Win odds badge */}
+          {winOddsLabel && (
+            <div className="text-right">
+              <div className="text-[10px] text-muted-foreground uppercase tracking-widest mb-0.5">{t("open_draws_your_win_odds")}</div>
+              <div className="font-mono font-bold text-primary text-base">{winOddsLabel}</div>
+            </div>
+          )}
         </div>
 
         {/* Stats Grid */}
@@ -211,7 +244,6 @@ export default function OpenDraws() {
             </div>
             <div className="font-mono text-lg">${weiToUsdcString(draw.ticketPrice)}</div>
           </div>
-          
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase">
               <Users className="w-3 h-3" /> {t("open_draws_tickets_sold")}
@@ -225,14 +257,30 @@ export default function OpenDraws() {
           <div className="bg-muted/10 rounded-sm p-3 border border-border/50 flex justify-between items-center">
             <span className="text-[10px] uppercase text-muted-foreground">{t("open_draws_your_holdings")}</span>
             <span className="font-mono text-primary font-bold">
-              {ticketCountsByDraw[draw.id]?.toString() ?? "0"}{" "}
+              {userTickets}{" "}
               <span className="text-[10px] font-normal text-muted-foreground">{t("open_draws_tickets_unit")}</span>
             </span>
           </div>
         )}
 
+        {/* Countdown progress bar */}
+        {secondsUntilClose > 0 && minDuration > 0 && (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[10px] uppercase text-muted-foreground">
+              <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{t("open_draws_draw_opens_in")}</span>
+              <span className="font-mono text-foreground">{formatCountdown(secondsUntilClose)}</span>
+            </div>
+            <div className="w-full h-1 bg-muted/30 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary/60 rounded-full transition-all duration-1000"
+                style={{ width: `${Math.max(2, 100 - (secondsUntilClose / minDuration) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Actions */}
-        <div className="pt-2 grid grid-cols-1 gap-3">
+        <div className="pt-1 grid grid-cols-1 gap-3">
           <ContractButton
             size="lg"
             variant="default"
@@ -243,25 +291,30 @@ export default function OpenDraws() {
           </ContractButton>
 
           <div className="flex flex-col gap-2">
-             <ContractButton
+            <ContractButton
               onClick={closeDraw}
-              disabled={isClosing || draw.potSize === "0"}
+              disabled={isClosing || !canClose}
               size="default"
               variant="outline"
               className="w-full font-mono uppercase tracking-wider border-primary/50 text-primary hover:bg-primary/10 hover:text-primary hover:border-primary transition-all"
             >
-                {isClosing ? t("open_draws_executing") : t("open_draws_execute_draw")}
+              {isClosing ? t("open_draws_executing") : t("open_draws_execute_draw")}
             </ContractButton>
+            {!canClose && currentTicketCount === 0 && (
+              <p className="text-[10px] text-center text-muted-foreground">{t("open_draws_no_tickets_to_close")}</p>
+            )}
             <AutoClearingAlert message={closeError} variant="destructive" />
           </div>
         </div>
       </div>
-      
+
       <BuyTicketsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         drawId={draw.id}
         ticketPrice={ticketPriceNumber}
+        currentTicketCount={currentTicketCount}
+        maxTicketAmount={maxTicketAmount}
         onBuyTickets={handleBuyTickets}
         isLoading={isLoadingBuy}
         errorMessage={errorMessage}

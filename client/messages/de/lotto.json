@@ -100,6 +100,32 @@
         "metadata_hide_details": "Details ausblenden",
         "metadata_show_details": "Details anzeigen",
         "metadata_max_tickets_per_buy": "Maximale Tickets pro Kauf",
-        "metadata_min_round_duration_seconds": "Minimale Runden Dauer (s)"
+        "metadata_min_round_duration_seconds": "Minimale Runden Dauer (s)",
+
+        "hero_draw_label": "RUNDE",
+        "hero_ticket_price_label": "Ticket",
+        "hero_tickets_sold_label": "Verkauft",
+        "hero_your_odds_label": "Deine Chance",
+        "hero_tickets_unit": "Tickets",
+        "hero_connect_to_play": "Wallet verbinden um zu spielen",
+
+        "open_draws_your_win_odds": "Deine Gewinnchance",
+        "open_draws_draw_opens_in": "Ziehung schließt in",
+        "open_draws_no_tickets_to_close": "Noch keine Tickets verkauft — kaufe das erste Ticket!",
+
+        "buy_dialog_odds_preview": "~{odds}% Gewinnchance",
+
+        "global_stats_total_draws": "Gesamte Ziehungen",
+        "global_stats_total_volume": "Gesamtvolumen",
+        "global_stats_total_players": "Spieler",
+        "global_stats_total_tickets": "Verkaufte Tickets",
+
+        "user_stats_title": "Deine Statistiken",
+        "user_stats_tickets_bought": "Gekaufte Tickets",
+        "user_stats_total_spent": "Ausgegeben",
+        "user_stats_total_winnings": "Gewinne",
+        "user_stats_net_pnl": "Netto G&V",
+
+        "recent_winners_title": "Letzte Gewinner"
     }
 }

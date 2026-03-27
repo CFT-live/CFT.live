@@ -118,6 +118,7 @@
         "create_table_submit": "创建牌桌",
         "global_stats_total_users": "总用户数",
         "global_stats_total_tables": "总牌桌数",
+        "global_stats_active_tables": "活跃牌桌",
         "global_stats_tables_breakdown": "{open} 个开放，{active} 个活跃",
         "global_stats_total_volume": "总成交量",
         "global_stats_total_winnings": "总奖金",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "在你的回合，选择 0-9 的一个数字并设置下注金额，然后出手。如果你的数字与轮盘随机结果相同，你将被淘汰。",
         "instructions_step_next_player": "上一位玩家出手后，下一位玩家的回合开始。为继续留在游戏中，他们必须匹配上一位玩家的下注金额（或加注）。",
         "instructions_step_until_one_left": "游戏将持续进行，直到只剩下一名玩家。最后存活的玩家赢得整个奖池。",
-        "instructions_step_claim_winnings": "如果你获胜，记得在用户下注部分领取你的奖金！"
+        "instructions_step_claim_winnings": "如果你获胜，记得在用户下注部分领取你的奖金！",
+        "hero_cta": "创建牌桌",
+        "hero_cta_browse": "浏览牌桌",
+        "hero_subtitle": "选择数字。下注。存活。",
+        "hero_live_badge": "在 Arbitrum 上直播",
+        "tables_open_seats": "{count} 个席位空缺",
+        "tables_pot_label": "奖池",
+        "active_table_status_label": "状态"
     }
 }

@@ -98,15 +98,21 @@ export default function DrawRow({
 
         {/* Winner Info */}
         {draw.winnerChosen && draw.winner && (
-          <div className="space-y-1.5 sm:space-y-2 pt-2 border-t">
+          <div className={`space-y-1.5 sm:space-y-2 pt-2 border-t ${
+            isUserWinner ? "border-primary/40" : ""
+          }`}>
             <div className="text-[10px] sm:text-xs text-muted-foreground mb-0.5 sm:mb-1">{t("draw_row_winner")}</div>
-            <div className="font-mono text-[10px] sm:text-xs break-all bg-accent p-1.5 sm:p-2 rounded">
+            <div className={`font-mono text-[10px] sm:text-xs break-all p-1.5 sm:p-2 rounded ${
+              isUserWinner
+                ? "bg-primary/10 border border-primary/30 text-primary"
+                : "bg-accent"
+            }`}>
               {draw.winner}
             </div>
             {isUserWinner && (
-              <Badge variant="default" className="w-full justify-center">
-                {t("draw_row_you_won")}
-              </Badge>
+              <div className="flex items-center justify-center gap-1.5 bg-primary/10 border border-primary/30 rounded py-1.5 animate-pulse">
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">🏆 {t("draw_row_you_won")}</span>
+              </div>
             )}
           </div>
         )}
@@ -150,11 +156,13 @@ export default function DrawRow({
 
         {status === "CLAIMED" && (
           <div className="pt-2">
-            <Alert className="border-primary bg-accent">
-              <AlertDescription className="text-xs text-center">
-                {t("draw_row_prize_claimed")}
-              </AlertDescription>
-            </Alert>
+            <div className={`text-xs text-center py-1.5 px-2 rounded border ${
+              isUserWinner
+                ? "border-primary/30 bg-primary/5 text-primary"
+                : "border-border bg-accent text-muted-foreground"
+            }`}>
+              {t("draw_row_prize_claimed")}
+            </div>
           </div>
         )}
 

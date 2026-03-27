@@ -100,6 +100,32 @@
         "metadata_hide_details": "Ocultar detalles",
         "metadata_show_details": "Mostrar detalles",
         "metadata_max_tickets_per_buy": "Máximo de Boletos por Compra",
-        "metadata_min_round_duration_seconds": "Duración Mínima de Ronda (s)"
+        "metadata_min_round_duration_seconds": "Duración Mínima de Ronda (s)",
+
+        "hero_draw_label": "SORTEO",
+        "hero_ticket_price_label": "Ticket",
+        "hero_tickets_sold_label": "Vendidos",
+        "hero_your_odds_label": "Tus probabilidades",
+        "hero_tickets_unit": "tickets",
+        "hero_connect_to_play": "Conecta tu cartera para jugar",
+
+        "open_draws_your_win_odds": "Tus probabilidades de ganar",
+        "open_draws_draw_opens_in": "El sorteo cierra en",
+        "open_draws_no_tickets_to_close": "Aún no hay tickets vendidos — ¡compra el primero!",
+
+        "buy_dialog_odds_preview": "~{odds}% de probabilidad",
+
+        "global_stats_total_draws": "Total Sorteos",
+        "global_stats_total_volume": "Volumen Total",
+        "global_stats_total_players": "Jugadores",
+        "global_stats_total_tickets": "Tickets Vendidos",
+
+        "user_stats_title": "Tus Estadísticas",
+        "user_stats_tickets_bought": "Tickets Comprados",
+        "user_stats_total_spent": "Total Gastado",
+        "user_stats_total_winnings": "Ganancias",
+        "user_stats_net_pnl": "P&G Neto",
+
+        "recent_winners_title": "Ganadores Recientes"
     }
 }

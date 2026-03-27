@@ -14,10 +14,15 @@ import {
   getOpenDrawsQuery,
   getClosedDrawsQuery,
   getDrawsWithWinnerQuery,
+  getGlobalStatsQuery,
 } from "@/app/features/lotto/v1/queries/lotto";
 import { getMetadata } from "@/app/features/lotto/v1/api/actions.lotto";
 import { ContractMetadata } from "@/app/features/lotto/v1/components/LottoMetadata";
 import { LottoAdminCard } from "@/app/features/lotto/v1/components/LottoAdminCard";
+import { HeroPrizePool } from "@/app/features/lotto/v1/components/HeroPrizePool";
+import { GlobalStats } from "@/app/features/lotto/v1/components/GlobalStats";
+import { UserStats } from "@/app/features/lotto/v1/components/UserStats";
+import { RecentWinners } from "@/app/features/lotto/v1/components/RecentWinners";
 import { Card, CardContent } from "@/components/ui/card";
 import { REFRESH_INTERVAL_MILLIS } from "@/app/helpers";
 import {
@@ -25,6 +30,7 @@ import {
   LOTTO_CLOSED_DRAWS_QUERY_KEY,
   LOTTO_WINNER_DRAWS_QUERY_KEY,
   LOTTO_CONTRACT_METADATA_QUERY_KEY,
+  LOTTO_GLOBAL_STATS_QUERY_KEY,
 } from "./queries/keys";
 import { Instructions } from "@/app/features/root/v1/components/Instructions";
 
@@ -48,18 +54,18 @@ export default async function LottoPage() {
     t("instructions_step_check_closed"),
   ];
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
     name: t("meta_title"),
-    applicationCategory: 'GameApplication',
-    operatingSystem: 'Any',
+    applicationCategory: "GameApplication",
+    operatingSystem: "Any",
     description: t("meta_description"),
     offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'ETH'
-    }
-  }
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "ETH",
+    },
+  };
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -81,7 +87,7 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getOpenDrawsQuery,
           { first: 10, skip: 0 },
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -93,7 +99,7 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getClosedDrawsQuery,
           { first: 10, skip: 0 },
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -105,7 +111,19 @@ export default async function LottoPage() {
           process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
           getDrawsWithWinnerQuery,
           { first: 10, skip: 0 },
-          DEFAULT_HEADERS
+          DEFAULT_HEADERS,
+        );
+      },
+    }),
+    // Prefetch global stats
+    queryClient.prefetchQuery({
+      queryKey: [LOTTO_GLOBAL_STATS_QUERY_KEY],
+      async queryFn() {
+        return await request(
+          process.env.NEXT_PUBLIC_LOTTO_THE_GRAPH_API_URL!,
+          getGlobalStatsQuery,
+          {},
+          DEFAULT_HEADERS,
         );
       },
     }),
@@ -156,21 +174,40 @@ export default async function LottoPage() {
             toggleOpenLabel={t("instructions_read_file")}
             toggleCloseLabel={t("instructions_close_file")}
             footerLeftLabel={t("instructions_end_of_file")}
-            footerRightLabel={t("instructions_lines", { count: instructions.length })}
+            footerRightLabel={t("instructions_lines", {
+              count: instructions.length,
+            })}
           />
         </div>
-
-        {/* Contract Metadata */}
-        <ContractMetadata />
-
-        {/* Draws Display */}
         <HydrationBoundary state={dehydrate(queryClient)}>
+          {/* Hero: animated prize pool + CTA */}
+          <HeroPrizePool />
+
+          {/* Global stats bar */}
+          <GlobalStats />
+
+          {/* User stats (visible only when wallet connected) */}
+          <UserStats />
+
+          {/* Draws */}
           <div className="space-y-6">
             <OpenDraws />
+          </div>
+
+          {/* Recent winners */}
+          <div className="mt-6 sm:mt-8">
+            <RecentWinners />
+          </div>
+
+          {/* Completed draws with pagination */}
+          <div className="space-y-6">
             <ClosedDraws />
           </div>
         </HydrationBoundary>
-
+        {/* Contract Metadata */}
+        <div className="mt-6 sm:mt-8">
+          <ContractMetadata />
+        </div>
         {/* Admin section */}
         <LottoAdminCard contractOwnerAddress={contractMetadata.ownerAddress} />
       </div>

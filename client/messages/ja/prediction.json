@@ -102,7 +102,14 @@
                 "amount_required": "金額の入力が必要です。",
                 "amount_must_be_integer": "金額は整数である必要があります（小数不可）。",
                 "amount_invalid": "無効な金額です。整数値を使用してください。"
-            }
+            },
+            "presets_label": "クイックプリセット",
+            "preset_5m_eth": "5分 ETH",
+            "preset_15m_btc": "15分 BTC",
+            "preset_1h_eth": "1時間 ETH",
+            "preset_1h_arb": "1時間 ARB",
+            "advanced_options": "詳細オプション（カスタム時間選択）",
+            "closes_at": "終了時刻"
         },
         "rounds": {
             "titles": {
@@ -167,7 +174,9 @@
                 "confirm": "ベットを確定",
                 "processing": "処理中...",
                 "processing_title": "トランザクション処理中",
-                "processing_description": "ウォレットでトランザクションを確認し、承認されるまでお待ちください..."
+                "processing_description": "ウォレットでトランザクションを確認し、承認されるまでお待ちください...",
+                "potential_payout": "予想配当",
+                "quick_amounts": "クイック："
             },
             "status": {
                 "open": "OPEN",
@@ -194,7 +203,9 @@
                 "close_price_label": "終了:",
                 "now_price_label": "現在:",
                 "result": "結果",
-                "trend": "トレンド"
+                "trend": "トレンド",
+                "closing_soon": "まもなく終了！",
+                "pool_ratio": "プール比率"
             },
             "time": {
                 "days_short": "日",
@@ -202,6 +213,43 @@
                 "minutes_short": "分",
                 "seconds_short": "秒"
             }
+        },
+        "platform_stats": {
+            "title": "プラットフォーム統計",
+            "total_volume": "総取引量",
+            "total_rounds": "総ラウンド数",
+            "total_users": "プレイヤー",
+            "live_rounds": "ライブ中",
+            "open_rounds": "オープンラウンド"
+        },
+        "leaderboard": {
+            "title": "リーダーボード",
+            "by_volume": "取引量順",
+            "by_profit": "利益順",
+            "rank": "#",
+            "player": "プレイヤー",
+            "volume": "取引量",
+            "profit": "利益",
+            "win_rate": "勝率",
+            "bets": "ベット",
+            "no_data": "まだリーダーボードデータがありません。"
+        },
+        "recent_activity": {
+            "title": "最近のアクティビティ",
+            "placed_bet": "{amount} USDCをベット",
+            "no_activity": "まだ最近のアクティビティはありません。",
+            "just_now": "たった今",
+            "ago": "{time}前"
+        },
+        "user_performance": {
+            "title": "あなたの統計",
+            "total_bets": "総ベット数",
+            "win_rate": "勝率",
+            "profit_loss": "損益",
+            "total_volume": "取引量",
+            "won": "勝ち",
+            "lost": "負け",
+            "connect_prompt": "ウォレットを接続して統計を確認してください。"
         }
     }
 }

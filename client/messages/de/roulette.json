@@ -118,6 +118,7 @@
         "create_table_submit": "Tisch erstellen",
         "global_stats_total_users": "Gesamte Nutzer",
         "global_stats_total_tables": "Gesamte Tische",
+        "global_stats_active_tables": "Aktive Tische",
         "global_stats_tables_breakdown": "{open} offen, {active} aktiv",
         "global_stats_total_volume": "Gesamtvolumen",
         "global_stats_total_winnings": "Gesamtgewinne",
@@ -199,6 +200,13 @@
         "instructions_step_your_turn": "In deinem Zug wählst du eine Zahl von 0 bis 9 und deinen Wettbetrag. Spiele dann deinen Zug. Wenn deine Zahl mit dem zufälligen Roulette Ergebnis übereinstimmt, wirst du eliminiert.",
         "instructions_step_next_player": "Der Zug des nächsten Spielers beginnt, nachdem der vorherige Spieler seinen Zug gespielt hat. Er muss den gleichen Wettbetrag wie der vorherige Spieler setzen oder die Wette erhöhen, um im Spiel zu bleiben.",
         "instructions_step_until_one_left": "Das Spiel geht weiter, bis nur noch ein Spieler übrig ist. Der letzte verbleibende Spieler gewinnt den gesamten Pot.",
-        "instructions_step_claim_winnings": "Wenn du gewinnst, vergiss nicht, deine Gewinne im Bereich Nutzerwetten einzufordern."
+        "instructions_step_claim_winnings": "Wenn du gewinnst, vergiss nicht, deine Gewinne im Bereich Nutzerwetten einzufordern.",
+        "hero_cta": "Tisch erstellen",
+        "hero_cta_browse": "Tische durchsuchen",
+        "hero_subtitle": "Wähle eine Zahl. Platziere deine Wette. Überlebe.",
+        "hero_live_badge": "Live auf Arbitrum",
+        "tables_open_seats": "{count} Plätze frei",
+        "tables_pot_label": "Pot",
+        "active_table_status_label": "Status"
     }
 }

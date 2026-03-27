@@ -102,7 +102,14 @@
                 "amount_required": "必须填写金额。",
                 "amount_must_be_integer": "金额必须为整数（不支持小数）。",
                 "amount_invalid": "无效金额。请使用整数值。"
-            }
+            },
+            "presets_label": "快速预设",
+            "preset_5m_eth": "5分钟 ETH",
+            "preset_15m_btc": "15分钟 BTC",
+            "preset_1h_eth": "1小时 ETH",
+            "preset_1h_arb": "1小时 ARB",
+            "advanced_options": "高级选项（自定义时间选择器）",
+            "closes_at": "关闭时间"
         },
         "rounds": {
             "titles": {
@@ -167,7 +174,9 @@
                 "confirm": "确认下注",
                 "processing": "处理中...",
                 "processing_title": "交易处理中",
-                "processing_description": "请在钱包中确认交易并等待确认..."
+                "processing_description": "请在钱包中确认交易并等待确认...",
+                "potential_payout": "潜在收益",
+                "quick_amounts": "快速："
             },
             "status": {
                 "open": "开放",
@@ -194,7 +203,9 @@
                 "close_price_label": "结束价：",
                 "now_price_label": "当前价：",
                 "result": "结果",
-                "trend": "趋势"
+                "trend": "趋势",
+                "closing_soon": "即将关闭！",
+                "pool_ratio": "池比例"
             },
             "time": {
                 "days_short": "天",
@@ -202,6 +213,43 @@
                 "minutes_short": "分",
                 "seconds_short": "秒"
             }
+        },
+        "platform_stats": {
+            "title": "平台统计",
+            "total_volume": "总交易量",
+            "total_rounds": "总轮次",
+            "total_users": "玩家",
+            "live_rounds": "正在直播",
+            "open_rounds": "开放轮次"
+        },
+        "leaderboard": {
+            "title": "排行榜",
+            "by_volume": "按交易量",
+            "by_profit": "按利润",
+            "rank": "#",
+            "player": "玩家",
+            "volume": "交易量",
+            "profit": "利润",
+            "win_rate": "胜率",
+            "bets": "投注",
+            "no_data": "暂无排行榜数据。"
+        },
+        "recent_activity": {
+            "title": "最近活动",
+            "placed_bet": "投注了 {amount} USDC 于",
+            "no_activity": "暂无最近活动。",
+            "just_now": "刚刚",
+            "ago": "{time}前"
+        },
+        "user_performance": {
+            "title": "您的统计",
+            "total_bets": "总投注数",
+            "win_rate": "胜率",
+            "profit_loss": "盈/亏",
+            "total_volume": "交易量",
+            "won": "盈利",
+            "lost": "亏损",
+            "connect_prompt": "连接钱包以查看您的统计信息。"
         }
     }
 }

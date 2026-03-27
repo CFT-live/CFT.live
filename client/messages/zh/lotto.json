@@ -100,6 +100,32 @@
         "metadata_hide_details": "隐藏详情",
         "metadata_show_details": "显示详情",
         "metadata_max_tickets_per_buy": "每次最多购买门票数",
-        "metadata_min_round_duration_seconds": "最短轮次时长（秒）"
+        "metadata_min_round_duration_seconds": "最短轮次时长（秒）",
+
+        "hero_draw_label": "抽奖",
+        "hero_ticket_price_label": "票价",
+        "hero_tickets_sold_label": "已售",
+        "hero_your_odds_label": "您的中奖率",
+        "hero_tickets_unit": "张票",
+        "hero_connect_to_play": "连接钱包开始游戏",
+
+        "open_draws_your_win_odds": "您的中奖概率",
+        "open_draws_draw_opens_in": "抽奖将在以下时间后结束",
+        "open_draws_no_tickets_to_close": "还没有票被购买 — 购买第一张票吧！",
+
+        "buy_dialog_odds_preview": "~{odds}% 中奖概率",
+
+        "global_stats_total_draws": "总计抽奖",
+        "global_stats_total_volume": "总成交量",
+        "global_stats_total_players": "玩家数",
+        "global_stats_total_tickets": "已售票数",
+
+        "user_stats_title": "您的统计",
+        "user_stats_tickets_bought": "已购票数",
+        "user_stats_total_spent": "总花费",
+        "user_stats_total_winnings": "总奖金",
+        "user_stats_net_pnl": "净盈亏",
+
+        "recent_winners_title": "最近获奖者"
     }
 }

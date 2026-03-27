@@ -197,6 +197,35 @@ export const CreateRound = ({
       isRefreshing={false}
     >
       <form onSubmit={onSubmit} className="space-y-6">
+        {/* Quick Presets */}
+        <div className="space-y-2">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+            {t("create_round.presets_label")}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { label: t("create_round.preset_5m_eth"), lock: "5", close: "5", asset: "ETH" as Asset, pos: "UP" as Position },
+              { label: t("create_round.preset_15m_btc"), lock: "5", close: "15", asset: "BTC" as Asset, pos: "UP" as Position },
+              { label: t("create_round.preset_1h_eth"), lock: "5", close: "60", asset: "ETH" as Asset, pos: "UP" as Position },
+              { label: t("create_round.preset_1h_arb"), lock: "5", close: "60", asset: "ARB" as Asset, pos: "UP" as Position },
+            ] as const).map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => {
+                  setLockInMinutes(preset.lock);
+                  setCloseInMinutes(preset.close);
+                  setAsset(preset.asset);
+                  setPosition(preset.pos);
+                }}
+                className="text-xs px-3 py-1 rounded border border-border text-muted-foreground hover:border-primary/60 hover:text-foreground transition-colors font-mono"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Timing Section */}
         <div className="space-y-4 p-4 border border-border/50 rounded-md bg-card/30">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-primary font-semibold border-b border-border pb-2">

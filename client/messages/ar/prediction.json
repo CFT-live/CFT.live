@@ -102,7 +102,14 @@
                 "amount_required": "المبلغ مطلوب.",
                 "amount_must_be_integer": "يجب أن يكون المبلغ عددا صحيحا دون كسور.",
                 "amount_invalid": "مبلغ غير صالح. استخدم قيمة عدد صحيح."
-            }
+            },
+            "presets_label": "إعدادات مسبقة سريعة",
+            "preset_5m_eth": "5د ETH",
+            "preset_15m_btc": "15د BTC",
+            "preset_1h_eth": "1س ETH",
+            "preset_1h_arb": "1س ARB",
+            "advanced_options": "خيارات متقدمة (منتقي وقت مخصص)",
+            "closes_at": "يغلق في"
         },
         "rounds": {
             "titles": {
@@ -167,7 +174,9 @@
                 "confirm": "تأكيد الرهان",
                 "processing": "جار المعالجة...",
                 "processing_title": "جار معالجة المعاملة",
-                "processing_description": "يرجى تأكيد المعاملة في محفظتك والانتظار حتى يتم التأكيد..."
+                "processing_description": "يرجى تأكيد المعاملة في محفظتك والانتظار حتى يتم التأكيد...",
+                "potential_payout": "العائد المحتمل",
+                "quick_amounts": "سريع:"
             },
             "status": {
                 "open": "مفتوح",
@@ -194,7 +203,9 @@
                 "close_price_label": "إغلاق:",
                 "now_price_label": "الآن:",
                 "result": "النتيجة",
-                "trend": "الاتجاه"
+                "trend": "الاتجاه",
+                "closing_soon": "يغلق قريبا!",
+                "pool_ratio": "نسبة المجمع"
             },
             "time": {
                 "days_short": "ي",
@@ -202,6 +213,43 @@
                 "minutes_short": "د",
                 "seconds_short": "ث"
             }
+        },
+        "platform_stats": {
+            "title": "إحصائيات المنصة",
+            "total_volume": "إجمالي الحجم",
+            "total_rounds": "إجمالي الجولات",
+            "total_users": "اللاعبون",
+            "live_rounds": "مباشر الآن",
+            "open_rounds": "جولات مفتوحة"
+        },
+        "leaderboard": {
+            "title": "لوحة المتصدرين",
+            "by_volume": "حسب الحجم",
+            "by_profit": "حسب الربح",
+            "rank": "#",
+            "player": "اللاعب",
+            "volume": "الحجم",
+            "profit": "الربح",
+            "win_rate": "معدل الفوز",
+            "bets": "الرهانات",
+            "no_data": "لا توجد بيانات للوحة المتصدرين بعد."
+        },
+        "recent_activity": {
+            "title": "النشاط الأخير",
+            "placed_bet": "وضع {amount} USDC على",
+            "no_activity": "لا يوجد نشاط حديث بعد.",
+            "just_now": "الآن",
+            "ago": "منذ {time}"
+        },
+        "user_performance": {
+            "title": "إحصائياتك",
+            "total_bets": "إجمالي الرهانات",
+            "win_rate": "معدل الفوز",
+            "profit_loss": "ر/خ",
+            "total_volume": "الحجم",
+            "won": "فاز",
+            "lost": "خسر",
+            "connect_prompt": "اربط محفظتك لعرض إحصائياتك."
         }
     }
 }

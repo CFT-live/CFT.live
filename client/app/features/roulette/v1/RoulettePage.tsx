@@ -17,6 +17,7 @@ import { getMetadata } from "./api/actions.roulette";
 import { ContractMetadata } from "./components/RouletteMetadata";
 import { OpenTables } from "./components/OpenTables";
 import { ActiveTables } from "./components/ActiveTables";
+import { GlobalStats } from "./components/GlobalStats";
 import { RouletteAdminCard } from "./components/RouletteAdminCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { REFRESH_INTERVAL_MILLIS } from "@/app/helpers";
@@ -163,66 +164,48 @@ export default async function RoulettePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8 border-b border-border pb-6 sm:pb-8">
-          <div className="inline-flex items-center justify-center mb-3 sm:mb-4">
-            <div className="text-primary">
-              <svg
-                className="w-10 h-10 sm:w-12 sm:h-12 mx-auto"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="1"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-                <circle cx="12" cy="12" r="3" />
-                <path
-                  d="M12 2 L12 5 M12 19 L12 22 M22 12 L19 12 M5 12 L2 12"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+        {/* Hero Section */}
+        <div className="relative text-center mb-6 sm:mb-8 border-b border-border pb-6 sm:pb-8 overflow-hidden">
+
+
+          <div className="relative z-10">
+
+
+            <h1 className="text-3xl sm:text-5xl font-black text-foreground mb-2 sm:mb-3 uppercase tracking-wider">
+              {t("title")}
+            </h1>
+            <p className="text-sm sm:text-lg text-primary font-semibold mb-1 sm:mb-2 uppercase tracking-wide">
+              {t("hero_subtitle")}
+            </p>
+
+            <Instructions
+              title={t("instructions_title")}
+              instructions={[
+                t("instructions_step_create_or_join"),
+                t("instructions_step_mark_ready"),
+                t("instructions_step_your_turn"),
+                t("instructions_step_next_player"),
+                t("instructions_step_until_one_left"),
+                t("instructions_step_claim_winnings"),
+              ]}
+            />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3 uppercase tracking-wider">
-            {t("title")}
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 max-w-2xl mx-auto uppercase tracking-wide px-2">
-            {t("tagline")}
-          </p>
-          <Instructions
-            title={t("instructions_title")}
-            instructions={[
-              t("instructions_step_create_or_join"),
-              t("instructions_step_mark_ready"),
-              t("instructions_step_your_turn"),
-              t("instructions_step_next_player"),
-              t("instructions_step_until_one_left"),
-              t("instructions_step_claim_winnings"),
-            ]}
-          />
         </div>
 
-        {/* Contract Metadata */}
-        <ContractMetadata />
-
-        {/* Global Stats
-        <GlobalStats />
-        */}
-        {/* Tables Display */}
+        {/* Global Stats - social proof */}
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <div className="space-y-4 sm:space-y-6">
-            <ActiveTables />
-            <OpenTables />
-          </div>
+          <GlobalStats />
         </HydrationBoundary>
+
+        {/* Tables Display */}
+        <div id="tables-section">
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <div className="space-y-4 sm:space-y-6">
+              <ActiveTables />
+              <OpenTables />
+            </div>
+          </HydrationBoundary>
+        </div>
 
         {/* Selected Table Display */}
         {tableId && (
@@ -232,6 +215,11 @@ export default async function RoulettePage({
             </div>
           </HydrationBoundary>
         )}
+
+        {/* Contract Metadata - technical details at the bottom */}
+        <div className="mt-8 sm:mt-12">
+          <ContractMetadata />
+        </div>
 
         {/* Admin section */}
         <RouletteAdminCard

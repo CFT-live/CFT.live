@@ -102,7 +102,14 @@
                 "amount_required": "Необходимо указать сумму.",
                 "amount_must_be_integer": "Сумма должна быть целым числом без десятичных знаков.",
                 "amount_invalid": "Некорректная сумма. Используйте целое число."
-            }
+            },
+            "presets_label": "Быстрые настройки",
+            "preset_5m_eth": "5м ETH",
+            "preset_15m_btc": "15м BTC",
+            "preset_1h_eth": "1ч ETH",
+            "preset_1h_arb": "1ч ARB",
+            "advanced_options": "Расширенные параметры (выбор произвольного времени)",
+            "closes_at": "Закрывается в"
         },
         "rounds": {
             "titles": {
@@ -167,7 +174,9 @@
                 "confirm": "Подтвердить ставку",
                 "processing": "Обработка...",
                 "processing_title": "Обработка транзакции",
-                "processing_description": "Подтвердите транзакцию в кошельке и дождитесь подтверждения..."
+                "processing_description": "Подтвердите транзакцию в кошельке и дождитесь подтверждения...",
+                "potential_payout": "Возможный выигрыш",
+                "quick_amounts": "Быстро:"
             },
             "status": {
                 "open": "ОТКРЫТ",
@@ -194,7 +203,9 @@
                 "close_price_label": "Закрытие:",
                 "now_price_label": "Сейчас:",
                 "result": "Результат",
-                "trend": "Тренд"
+                "trend": "Тренд",
+                "closing_soon": "Закрывается скоро!",
+                "pool_ratio": "Соотношение пула"
             },
             "time": {
                 "days_short": "д",
@@ -202,6 +213,43 @@
                 "minutes_short": "м",
                 "seconds_short": "с"
             }
+        },
+        "platform_stats": {
+            "title": "Статистика платформы",
+            "total_volume": "Общий объём",
+            "total_rounds": "Всего раундов",
+            "total_users": "Игроки",
+            "live_rounds": "Сейчас в эфире",
+            "open_rounds": "Открытые раунды"
+        },
+        "leaderboard": {
+            "title": "Таблица лидеров",
+            "by_volume": "По объёму",
+            "by_profit": "По прибыли",
+            "rank": "#",
+            "player": "Игрок",
+            "volume": "Объём",
+            "profit": "Прибыль",
+            "win_rate": "Процент побед",
+            "bets": "Ставки",
+            "no_data": "Данных таблицы лидеров пока нет."
+        },
+        "recent_activity": {
+            "title": "Последние действия",
+            "placed_bet": "поставил {amount} USDC на",
+            "no_activity": "Последних действий пока нет.",
+            "just_now": "только что",
+            "ago": "{time} назад"
+        },
+        "user_performance": {
+            "title": "Ваша статистика",
+            "total_bets": "Всего ставок",
+            "win_rate": "Процент побед",
+            "profit_loss": "П/У",
+            "total_volume": "Объём",
+            "won": "Выиграно",
+            "lost": "Проиграно",
+            "connect_prompt": "Подключите кошелёк, чтобы увидеть свою статистику."
         }
     }
 }
