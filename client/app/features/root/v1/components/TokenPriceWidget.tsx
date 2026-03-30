@@ -128,7 +128,7 @@ export function TokenPriceWidget() {
   }
 
   return (
-    <div className="mb-10 flex justify-center lg:justify-start">
+    <div className="flex justify-center">
       <div className="inline-flex flex-wrap items-center justify-center gap-3 rounded-lg border border-primary/40 bg-card/70 px-5 py-3 backdrop-blur-sm sm:flex-nowrap">
         <span className="font-mono text-sm text-muted-foreground">
           CFT / USDC
