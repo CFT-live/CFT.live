@@ -38,7 +38,7 @@
     "how_it_works_line_1": "Пул погашения рассчитывает пропорциональную сумму USDC для выбранного вами количества CFT.",
     "how_it_works_line_2": "В режиме permit сообщение разрешения подписывается off-chain, после чего redeemWithPermit отправляется on-chain одним действием.",
     "how_it_works_line_3": "Резервный режим сначала использует ERC-20 approve, с опцией безлимитного approval, если вы не хотите повторять его позже.",
-    "wallet_asset_title": "Add CFT before redeeming",
-    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
+    "wallet_asset_title": "Добавьте CFT перед погашением",
+    "wallet_asset_description": "Если кошелёк подключён, но CFT пока не отображается, добавьте токен здесь перед началом сценария погашения."
   }
 }

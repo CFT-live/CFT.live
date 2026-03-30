@@ -38,7 +38,7 @@
     "how_it_works_line_1": "يحسب مجمع الاسترداد كمية USDC نسبية مقابل كمية CFT التي تختارها.",
     "how_it_works_line_2": "في وضع permit يتم توقيع رسالة السماح خارج السلسلة ثم إرسال redeemWithPermit على السلسلة في خطوة واحدة.",
     "how_it_works_line_3": "أما الوضع البديل فيستخدم ERC-20 approve أولاً، مع خيار السماح غير المحدود إذا كنت لا تريد تكرار الموافقات لاحقاً.",
-    "wallet_asset_title": "Add CFT before redeeming",
-    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
+    "wallet_asset_title": "أضف CFT قبل الاسترداد",
+    "wallet_asset_description": "إذا كانت محفظتك متصلة لكن CFT غير مرئي بعد، أضفه هنا قبل بدء مسار الاسترداد."
   }
 }
