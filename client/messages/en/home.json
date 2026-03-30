@@ -9,6 +9,8 @@
         "Games": "Protocols",
         "Sandbox": "Sandbox",
         "Sandbox_Description": "Test and interact with any smart contract in a safe environment. Experiment freely.",
+        "Revoke_Approvals": "Revoke_Approvals",
+        "Revoke_Approvals_Description": "Scan and revoke ERC-20 token approvals on Arbitrum. Protect your wallet from unwanted token spending.",
         "Prediction_Market": "Prediction_Market",
         "Prediction_Market_Description": "Predict asset price movements. Create bets on UP/DOWN markets. Winner takes the pot.",
         "EXECUTE_PROTOCOL": "EXECUTE PROTOCOL",
