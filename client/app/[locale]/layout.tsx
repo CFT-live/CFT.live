@@ -7,7 +7,6 @@ import { Github } from "lucide-react";
 
 import { ContextProvider } from "@/app/context";
 import Providers from "@/app/providers/Providers";
-import { UserCounter } from "@/app/features/root/v1/components/UserCounter";
 import ConnectButton from "@/app/features/root/v1/components/ConnectButton";
 import LanguageSwitcher from "@/app/features/root/v1/components/LanguageSwitcher";
 import { Breadcrumb } from "@/app/features/root/v1/components/Breadcrumb";
@@ -172,12 +171,8 @@ export default async function RootLayout({
                       <ConnectButton />
                     </div>
 
-                    {/* Desktop Nav & User Counter */}
+                    {/* Desktop Nav */}
                     <div className="flex items-center justify-between md:justify-end gap-4 md:gap-8">
-                      <div className="w-full md:w-auto flex justify-end md:justify-start">
-                        <UserCounter />
-                      </div>
-
                       {/* Desktop Only Actions */}
                       <div className="hidden md:flex items-center gap-6">
                         <Link

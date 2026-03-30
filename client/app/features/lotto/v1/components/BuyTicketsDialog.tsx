@@ -28,7 +28,6 @@ interface BuyTicketsDialogProps {
   onOpenChange: (open: boolean) => void;
   drawId: string;
   ticketPrice: number;
-  currentTicketCount: number;
   maxTicketAmount: number;
   onBuyTickets: (amount: number, total: bigint) => void;
   isLoading: boolean;
@@ -41,7 +40,6 @@ export function BuyTicketsDialog({
   onOpenChange,
   drawId,
   ticketPrice,
-  currentTicketCount,
   maxTicketAmount,
   onBuyTickets,
   isLoading,

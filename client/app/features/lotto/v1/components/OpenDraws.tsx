@@ -313,7 +313,6 @@ export default function OpenDraws() {
         onOpenChange={setDialogOpen}
         drawId={draw.id}
         ticketPrice={ticketPriceNumber}
-        currentTicketCount={currentTicketCount}
         maxTicketAmount={maxTicketAmount}
         onBuyTickets={handleBuyTickets}
         isLoading={isLoadingBuy}

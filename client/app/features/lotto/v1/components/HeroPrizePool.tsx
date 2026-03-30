@@ -157,7 +157,6 @@ export function HeroPrizePool() {
         onOpenChange={setDialogOpen}
         drawId={drawId}
         ticketPrice={ticketPriceNumber}
-        currentTicketCount={ticketCount}
         maxTicketAmount={maxTicketAmount}
         onBuyTickets={(amount, total) => buyTickets(amount, total)}
         isLoading={isLoadingBuy}
