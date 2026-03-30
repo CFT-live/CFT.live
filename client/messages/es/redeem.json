@@ -38,7 +38,7 @@
     "how_it_works_line_1": "El pool de canje calcula una cantidad proporcional de USDC para el CFT que selecciones.",
     "how_it_works_line_2": "El modo permit firma un mensaje de autorización fuera de cadena y luego envía redeemWithPermit on-chain en una sola acción.",
     "how_it_works_line_3": "El modo alternativo usa primero ERC-20 approve, con una opción ilimitada si no quieres repetir aprobaciones más adelante.",
-    "wallet_asset_title": "Add CFT before redeeming",
-    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
+    "wallet_asset_title": "Añadir CFT antes de canjear",
+    "wallet_asset_description": "Si tu billetera está conectada pero CFT aún no es visible, añádelo aquí antes de iniciar el flujo de canje."
   }
 }

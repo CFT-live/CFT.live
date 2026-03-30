@@ -38,7 +38,7 @@
     "how_it_works_line_1": "Le pool de rachat calcule un montant d'USDC proportionnel aux CFT que vous sélectionnez.",
     "how_it_works_line_2": "Le mode permit signe un message d'autorisation hors chaîne puis soumet redeemWithPermit on-chain en une seule action.",
     "how_it_works_line_3": "Le mode de secours utilise d'abord ERC-20 approve, avec une option illimitée si vous ne voulez pas répéter l'approbation plus tard.",
-    "wallet_asset_title": "Add CFT before redeeming",
-    "wallet_asset_description": "If your wallet is connected but CFT is not visible yet, add it here before starting the redemption flow."
+    "wallet_asset_title": "Ajouter CFT avant de racheter",
+    "wallet_asset_description": "Si votre wallet est connecté mais que CFT n'est pas encore visible, ajoutez-le ici avant de commencer le flux de rachat."
   }
 }

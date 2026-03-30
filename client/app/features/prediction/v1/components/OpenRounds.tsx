@@ -63,7 +63,6 @@ export default function OpenRounds() {
     null
   );
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
-  const [selectedRound, setSelectedRound] = useState<Round | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -104,7 +103,6 @@ export default function OpenRounds() {
     setDialogOpen(false);
     setSelectedPosition(null);
     setSelectedRoundId(null);
-    setSelectedRound(null);
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     reset();
     setTimeout(() => {
@@ -137,8 +135,6 @@ export default function OpenRounds() {
   const openBetDialog = (position: Position, roundId: string) => {
     setSelectedPosition(position);
     setSelectedRoundId(roundId);
-    const round = data?.rounds.find((r) => r.id === roundId) ?? null;
-    setSelectedRound(round);
     setDialogOpen(true);
   };
 

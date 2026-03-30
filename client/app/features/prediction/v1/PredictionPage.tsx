@@ -198,7 +198,7 @@ export default async function PredictionPage() {
         <PriceData />
       </div>
       {/* User balance + Create Round — side by side on wide screens */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6 px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 gap-6 mt-6 px-4 sm:px-6 lg:px-8 pb-8">
         <ContractBalance />
         <CreateRound
           minOpenTime={contractMetadata.minOpenTimeInSeconds}
@@ -217,7 +217,7 @@ export default async function PredictionPage() {
         </HydrationBoundary>
 
         {/* Closed rounds + Leaderboard + Recent activity */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 gap-6 mt-6">
           <div className="xl:col-span-2">
             <HydrationBoundary state={dehydrate(queryClient)}>
               <ClosedRounds />
