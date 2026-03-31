@@ -180,7 +180,13 @@
                 "processing_title": "Memproses Transaksi",
                 "processing_description": "Silakan konfirmasi transaksi di dompet Anda dan tunggu konfirmasi...",
                 "potential_payout": "Pembayaran Potensial",
-                "quick_amounts": "Cepat:"
+                "quick_amounts": "Cepat:",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "TERBUKA",
@@ -209,14 +215,22 @@
                 "result": "Hasil",
                 "trend": "Tren",
                 "closing_soon": "Segera ditutup!",
-                "pool_ratio": "Rasio pool"
+                "pool_ratio": "Rasio pool",
+                "your_bets": "Taruhan Anda",
+                "bet_won": "Menang",
+                "bet_lost": "Kalah",
+                "bet_pending": "Tertunda",
+                "bet_refunded": "Dikembalikan",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "h",
                 "hours_short": "j",
                 "minutes_short": "m",
                 "seconds_short": "d"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "Statistik Platform",
@@ -254,6 +268,11 @@
             "won": "Menang",
             "lost": "Kalah",
             "connect_prompt": "Hubungkan wallet untuk melihat statistik Anda."
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

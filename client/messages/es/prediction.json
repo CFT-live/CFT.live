@@ -180,7 +180,13 @@
                 "processing_title": "Procesando Transacción",
                 "processing_description": "Por favor confirma la transacción en tu billetera y espera la confirmación.",
                 "potential_payout": "Pago potencial",
-                "quick_amounts": "Rápido:"
+                "quick_amounts": "Rápido:",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "ABIERTO",
@@ -209,14 +215,22 @@
                 "result": "Resultado",
                 "trend": "Tendencia",
                 "closing_soon": "¡Cerrando pronto!",
-                "pool_ratio": "Proporción del pool"
+                "pool_ratio": "Proporción del pool",
+                "your_bets": "Tus apuestas",
+                "bet_won": "Ganada",
+                "bet_lost": "Perdida",
+                "bet_pending": "Pendiente",
+                "bet_refunded": "Reembolsada",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "d",
                 "hours_short": "h",
                 "minutes_short": "m",
                 "seconds_short": "s"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "Estadísticas de la plataforma",
@@ -254,6 +268,11 @@
             "won": "Ganado",
             "lost": "Perdido",
             "connect_prompt": "Conecta tu wallet para ver tus estadísticas."
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

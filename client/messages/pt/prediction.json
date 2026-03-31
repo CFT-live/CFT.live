@@ -180,7 +180,13 @@
                 "processing_title": "Processando Transação",
                 "processing_description": "Confirme a transação na sua carteira e aguarde a confirmação...",
                 "potential_payout": "Pagamento potencial",
-                "quick_amounts": "Rápido:"
+                "quick_amounts": "Rápido:",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "ABERTA",
@@ -209,14 +215,22 @@
                 "result": "Resultado",
                 "trend": "Tendência",
                 "closing_soon": "Fechando em breve!",
-                "pool_ratio": "Proporção do pool"
+                "pool_ratio": "Proporção do pool",
+                "your_bets": "Suas apostas",
+                "bet_won": "Ganhou",
+                "bet_lost": "Perdeu",
+                "bet_pending": "Pendente",
+                "bet_refunded": "Reembolsado",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "d",
                 "hours_short": "h",
                 "minutes_short": "m",
                 "seconds_short": "s"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "Estatísticas da plataforma",
@@ -254,6 +268,11 @@
             "won": "Ganhou",
             "lost": "Perdeu",
             "connect_prompt": "Conecte a carteira para ver suas estatísticas."
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

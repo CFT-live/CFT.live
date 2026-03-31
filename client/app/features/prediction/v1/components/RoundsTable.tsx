@@ -5,13 +5,13 @@ import RoundRow from "./round-row";
 
 interface RoundsTableProps {
   rounds: Round[];
-  openBetDialog?: (position: Position, roundId: string) => void;
+  openBetDialog?: (position: Position, roundId: string, amount?: string) => void;
 }
 
 export default function RoundsTable({
   rounds,
   openBetDialog,
-}: RoundsTableProps) {
+}: Readonly<RoundsTableProps>) {
   return (
     <div className="relative">
       <div className="overflow-x-auto pb-4 custom-scrollbar">

@@ -180,7 +180,13 @@
                 "processing_title": "交易处理中",
                 "processing_description": "请在钱包中确认交易并等待确认...",
                 "potential_payout": "潜在收益",
-                "quick_amounts": "快速："
+                "quick_amounts": "快速：",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "开放",
@@ -209,14 +215,22 @@
                 "result": "结果",
                 "trend": "趋势",
                 "closing_soon": "即将关闭！",
-                "pool_ratio": "池比例"
+                "pool_ratio": "池比例",
+                "your_bets": "您的投注",
+                "bet_won": "赢了",
+                "bet_lost": "输了",
+                "bet_pending": "待定",
+                "bet_refunded": "已退款",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "天",
                 "hours_short": "小时",
                 "minutes_short": "分",
                 "seconds_short": "秒"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "平台统计",
@@ -254,6 +268,11 @@
             "won": "盈利",
             "lost": "亏损",
             "connect_prompt": "连接钱包以查看您的统计信息。"
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

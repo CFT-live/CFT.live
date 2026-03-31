@@ -180,7 +180,13 @@
                 "processing_title": "Обработка транзакции",
                 "processing_description": "Подтвердите транзакцию в кошельке и дождитесь подтверждения...",
                 "potential_payout": "Возможный выигрыш",
-                "quick_amounts": "Быстро:"
+                "quick_amounts": "Быстро:",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "ОТКРЫТ",
@@ -209,14 +215,22 @@
                 "result": "Результат",
                 "trend": "Тренд",
                 "closing_soon": "Закрывается скоро!",
-                "pool_ratio": "Соотношение пула"
+                "pool_ratio": "Соотношение пула",
+                "your_bets": "Ваши ставки",
+                "bet_won": "Выиграна",
+                "bet_lost": "Проиграна",
+                "bet_pending": "Ожидание",
+                "bet_refunded": "Возвращена",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "д",
                 "hours_short": "ч",
                 "minutes_short": "м",
                 "seconds_short": "с"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "Статистика платформы",
@@ -254,6 +268,11 @@
             "won": "Выиграно",
             "lost": "Проиграно",
             "connect_prompt": "Подключите кошелёк, чтобы увидеть свою статистику."
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

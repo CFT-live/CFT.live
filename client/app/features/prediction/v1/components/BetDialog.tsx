@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   AlertDialog,
@@ -18,16 +18,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AutoClearingAlert } from "../../../root/v1/components/AutoClearingAlert";
 import type { Position } from "../../../../types";
+import type { DepositAndBetStep } from "../hooks/useDepositAndBet";
 
 interface BetDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   roundId: string | null;
   initialPosition: Position | null;
+  initialAmount?: string | null;
   isLoading: boolean;
   errorMessage: string | undefined;
   onConfirm: (roundId: string, position: Position, betAmount: string) => void;
   onCancel: () => void;
+  contractBalance?: string | null;
+  flowStep?: DepositAndBetStep;
+  flowTotalSteps?: number;
+  flowCurrentStep?: number;
 }
 
 export function BetDialog({
@@ -35,25 +41,35 @@ export function BetDialog({
   onOpenChange,
   roundId,
   initialPosition,
+  initialAmount,
   isLoading,
   errorMessage,
   onConfirm,
   onCancel,
+  contractBalance,
+  flowStep = "idle",
+  flowTotalSteps = 1,
+  flowCurrentStep = 0,
 }: Readonly<BetDialogProps>) {
   const t = useTranslations("prediction");
   const [betAmount, setBetAmount] = useState(() => {
+    if (initialAmount) return initialAmount;
     if (globalThis.window !== undefined) {
       return globalThis.localStorage.getItem("prediction_last_bet_amount") ?? "1";
     }
     return "1";
   });
   const [position, setPosition] = useState<Position | null>(initialPosition);
+  const prevOpenRef = useRef(open);
 
-  // Sync position when dialog opens with a new initial value
-  const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen) setPosition(initialPosition);
-    onOpenChange(isOpen);
-  };
+  // Sync position/amount when dialog transitions from closed → open
+  useEffect(() => {
+    if (open && !prevOpenRef.current) {
+      setPosition(initialPosition);
+      if (initialAmount) setBetAmount(initialAmount);
+    }
+    prevOpenRef.current = open;
+  }, [open, initialPosition, initialAmount]);
 
   const handleSetBetAmount = (val: string) => {
     setBetAmount(val);
@@ -73,7 +89,7 @@ export function BetDialog({
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
@@ -160,7 +176,67 @@ export function BetDialog({
           </div>
 
           <AutoClearingAlert message={errorMessage} variant="destructive" />
-          {isLoading && (
+
+          {/* Contract balance + auto-topup info */}
+          {contractBalance != null && (
+            <div className="rounded border border-border px-3 py-2 text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">
+                  {t("rounds.bet_dialog.your_balance")}
+                </span>
+                <span className="font-mono font-medium">
+                  ${contractBalance} USDC
+                </span>
+              </div>
+              {Number.parseFloat(betAmount || "0") >
+                Number.parseFloat(contractBalance) && (
+                <p className="text-primary text-[11px]">
+                  {t("rounds.bet_dialog.auto_topup")}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Step-based progress when multi-step flow is active */}
+          {isLoading && flowTotalSteps > 1 && (
+            <div className="space-y-2">
+              <div className="flex gap-1">
+                {Array.from({ length: flowTotalSteps }).map((_, i) => {
+                  const getStepClass = () => {
+                    if (i < flowCurrentStep) return "bg-primary";
+                    if (i === flowCurrentStep - 1) return "bg-primary animate-pulse";
+                    return "bg-muted";
+                  };
+                  return (
+                    <div
+                      key={`step-${flowTotalSteps}-${i}`}
+                      className={`h-1.5 flex-1 rounded-full transition-colors ${getStepClass()}`}
+                    />
+                  );
+                })}
+              </div>
+              <Alert className="border-primary bg-accent">
+                <AlertDescription>
+                  <strong className="font-semibold text-sm">
+                    {t("rounds.bet_dialog.step_progress", {
+                      current: flowCurrentStep,
+                      total: flowTotalSteps,
+                    })}
+                    {" — "}
+                    {flowStep === "approving" && t("rounds.bet_dialog.step_approving")}
+                    {flowStep === "depositing" && t("rounds.bet_dialog.step_depositing")}
+                    {flowStep === "betting" && t("rounds.bet_dialog.step_betting")}
+                  </strong>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("rounds.bet_dialog.processing_description")}
+                  </p>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          {/* Single-step processing indicator */}
+          {isLoading && flowTotalSteps <= 1 && (
             <Alert className="border-primary bg-accent">
               <AlertDescription>
                 <strong className="font-semibold">

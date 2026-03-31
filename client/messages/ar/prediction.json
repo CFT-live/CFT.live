@@ -180,7 +180,13 @@
                 "processing_title": "جار معالجة المعاملة",
                 "processing_description": "يرجى تأكيد المعاملة في محفظتك والانتظار حتى يتم التأكيد...",
                 "potential_payout": "العائد المحتمل",
-                "quick_amounts": "سريع:"
+                "quick_amounts": "سريع:",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "مفتوح",
@@ -209,14 +215,22 @@
                 "result": "النتيجة",
                 "trend": "الاتجاه",
                 "closing_soon": "يغلق قريبا!",
-                "pool_ratio": "نسبة المجمع"
+                "pool_ratio": "نسبة المجمع",
+                "your_bets": "رهاناتك",
+                "bet_won": "فاز",
+                "bet_lost": "خسر",
+                "bet_pending": "قيد الانتظار",
+                "bet_refunded": "مُسترد",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "ي",
                 "hours_short": "س",
                 "minutes_short": "د",
                 "seconds_short": "ث"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "إحصائيات المنصة",
@@ -254,6 +268,11 @@
             "won": "فاز",
             "lost": "خسر",
             "connect_prompt": "اربط محفظتك لعرض إحصائياتك."
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }
