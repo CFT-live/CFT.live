@@ -42,6 +42,8 @@
             "title": "Vertrags Guthaben",
             "description": "Verwalte deine Gelder",
             "available": "Verfügbar",
+            "connect_prompt": "Verbinde deine Wallet, um dein Vertragsguthaben zu verwalten.",
+            "error_title": "Fehler beim Laden des Vertragsguthabens",
             "fetched_contract_balance": "Abgerufenes Vertrags Guthaben:",
             "Amount_to_deposit": "Einzahlungsbetrag",
             "Deposit": "Einzahlen",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Sperr Minuten dürfen {minutes} Minuten nicht überschreiten.",
                 "amount_required": "Betrag ist erforderlich.",
                 "amount_must_be_integer": "Betrag muss eine ganze Zahl sein (keine Dezimalstellen).",
-                "amount_invalid": "Ungültiger Betrag. Verwende einen ganzzahligen Wert."
+                "amount_invalid": "Ungültiger Betrag. Verwende einen ganzzahligen Wert.",
+                "amount_below_min": "Der Betrag muss mindestens {amount} USDC betragen.",
+                "amount_above_max": "Der Betrag darf {amount} USDC nicht überschreiten."
             },
             "presets_label": "Schnelle Voreinstellungen",
             "preset_5m_eth": "5m ETH",

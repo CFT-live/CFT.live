@@ -42,6 +42,8 @@
             "title": "Contract Balance",
             "description": "Manage your funds",
             "available": "Available",
+            "connect_prompt": "Connect wallet to manage your contract balance.",
+            "error_title": "Error loading contract balance",
             "fetched_contract_balance": "Fetched contract balance:",
             "Amount_to_deposit": "Amount to deposit",
             "Deposit": "Deposit",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Lock minutes cannot exceed {minutes} minutes.",
                 "amount_required": "Amount is required.",
                 "amount_must_be_integer": "Amount must be an integer (no decimals).",
-                "amount_invalid": "Invalid amount. Use an integer value."
+                "amount_invalid": "Invalid amount. Use an integer value.",
+                "amount_below_min": "Amount must be at least {amount} USDC.",
+                "amount_above_max": "Amount cannot exceed {amount} USDC."
             },
             "presets_label": "Quick Presets",
             "preset_5m_eth": "5m ETH",

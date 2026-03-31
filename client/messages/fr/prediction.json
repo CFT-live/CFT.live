@@ -42,6 +42,8 @@
             "title": "Solde du Contrat",
             "description": "Gérez vos fonds",
             "available": "Disponible",
+            "connect_prompt": "Connectez votre portefeuille pour gérer votre solde de contrat.",
+            "error_title": "Erreur lors du chargement du solde du contrat",
             "fetched_contract_balance": "Solde du contrat récupéré :",
             "Amount_to_deposit": "Montant à déposer",
             "Deposit": "Déposer",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Les minutes de verrouillage ne peuvent pas dépasser {minutes} minutes.",
                 "amount_required": "Le montant est requis.",
                 "amount_must_be_integer": "Le montant doit être un entier (sans décimales).",
-                "amount_invalid": "Montant invalide. Utilisez une valeur entière."
+                "amount_invalid": "Montant invalide. Utilisez une valeur entière.",
+                "amount_below_min": "Le montant doit être d'au moins {amount} USDC.",
+                "amount_above_max": "Le montant ne peut pas dépasser {amount} USDC."
             },
             "presets_label": "Préréglages rapides",
             "preset_5m_eth": "5m ETH",

@@ -42,6 +42,8 @@
             "title": "コントラクト残高",
             "description": "資金を管理",
             "available": "利用可能",
+            "connect_prompt": "ウォレットを接続してコントラクト残高を管理してください。",
+            "error_title": "コントラクト残高の読み込みエラー",
             "fetched_contract_balance": "取得したコントラクト残高:",
             "Amount_to_deposit": "入金額",
             "Deposit": "入金",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "ロック時間は {minutes} 分を超えることはできません。",
                 "amount_required": "金額の入力が必要です。",
                 "amount_must_be_integer": "金額は整数である必要があります（小数不可）。",
-                "amount_invalid": "無効な金額です。整数値を使用してください。"
+                "amount_invalid": "無効な金額です。整数値を使用してください。",
+                "amount_below_min": "金額は{amount} USDC以上である必要があります。",
+                "amount_above_max": "金額は{amount} USDCを超えることはできません。"
             },
             "presets_label": "クイックプリセット",
             "preset_5m_eth": "5分 ETH",

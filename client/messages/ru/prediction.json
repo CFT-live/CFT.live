@@ -42,6 +42,8 @@
             "title": "Баланс контракта",
             "description": "Управление вашими средствами",
             "available": "Доступно",
+            "connect_prompt": "Подключите кошелёк для управления балансом контракта.",
+            "error_title": "Ошибка загрузки баланса контракта",
             "fetched_contract_balance": "Получен баланс контракта:",
             "Amount_to_deposit": "Сумма для депозита",
             "Deposit": "Пополнить",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Время блокировки не может превышать {minutes} минут.",
                 "amount_required": "Необходимо указать сумму.",
                 "amount_must_be_integer": "Сумма должна быть целым числом без десятичных знаков.",
-                "amount_invalid": "Некорректная сумма. Используйте целое число."
+                "amount_invalid": "Некорректная сумма. Используйте целое число.",
+                "amount_below_min": "Сумма должна быть не менее {amount} USDC.",
+                "amount_above_max": "Сумма не может превышать {amount} USDC."
             },
             "presets_label": "Быстрые настройки",
             "preset_5m_eth": "5м ETH",

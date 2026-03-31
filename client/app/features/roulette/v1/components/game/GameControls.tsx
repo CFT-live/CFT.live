@@ -11,7 +11,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { AlertCircle, CheckCircle, Clock, Trophy, LogOut, AlertTriangle, RefreshCcw, ChevronDown, Flag, Crosshair } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, Trophy, LogOut, AlertTriangle, RefreshCcw, ChevronDown, Flag } from "lucide-react";
 import { usdcToWei, weiToUsdc } from "@/app/helpers";
 import { useReadContract, useWriteContract } from "wagmi";
 import { useAppKitAccount } from "@reown/appkit/react";
@@ -348,8 +348,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
 
               {/* Random Number Selection - Chamber Grid */}
               <div className="space-y-2">
-                <Label className="text-xs sm:text-sm flex items-center gap-1.5">
-                  <Crosshair className="h-3.5 w-3.5 text-primary" />
+                <Label className="text-xs sm:text-sm">
                   {t("game_controls_select_number")}
                 </Label>
                 <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
@@ -366,9 +365,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
                       )}
                     >
                       {num}
-                      {selectedRandom === num && (
-                        <span className="absolute inset-0 rounded-full border border-primary/30 animate-ping pointer-events-none" />
-                      )}
+
                     </button>
                   ))}
                 </div>

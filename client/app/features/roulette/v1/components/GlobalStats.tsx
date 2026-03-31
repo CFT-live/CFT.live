@@ -34,19 +34,10 @@ export const GlobalStats: React.FC = () => {
   const stats = data.globalStats;
 
   const items = [
-    // { label: t("global_stats_total_users"), value: Number(stats.totalUsers), prefix: "" },
     {
       label: t("global_stats_total_tables"),
       value: Number(stats.totalTables),
       prefix: "",
-    },
-    {
-      label: t("global_stats_active_tables"),
-      value: undefined,
-      prefix: t("global_stats_tables_breakdown", {
-        open: stats.openTables,
-        active: stats.inProgressTables,
-      }),
     },
     {
       label: t("global_stats_total_volume"),
@@ -65,7 +56,7 @@ export const GlobalStats: React.FC = () => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.1 }}
-      className="grid grid-cols-2 sm:grid-cols-4 gap-px border border-border/60 rounded-sm overflow-hidden mb-6 sm:mb-8"
+      className="grid grid-cols-3 gap-px border border-border/60 rounded-sm overflow-hidden mb-6 sm:mb-8"
     >
       {items.map((item) => (
         <div
@@ -77,16 +68,14 @@ export const GlobalStats: React.FC = () => {
           </p>
           <p className="font-mono font-bold text-base sm:text-xl text-foreground">
             {item.prefix}
-            {!!item.value && (
-              <NumberFlow
-                value={item.value}
-                format={
-                  item.prefix === "$"
-                    ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                    : { maximumFractionDigits: 0 }
-                }
-              />
-            )}
+            <NumberFlow
+              value={item.value}
+              format={
+                item.prefix === "$"
+                  ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                  : { maximumFractionDigits: 0 }
+              }
+            />
           </p>
         </div>
       ))}

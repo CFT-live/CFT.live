@@ -42,6 +42,8 @@
             "title": "合约余额",
             "description": "管理你的资金",
             "available": "可用",
+            "connect_prompt": "连接钱包以管理您的合约余额。",
+            "error_title": "加载合约余额时出错",
             "fetched_contract_balance": "已获取的合约余额：",
             "Amount_to_deposit": "存入金额",
             "Deposit": "存款",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "锁定时间不能超过 {minutes} 分钟。",
                 "amount_required": "必须填写金额。",
                 "amount_must_be_integer": "金额必须为整数（不支持小数）。",
-                "amount_invalid": "无效金额。请使用整数值。"
+                "amount_invalid": "无效金额。请使用整数值。",
+                "amount_below_min": "金额不得少于 {amount} USDC。",
+                "amount_above_max": "金额不得超过 {amount} USDC。"
             },
             "presets_label": "快速预设",
             "preset_5m_eth": "5分钟 ETH",

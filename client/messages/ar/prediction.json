@@ -42,6 +42,8 @@
             "title": "رصيد العقد",
             "description": "إدارة أموالك",
             "available": "المتاح",
+            "connect_prompt": "قم بتوصيل المحفظة لإدارة رصيد العقد الخاص بك.",
+            "error_title": "خطأ في تحميل رصيد العقد",
             "fetched_contract_balance": "رصيد العقد الذي تم جلبه:",
             "Amount_to_deposit": "المبلغ المراد إيداعه",
             "Deposit": "إيداع",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "لا يمكن أن تتجاوز دقائق القفل {minutes} دقيقة.",
                 "amount_required": "المبلغ مطلوب.",
                 "amount_must_be_integer": "يجب أن يكون المبلغ عددا صحيحا دون كسور.",
-                "amount_invalid": "مبلغ غير صالح. استخدم قيمة عدد صحيح."
+                "amount_invalid": "مبلغ غير صالح. استخدم قيمة عدد صحيح.",
+                "amount_below_min": "يجب أن يكون المبلغ {amount} USDC على الأقل.",
+                "amount_above_max": "لا يمكن أن يتجاوز المبلغ {amount} USDC."
             },
             "presets_label": "إعدادات مسبقة سريعة",
             "preset_5m_eth": "5د ETH",

@@ -1,10 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 import { MILLIS } from "../../../../../helpers";
 import type { Position, Round } from "../../../../../types";
+import { useNow } from "../../hooks/useNow";
 
 interface BettingButtonsProps {
   readonly round: Round;
@@ -16,20 +17,13 @@ export default function BettingButtons({
   openBetDialog,
 }: Readonly<BettingButtonsProps>) {
   const t = useTranslations("prediction");
-  const [isDisabled, setIsDisabled] = useState(false);
+  const now = useNow();
 
-  useEffect(() => {
-    const checkTime = () => {
-      const now = Date.now();
-      const lockTime = Number.parseInt(round.lockAt) * MILLIS.inSecond;
-      const closeTime = Number.parseInt(round.closeAt) * MILLIS.inSecond;
-      setIsDisabled(now >= lockTime || now >= closeTime);
-    };
-
-    checkTime();
-    const interval = setInterval(checkTime, MILLIS.inSecond);
-    return () => clearInterval(interval);
-  }, [round.lockAt, round.closeAt]);
+  const isDisabled = useMemo(() => {
+    const lockTime = Number.parseInt(round.lockAt) * MILLIS.inSecond;
+    const closeTime = Number.parseInt(round.closeAt) * MILLIS.inSecond;
+    return now >= lockTime || now >= closeTime;
+  }, [now, round.lockAt, round.closeAt]);
 
   return (
     <div className="grid grid-cols-2 gap-2 pt-2">

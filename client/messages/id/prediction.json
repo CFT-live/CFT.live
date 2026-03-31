@@ -42,6 +42,8 @@
             "title": "Saldo Kontrak",
             "description": "Kelola dana Anda",
             "available": "Tersedia",
+            "connect_prompt": "Hubungkan dompet untuk mengelola saldo kontrak Anda.",
+            "error_title": "Gagal memuat saldo kontrak",
             "fetched_contract_balance": "Saldo kontrak diambil:",
             "Amount_to_deposit": "Jumlah untuk disetor",
             "Deposit": "Deposit",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Menit kunci tidak boleh melebihi {minutes} menit.",
                 "amount_required": "Jumlah wajib diisi.",
                 "amount_must_be_integer": "Jumlah harus berupa bilangan bulat (tanpa desimal).",
-                "amount_invalid": "Jumlah tidak valid. Gunakan nilai bilangan bulat."
+                "amount_invalid": "Jumlah tidak valid. Gunakan nilai bilangan bulat.",
+                "amount_below_min": "Jumlah minimal harus {amount} USDC.",
+                "amount_above_max": "Jumlah tidak boleh melebihi {amount} USDC."
             },
             "presets_label": "Preset Cepat",
             "preset_5m_eth": "5m ETH",

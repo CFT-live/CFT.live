@@ -42,6 +42,8 @@
             "title": "Saldo do Contrato",
             "description": "Gerencie seus fundos",
             "available": "Disponível",
+            "connect_prompt": "Conecte sua carteira para gerenciar o saldo do contrato.",
+            "error_title": "Erro ao carregar o saldo do contrato",
             "fetched_contract_balance": "Saldo do contrato obtido:",
             "Amount_to_deposit": "Valor para depositar",
             "Deposit": "Depositar",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Os minutos de bloqueio não podem exceder {minutes} minutos.",
                 "amount_required": "O valor é obrigatório.",
                 "amount_must_be_integer": "O valor deve ser um número inteiro (sem decimais).",
-                "amount_invalid": "Valor inválido. Use um número inteiro."
+                "amount_invalid": "Valor inválido. Use um número inteiro.",
+                "amount_below_min": "O valor deve ser pelo menos {amount} USDC.",
+                "amount_above_max": "O valor não pode exceder {amount} USDC."
             },
             "presets_label": "Predefinições Rápidas",
             "preset_5m_eth": "5m ETH",

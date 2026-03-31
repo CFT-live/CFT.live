@@ -42,6 +42,8 @@
             "title": "Saldo del Contrato",
             "description": "Gestiona tus fondos",
             "available": "Disponible",
+            "connect_prompt": "Conecta tu billetera para gestionar tu saldo del contrato.",
+            "error_title": "Error al cargar el saldo del contrato",
             "fetched_contract_balance": "Saldo del contrato obtenido:",
             "Amount_to_deposit": "Monto a depositar",
             "Deposit": "Depositar",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Los minutos de bloqueo no pueden exceder {minutes} minutos.",
                 "amount_required": "El monto es obligatorio.",
                 "amount_must_be_integer": "El monto debe ser un número entero (sin decimales).",
-                "amount_invalid": "Monto inválido. Usa un valor entero."
+                "amount_invalid": "Monto inválido. Usa un valor entero.",
+                "amount_below_min": "El monto debe ser al menos {amount} USDC.",
+                "amount_above_max": "El monto no puede exceder {amount} USDC."
             },
             "presets_label": "Ajustes rápidos",
             "preset_5m_eth": "5m ETH",

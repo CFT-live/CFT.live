@@ -1,72 +1,33 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { request } from "graphql-request";
 import { getClosedRoundsQuery } from "../queries/predictionMarket";
-import { DEFAULT_HEADERS } from "../../../../queries/headers";
-import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorState } from "./ErrorState";
 import { EmptyState } from "./EmptyState";
 import { CLOSED_ROUNDS_QUERY_KEY } from "../queries/keys";
-import { REFRESH_INTERVAL_MILLIS } from "../../../../helpers";
-import { useQuery } from "../hooks/useQuery";
 import { Round } from "../../../../types";
 import { CardTemplate } from "../../../root/v1/components/CardTemplate";
 import RoundsTable from "./RoundsTable";
-import { useState } from "react";
+import { useRoundsQuery, ITEMS_PER_PAGE } from "../hooks/useRoundsQuery";
+import { RoundsPaginationFooter } from "./RoundsPaginationFooter";
 
 interface ClosedRoundsData {
   rounds: Round[];
 }
 
-const ITEMS_PER_PAGE = 10;
-
 export default function ClosedRounds() {
   const t = useTranslations("prediction");
-  const [currentPage, setCurrentPage] = useState(0);
-  const { data, error, isLoading, isError, refetch } =
-    useQuery<ClosedRoundsData>({
-      queryKey: [CLOSED_ROUNDS_QUERY_KEY, currentPage],
-      async queryFn(): Promise<ClosedRoundsData> {
-        try {
-          const result = await request(
-            process.env.NEXT_PUBLIC_THE_GRAPH_API_URL!,
-            getClosedRoundsQuery,
-            { first: ITEMS_PER_PAGE, skip: currentPage * ITEMS_PER_PAGE },
-            DEFAULT_HEADERS
-          );
-          return result as ClosedRoundsData;
-        } catch (err) {
-          console.error(t("rounds.errors.closed_request_failed"), err);
-          if (err instanceof Error) {
-            throw new Error(
-              t("rounds.errors.graphql_error", { message: err.message })
-            );
-          }
-          throw err;
-        }
-      },
-      retry: (failureCount, error) => {
-        if (error?.message?.includes("fetch")) {
-          return failureCount < 2;
-        }
-        return failureCount < 3;
-      },
-      staleTime: REFRESH_INTERVAL_MILLIS.medium,
-      refetchInterval: REFRESH_INTERVAL_MILLIS.medium,
-    });
-
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(0, prev - 1));
-  };
-
-  const handleNextPage = () => {
-    if (data?.rounds.length === ITEMS_PER_PAGE) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
+  const {
+    data,
+    error,
+    isLoading,
+    isError,
+    refetch,
+    currentPage,
+    handlePreviousPage,
+    handleNextPage,
+  } = useRoundsQuery<ClosedRoundsData>(CLOSED_ROUNDS_QUERY_KEY, getClosedRoundsQuery);
 
   if (isLoading) {
     return (
@@ -127,38 +88,18 @@ export default function ClosedRounds() {
       refresh={refetch}
     >
       <RoundsTable rounds={data.rounds} />
-      <CardFooter className="flex flex-col gap-3">
-        <div className="flex items-center justify-between w-full">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 0 || isLoading}
-          >
-            {t("rounds.pagination.previous")}
-          </Button>
-          <span className="text-xs text-muted-foreground">
-            {t("rounds.pagination.page", {
-              page: currentPage + 1,
-              count: data.rounds.length,
-            })}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNextPage}
-            disabled={data.rounds.length < ITEMS_PER_PAGE || isLoading}
-          >
-            {t("rounds.pagination.next")}
-          </Button>
-        </div>
-        <div className="text-xs text-muted-foreground text-center">
-          {t("rounds.pagination.showing_closed", {
-            from: currentPage * ITEMS_PER_PAGE + 1,
-            to: currentPage * ITEMS_PER_PAGE + data.rounds.length,
-          })}
-        </div>
-      </CardFooter>
+      <RoundsPaginationFooter
+        currentPage={currentPage}
+        roundCount={data.rounds.length}
+        isLoading={isLoading}
+        onPreviousPage={handlePreviousPage}
+        onNextPage={handleNextPage}
+        showingText={t("rounds.pagination.showing_closed", {
+          from: currentPage * ITEMS_PER_PAGE + 1,
+          to: currentPage * ITEMS_PER_PAGE + data.rounds.length,
+        })}
+      />
     </CardTemplate>
   );
 }
+
