@@ -28,6 +28,9 @@ export const erc20Abi = [
       { name: "spender", type: "address" },
       { name: "value", type: "uint256" }
     ], outputs: [{ type: "bool" }] },
+  { type: "function", name: "name", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
+  { type: "function", name: "symbol", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
+  { type: "function", name: "decimals", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] },
 ] as const;
 
 export const PYTH_ABI = [

@@ -270,6 +270,44 @@ export default async function HomePage() {
                 </div>
               </TerminalCard>
             </Link>
+
+            {/* Approval Manager */}
+            <Link href="/revoke" className="block h-full no-underline">
+              <TerminalCard title="revoke" status="online" className="h-full">
+                <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.1)_0%,transparent_70%)]" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 font-mono text-xs select-none pointer-events-none">
+                    <span className="text-muted-foreground/40">{"// ERC-20 APPROVAL AUDIT"}</span>
+                    <span className="text-primary/50">{">"}  scanning approvals...</span>
+                    <span className="text-destructive/70">{">"}  <span className="text-orange-400/70">42 HIGH RISK</span> found</span>
+                    <span className="text-primary/60">{">"}  approve(spender, <span className="text-green-500/70">0</span>)</span>
+                    <span className="text-primary animate-pulse">{">"}  ✓ revoked</span>
+                  </div>
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 pointer-events-none">
+                    <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 text-xs font-mono rounded backdrop-blur-sm">
+                      {t("LIVE")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 flex flex-col flex-1 gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                      <Terminal className="w-4 h-4" /> {t("Revoke_Approvals")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t("Revoke_Approvals_Description")}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span>{t("EXECUTE_PROTOCOL")}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </TerminalCard>
+            </Link>
           </div>
         </div>
 
