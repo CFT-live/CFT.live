@@ -14,6 +14,13 @@ import {
   TaskStatus,
   TaskType,
   TransactionStatus,
+  RewardDefinitionSchema,
+  RewardDefinitionStatus,
+  RewardActionType,
+  UserRewardSchema,
+  UserRewardStatus,
+  RewardQuestionSchema,
+  RewardQuestionStatus,
 } from "./schemas";
 
 export type Contributor = z.infer<typeof ContributorSchema>;
@@ -34,3 +41,13 @@ export type ContributionStatus = z.infer<typeof ContributionStatus>;
 
 export type FeatureDistribution = z.infer<typeof FeatureDistributionSchema>;
 export type TransactionStatus = z.infer<typeof TransactionStatus>;
+
+export type RewardDefinition = z.infer<typeof RewardDefinitionSchema>;
+export type RewardDefinitionStatus = z.infer<typeof RewardDefinitionStatus>;
+export type RewardActionType = z.infer<typeof RewardActionType>;
+
+export type UserReward = z.infer<typeof UserRewardSchema>;
+export type UserRewardStatus = z.infer<typeof UserRewardStatus>;
+
+export type RewardQuestion = z.infer<typeof RewardQuestionSchema>;
+export type RewardQuestionStatus = z.infer<typeof RewardQuestionStatus>;

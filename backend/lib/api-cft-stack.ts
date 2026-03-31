@@ -5,6 +5,7 @@ import { Construct } from "constructs";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as iam from "aws-cdk-lib/aws-iam";
 
 interface StackProps extends cdk.StackProps {
   appEnv: string;
@@ -176,6 +177,55 @@ export class ApiCFTStack extends cdk.Stack {
       indexName: "transaction_status-index",
       partitionKey: { name: "transaction_status", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "distribution_date", type: dynamodb.AttributeType.STRING },
+    });
+
+    // Reward definitions table with GSIs
+    const rewardDefinitionsTable = createTable("CFT-RewardDefinitions");
+    rewardDefinitionsTable.addGlobalSecondaryIndex({
+      indexName: "action_type-index",
+      partitionKey: { name: "action_type", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
+    });
+    rewardDefinitionsTable.addGlobalSecondaryIndex({
+      indexName: "status-index",
+      partitionKey: { name: "status", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
+    });
+
+    // User rewards table with GSIs
+    const userRewardsTable = createTable("CFT-UserRewards");
+    userRewardsTable.addGlobalSecondaryIndex({
+      indexName: "wallet_address-reward_def-index",
+      partitionKey: { name: "wallet_address", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "reward_definition_id", type: dynamodb.AttributeType.STRING },
+    });
+    userRewardsTable.addGlobalSecondaryIndex({
+      indexName: "contributor_id-index",
+      partitionKey: { name: "contributor_id", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
+    });
+    userRewardsTable.addGlobalSecondaryIndex({
+      indexName: "reward_definition_id-index",
+      partitionKey: { name: "reward_definition_id", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
+    });
+    userRewardsTable.addGlobalSecondaryIndex({
+      indexName: "status-index",
+      partitionKey: { name: "status", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
+    });
+
+    // Reward questions table with GSIs
+    const rewardQuestionsTable = createTable("CFT-RewardQuestions");
+    rewardQuestionsTable.addGlobalSecondaryIndex({
+      indexName: "status-index",
+      partitionKey: { name: "status", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
+    });
+    rewardQuestionsTable.addGlobalSecondaryIndex({
+      indexName: "reward_definition_id-index",
+      partitionKey: { name: "reward_definition_id", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "created_date", type: dynamodb.AttributeType.STRING },
     });
     /**
      * Create the Lambda functions
@@ -426,6 +476,145 @@ export class ApiCFTStack extends cdk.Stack {
     );
     featureDistributionTable.grantReadData(getDistributionsLambda);
 
+    // Rewards Lambda functions
+    const createRewardDefinitionLambda = createLambda(
+      "CreateRewardDefinitionLambda",
+      "create-reward-definition.handler",
+      {
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+        CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
+      },
+    );
+    rewardDefinitionsTable.grantReadWriteData(createRewardDefinitionLambda);
+    contributorsTable.grantReadData(createRewardDefinitionLambda);
+
+    const updateRewardDefinitionLambda = createLambda(
+      "UpdateRewardDefinitionLambda",
+      "update-reward-definition.handler",
+      {
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+        CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
+      },
+    );
+    rewardDefinitionsTable.grantReadWriteData(updateRewardDefinitionLambda);
+    contributorsTable.grantReadData(updateRewardDefinitionLambda);
+
+    const getRewardDefinitionsLambda = createLambda(
+      "GetRewardDefinitionsLambda",
+      "get-reward-definitions.handler",
+      {
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+      },
+    );
+    rewardDefinitionsTable.grantReadData(getRewardDefinitionsLambda);
+
+    const getRewardDefinitionLambda = createLambda(
+      "GetRewardDefinitionLambda",
+      "get-reward-definition.handler",
+      {
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+      },
+    );
+    rewardDefinitionsTable.grantReadData(getRewardDefinitionLambda);
+
+    const createRewardQuestionLambda = createLambda(
+      "CreateRewardQuestionLambda",
+      "create-reward-question.handler",
+      {
+        REWARD_QUESTIONS_TABLE_NAME: rewardQuestionsTable.tableName,
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+        CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
+      },
+    );
+    rewardQuestionsTable.grantReadWriteData(createRewardQuestionLambda);
+    rewardDefinitionsTable.grantReadData(createRewardQuestionLambda);
+    contributorsTable.grantReadData(createRewardQuestionLambda);
+
+    const updateRewardQuestionLambda = createLambda(
+      "UpdateRewardQuestionLambda",
+      "update-reward-question.handler",
+      {
+        REWARD_QUESTIONS_TABLE_NAME: rewardQuestionsTable.tableName,
+        CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
+      },
+    );
+    rewardQuestionsTable.grantReadWriteData(updateRewardQuestionLambda);
+    contributorsTable.grantReadData(updateRewardQuestionLambda);
+
+    const getRewardQuestionsLambda = createLambda(
+      "GetRewardQuestionsLambda",
+      "get-reward-questions.handler",
+      {
+        REWARD_QUESTIONS_TABLE_NAME: rewardQuestionsTable.tableName,
+      },
+    );
+    rewardQuestionsTable.grantReadData(getRewardQuestionsLambda);
+
+    const getRewardQuestionLambda = createLambda(
+      "GetRewardQuestionLambda",
+      "get-reward-question.handler",
+      {
+        REWARD_QUESTIONS_TABLE_NAME: rewardQuestionsTable.tableName,
+      },
+    );
+    rewardQuestionsTable.grantReadData(getRewardQuestionLambda);
+
+    const getUserRewardsLambda = createLambda(
+      "GetUserRewardsLambda",
+      "get-user-rewards.handler",
+      {
+        USER_REWARDS_TABLE_NAME: userRewardsTable.tableName,
+      },
+    );
+    userRewardsTable.grantReadData(getUserRewardsLambda);
+
+    const triggerRewardLambda = createLambda(
+      "TriggerRewardLambda",
+      "trigger-reward.handler",
+      {
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+        USER_REWARDS_TABLE_NAME: userRewardsTable.tableName,
+        CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
+        FAUCET_ALLOCATOR_SECRET_ARN: process.env.FAUCET_ALLOCATOR_SECRET_ARN ?? "",
+        TOKEN_FAUCET_CONTRACT_ADDRESS: process.env.TOKEN_FAUCET_CONTRACT_ADDRESS ?? "",
+        ARBITRUM_RPC_URL: process.env.ARBITRUM_RPC_URL ?? "",
+      },
+      30,
+    );
+    rewardDefinitionsTable.grantReadData(triggerRewardLambda);
+    userRewardsTable.grantReadWriteData(triggerRewardLambda);
+    contributorsTable.grantReadData(triggerRewardLambda);
+
+    const answerRewardQuestionLambda = createLambda(
+      "AnswerRewardQuestionLambda",
+      "answer-reward-question.handler",
+      {
+        REWARD_QUESTIONS_TABLE_NAME: rewardQuestionsTable.tableName,
+        REWARD_DEFINITIONS_TABLE_NAME: rewardDefinitionsTable.tableName,
+        USER_REWARDS_TABLE_NAME: userRewardsTable.tableName,
+        CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
+        FAUCET_ALLOCATOR_SECRET_ARN: process.env.FAUCET_ALLOCATOR_SECRET_ARN ?? "",
+        TOKEN_FAUCET_CONTRACT_ADDRESS: process.env.TOKEN_FAUCET_CONTRACT_ADDRESS ?? "",
+        ARBITRUM_RPC_URL: process.env.ARBITRUM_RPC_URL ?? "",
+      },
+      30,
+    );
+    rewardQuestionsTable.grantReadData(answerRewardQuestionLambda);
+    rewardDefinitionsTable.grantReadData(answerRewardQuestionLambda);
+    userRewardsTable.grantReadWriteData(answerRewardQuestionLambda);
+    contributorsTable.grantReadData(answerRewardQuestionLambda);
+
+    // Grant Secrets Manager read access to lambdas that sign blockchain transactions
+    const faucetSecretArn = process.env.FAUCET_ALLOCATOR_SECRET_ARN;
+    if (faucetSecretArn) {
+      const secretsPolicy = new iam.PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [faucetSecretArn],
+      });
+      triggerRewardLambda.addToRolePolicy(secretsPolicy);
+      answerRewardQuestionLambda.addToRolePolicy(secretsPolicy);
+    }
+
     /**
      * Create the API Gateway
      * ------------------------------------------------------------------------------------------------------------------------------------
@@ -467,6 +656,19 @@ export class ApiCFTStack extends cdk.Stack {
     const distributions = api.root.addResource("distributions");
     const createDistribution = distributions.addResource("create");
     const updateDistribution = distributions.addResource("update");
+
+    const rewards = api.root.addResource("rewards");
+    const rewardDefinitions = rewards.addResource("definitions");
+    const createRewardDefinition = rewardDefinitions.addResource("create");
+    const updateRewardDefinition = rewardDefinitions.addResource("update");
+    const getRewardDefinition = rewardDefinitions.addResource("get");
+    const rewardQuestions = rewards.addResource("questions");
+    const createRewardQuestion = rewardQuestions.addResource("create");
+    const updateRewardQuestion = rewardQuestions.addResource("update");
+    const getRewardQuestion = rewardQuestions.addResource("get");
+    const answerRewardQuestion = rewardQuestions.addResource("answer");
+    const triggerReward = rewards.addResource("trigger");
+    const userRewards = rewards.addResource("my-rewards");
 
     /**
      * Contributors Endpoints
@@ -796,6 +998,44 @@ export class ApiCFTStack extends cdk.Stack {
         apiKeyRequired: true,
       },
     );
+
+    /**
+     * Rewards Endpoints
+     * ------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    /** POST /rewards/definitions — list reward definitions */
+    rewardDefinitions.addMethod("POST", new apigateway.LambdaIntegration(getRewardDefinitionsLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/definitions/create — create reward definition (admin) */
+    createRewardDefinition.addMethod("POST", new apigateway.LambdaIntegration(createRewardDefinitionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/definitions/update — update reward definition (admin) */
+    updateRewardDefinition.addMethod("POST", new apigateway.LambdaIntegration(updateRewardDefinitionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/definitions/get — get single reward definition */
+    getRewardDefinition.addMethod("POST", new apigateway.LambdaIntegration(getRewardDefinitionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/questions — list reward questions */
+    rewardQuestions.addMethod("POST", new apigateway.LambdaIntegration(getRewardQuestionsLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/questions/create — create reward question (admin) */
+    createRewardQuestion.addMethod("POST", new apigateway.LambdaIntegration(createRewardQuestionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/questions/update — update reward question (admin) */
+    updateRewardQuestion.addMethod("POST", new apigateway.LambdaIntegration(updateRewardQuestionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/questions/get — get single reward question */
+    getRewardQuestion.addMethod("POST", new apigateway.LambdaIntegration(getRewardQuestionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/questions/answer — user submits an answer (triggers reward) */
+    answerRewardQuestion.addMethod("POST", new apigateway.LambdaIntegration(answerRewardQuestionLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/trigger — trigger a one-time reward for an action */
+    triggerReward.addMethod("POST", new apigateway.LambdaIntegration(triggerRewardLambda), { apiKeyRequired: true });
+
+    /** POST /rewards/my-rewards — list rewards for the authenticated user */
+    userRewards.addMethod("POST", new apigateway.LambdaIntegration(getUserRewardsLambda), { apiKeyRequired: true });
 
     // Create an API Key
     const apiKey = api.addApiKey(`${environment}-CFTApiGWKey`, {

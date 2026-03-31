@@ -129,3 +129,52 @@ export const FeatureDistributionSchema = z.object({
   approver_id: z.string().min(1),
   transaction_status: TransactionStatus,
 });
+
+// Rewards
+
+export const RewardActionType = z.enum([
+  "WALLET_CONNECT",
+  "PROFILE_COMPLETION",
+  "QUESTION_ANSWER",
+  "SOCIAL_SHARE",
+]);
+
+export const RewardDefinitionStatus = z.enum(["ACTIVE", "INACTIVE"]);
+
+export const RewardDefinitionSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000),
+  action_type: RewardActionType,
+  token_amount: z.number().int().positive(),
+  status: RewardDefinitionStatus,
+  created_by_id: z.string().min(1),
+  created_date: z.string().datetime(),
+});
+
+export const UserRewardStatus = z.enum(["PENDING", "ALLOCATED", "FAILED"]);
+
+export const UserRewardSchema = z.object({
+  id: z.string().min(1),
+  wallet_address: z.string().min(1),
+  reward_definition_id: z.string().min(1),
+  contributor_id: z.string().min(1).nullable(),
+  token_amount: z.number().int().positive(),
+  status: UserRewardStatus,
+  action_context: z.record(z.unknown()).nullable(),
+  error_message: z.string().max(2000).nullable(),
+  created_date: z.string().datetime(),
+  allocated_date: z.string().datetime().nullable(),
+});
+
+export const RewardQuestionStatus = z.enum(["ACTIVE", "INACTIVE"]);
+
+export const RewardQuestionSchema = z.object({
+  id: z.string().min(1),
+  question_text: z.string().min(1).max(2000),
+  options: z.array(z.string().min(1).max(500)).nullable(),
+  reward_definition_id: z.string().min(1),
+  status: RewardQuestionStatus,
+  created_by_id: z.string().min(1),
+  created_date: z.string().datetime(),
+});
