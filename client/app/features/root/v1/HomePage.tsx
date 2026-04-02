@@ -9,8 +9,11 @@ import { ConnectionStatusText } from "@/app/features/root/v1/components/Connecti
 import { MaskedRevealImage } from "@/app/features/root/v1/components/MaskedRevealImage";
 import { AddCftToWallet } from "@/app/features/root/v1/components/AddCftToWallet";
 import { CftTokenSection } from "@/app/features/root/v1/components/CftTokenSection";
+import { fetchTokenLogoMap } from "@/app/features/approval-manager/v1/api/actions";
 
 import { version } from "../../../../package.json";
+
+const ARB_TOKEN_ADDRESS = "0x912ce59144191c1204e64559fe8253a0e49e6548";
 
 const predictionVideo = "/assets/prediction.mp4";
 const rouletteVideo = "/assets/roulette.mp4";
@@ -32,7 +35,11 @@ export default async function HomePage() {
     },
   };
 
-  const t = await getTranslations("home");
+  const [t, tokenLogos] = await Promise.all([
+    getTranslations("home"),
+    fetchTokenLogoMap(),
+  ]);
+  const arbLogoUrl = tokenLogos[ARB_TOKEN_ADDRESS];
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden selection:bg-primary selection:text-primary-foreground">
@@ -272,8 +279,8 @@ export default async function HomePage() {
             </Link>
 
             {/* Approval Manager */}
-            <Link href="/revoke" className="block h-full no-underline">
-              <TerminalCard title="revoke" status="online" className="h-full">
+            <Link href="/approval-manager" className="block h-full no-underline">
+              <TerminalCard title="approval-manager" status="online" className="h-full">
                 <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.1)_0%,transparent_70%)]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 font-mono text-xs select-none pointer-events-none">
@@ -444,6 +451,28 @@ export default async function HomePage() {
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />{" "}
               {t("SYSTEM_ONLINE")}
             </span>
+            <span className="text-muted-foreground/60">|</span>
+            <a
+              href="https://arbitrum.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              {arbLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={arbLogoUrl}
+                  alt="Arbitrum One"
+                  className="w-4 h-4 rounded-full shrink-0"
+                />
+              ) : (
+                <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-mono font-bold text-primary shrink-0">
+                  AR
+                </div>
+              )}
+              Powered by Arbitrum One
+            </a>
+            <span className="text-muted-foreground/60">|</span>
             <span>v{version}</span>
           </div>
           <div className="mt-4 md:mt-0 hidden md:block">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
 import { Clock, Skull, CheckCircle } from "lucide-react";
 import { weiToUsdc } from "@/app/helpers";
 import { Turn } from "@/app/features/roulette/v1/queries/roulette.types";
@@ -69,17 +68,6 @@ export const TurnHistory = ({ turns }: Readonly<{ turns: Turn[] }>) => {
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div className="shrink-0">
-                    {eliminated ? (
-                      <Badge variant="destructive" className="text-[10px] sm:text-xs">
-                        {t("turn_history_out")}
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                        {t("turn_history_safe")}
-                      </Badge>
-                    )}
                   </div>
                 </div>
               </div>

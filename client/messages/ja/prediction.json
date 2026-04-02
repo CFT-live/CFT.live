@@ -42,6 +42,8 @@
             "title": "コントラクト残高",
             "description": "資金を管理",
             "available": "利用可能",
+            "connect_prompt": "ウォレットを接続してコントラクト残高を管理してください。",
+            "error_title": "コントラクト残高の読み込みエラー",
             "fetched_contract_balance": "取得したコントラクト残高:",
             "Amount_to_deposit": "入金額",
             "Deposit": "入金",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "ロック時間は {minutes} 分を超えることはできません。",
                 "amount_required": "金額の入力が必要です。",
                 "amount_must_be_integer": "金額は整数である必要があります（小数不可）。",
-                "amount_invalid": "無効な金額です。整数値を使用してください。"
+                "amount_invalid": "無効な金額です。整数値を使用してください。",
+                "amount_below_min": "金額は{amount} USDC以上である必要があります。",
+                "amount_above_max": "金額は{amount} USDCを超えることはできません。"
             },
             "presets_label": "クイックプリセット",
             "preset_5m_eth": "5分 ETH",
@@ -176,7 +180,13 @@
                 "processing_title": "トランザクション処理中",
                 "processing_description": "ウォレットでトランザクションを確認し、承認されるまでお待ちください...",
                 "potential_payout": "予想配当",
-                "quick_amounts": "クイック："
+                "quick_amounts": "クイック：",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "OPEN",
@@ -205,14 +215,22 @@
                 "result": "結果",
                 "trend": "トレンド",
                 "closing_soon": "まもなく終了！",
-                "pool_ratio": "プール比率"
+                "pool_ratio": "プール比率",
+                "your_bets": "あなたの賭け",
+                "bet_won": "勝利",
+                "bet_lost": "敗北",
+                "bet_pending": "保留中",
+                "bet_refunded": "返金済み",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "日",
                 "hours_short": "時",
                 "minutes_short": "分",
                 "seconds_short": "秒"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "プラットフォーム統計",
@@ -250,6 +268,11 @@
             "won": "勝ち",
             "lost": "負け",
             "connect_prompt": "ウォレットを接続して統計を確認してください。"
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

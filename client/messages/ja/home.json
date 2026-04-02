@@ -9,6 +9,8 @@
         "Games": "プロトコル",
         "Sandbox": "サンドボックス",
         "Sandbox_Description": "安全な環境であらゆるスマートコントラクトをテストし、相互作用してください。自由に実験できます。",
+        "Revoke_Approvals": "承認マネージャー",
+        "Revoke_Approvals_Description": "ArbitrumでERC-20トークンの承認をスキャンして取り消します。不要なトークン支出からウォレットを保護します。",
         "Prediction_Market": "予測マーケット",
         "Prediction_Market_Description": "資産価格の動きを予測します。UP/DOWNマーケットでベットを作成できます。勝者が全額を獲得します。",
         "EXECUTE_PROTOCOL": "プロトコルを実行",

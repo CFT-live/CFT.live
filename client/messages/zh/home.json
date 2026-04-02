@@ -9,6 +9,8 @@
         "Games": "协议",
         "Sandbox": "沙盒",
         "Sandbox_Description": "在安全的环境中测试和与任何智能合约交互。自由实验。",
+        "Revoke_Approvals": "授权管理器",
+        "Revoke_Approvals_Description": "扫描并撤销Arbitrum上的ERC-20代币授权。保护您的錢包免受不必要的代币支出。",
         "Prediction_Market": "预测市场",
         "Prediction_Market_Description": "预测资产价格走势。在涨/跌市场中创建投注。胜者获得全部奖池。",
         "EXECUTE_PROTOCOL": "执行协议",

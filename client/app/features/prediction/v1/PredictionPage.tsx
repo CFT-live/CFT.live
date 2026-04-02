@@ -155,9 +155,9 @@ export default async function PredictionPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Hero Header */}
+      {/* Hero Header — compact with inline stats */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        <div className="text-center mb-6 border-b border-border pb-6">
+        <div className="text-center mb-4 border-b border-border pb-4">
           <div className="inline-flex items-center justify-center mb-3">
             <div className="text-primary">
               <svg
@@ -190,15 +190,32 @@ export default async function PredictionPage() {
           />
         </div>
 
-        {/* Platform stats bar */}
+        {/* Platform stats bar — inline in hero */}
         <PlatformStats />
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        {/* Live price ticker — full width */}
+
+      {/* PRIMARY: Open rounds + Featured round — above the fold */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <div className="space-y-6">
+            <OpenRounds />
+            <LiveRounds />
+          </div>
+        </HydrationBoundary>
+      </div>
+
+      {/* User performance — immediate feedback after rounds */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+        <UserPerformance />
+      </div>
+
+      {/* Live price ticker */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
         <PriceData />
       </div>
-      {/* User balance + Create Round — side by side on wide screens */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 gap-6 mt-6 px-4 sm:px-6 lg:px-8 pb-8">
+
+      {/* User balance + Create Round — below the action */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 gap-6 px-4 sm:px-6 lg:px-8 pb-8">
         <ContractBalance />
         <CreateRound
           minOpenTime={contractMetadata.minOpenTimeInSeconds}
@@ -207,17 +224,10 @@ export default async function PredictionPage() {
           maxBetAmount={contractMetadata.maxBetAmount}
         />
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        {/* Primary CTA — Rounds (most important section first) */}
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <div className="space-y-6">
-            <OpenRounds />
-            <LiveRounds />
-          </div>
-        </HydrationBoundary>
 
-        {/* Closed rounds + Leaderboard + Recent activity */}
-        <div className="grid grid-cols-1 gap-6 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        {/* Closed rounds + Recent activity */}
+        <div className="grid grid-cols-1 gap-6">
           <div className="xl:col-span-2">
             <HydrationBoundary state={dehydrate(queryClient)}>
               <ClosedRounds />
@@ -228,9 +238,8 @@ export default async function PredictionPage() {
           </div>
         </div>
 
-        {/* User bets + personal performance */}
+        {/* User bets history */}
         <div className="mt-6 space-y-4">
-          <UserPerformance />
           <HydrationBoundary state={dehydrate(queryClient)}>
             <UserBets />
           </HydrationBoundary>

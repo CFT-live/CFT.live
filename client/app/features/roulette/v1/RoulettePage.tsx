@@ -165,31 +165,22 @@ export default async function RoulettePage({
       />
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Hero Section */}
-        <div className="relative text-center mb-6 sm:mb-8 border-b border-border pb-6 sm:pb-8 overflow-hidden">
+        <div className="text-center mb-6 sm:mb-8 border-b border-border pb-6 sm:pb-8">
+          <h1 className="text-3xl sm:text-5xl font-black text-foreground mb-2 sm:mb-3 uppercase tracking-wider">
+            {t("title")}
+          </h1>
 
-
-          <div className="relative z-10">
-
-
-            <h1 className="text-3xl sm:text-5xl font-black text-foreground mb-2 sm:mb-3 uppercase tracking-wider">
-              {t("title")}
-            </h1>
-            <p className="text-sm sm:text-lg text-primary font-semibold mb-1 sm:mb-2 uppercase tracking-wide">
-              {t("hero_subtitle")}
-            </p>
-
-            <Instructions
-              title={t("instructions_title")}
-              instructions={[
-                t("instructions_step_create_or_join"),
-                t("instructions_step_mark_ready"),
-                t("instructions_step_your_turn"),
-                t("instructions_step_next_player"),
-                t("instructions_step_until_one_left"),
-                t("instructions_step_claim_winnings"),
-              ]}
-            />
-          </div>
+          <Instructions
+            title={t("instructions_title")}
+            instructions={[
+              t("instructions_step_create_or_join"),
+              t("instructions_step_mark_ready"),
+              t("instructions_step_your_turn"),
+              t("instructions_step_next_player"),
+              t("instructions_step_until_one_left"),
+              t("instructions_step_claim_winnings"),
+            ]}
+          />
         </div>
 
         {/* Global Stats - social proof */}

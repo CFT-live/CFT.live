@@ -142,9 +142,6 @@ export const PlayerList = ({
                     )}>
                       ${weiToUsdc(player.totalBetAmount ?? "0").toFixed(2)}
                     </p>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground">
-                      {t("player_turns_count", { count: player.turnsPlayed ?? 0 })}
-                    </p>
                   </div>
                 </div>
               </div>

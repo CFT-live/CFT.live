@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import RevokePage from "@/app/features/revoke/v1/RevokePage";
+import ApprovalManagerPage from "@/app/features/approval-manager/v1/ApprovalManagerPage";
 
 export const metadata: Metadata = {
   title: "CFT.live - Approval Manager",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <RevokePage />;
+  return <ApprovalManagerPage />;
 }
