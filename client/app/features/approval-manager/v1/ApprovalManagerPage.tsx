@@ -58,7 +58,7 @@ function applyFilter(approvals: TokenApproval[], filter: ApprovalsFilter): Token
   });
 }
 
-export default function RevokePage() {
+export default function ApprovalManagerPage() {
   const t = useTranslations("revoke");
   const { address, isConnected } = useAppKitAccount();
   const [filter, setFilter] = useState<ApprovalsFilter>(DEFAULT_FILTER);

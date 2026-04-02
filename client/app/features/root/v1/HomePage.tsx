@@ -272,8 +272,8 @@ export default async function HomePage() {
             </Link>
 
             {/* Approval Manager */}
-            <Link href="/revoke" className="block h-full no-underline">
-              <TerminalCard title="revoke" status="online" className="h-full">
+            <Link href="/approval-manager" className="block h-full no-underline">
+              <TerminalCard title="approval-manager" status="online" className="h-full">
                 <div className="relative aspect-video w-full overflow-hidden bg-black border-b border-border group-hover:border-primary/50 transition-colors">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.1)_0%,transparent_70%)]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 font-mono text-xs select-none pointer-events-none">

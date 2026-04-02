@@ -9,6 +9,8 @@
         "Games": "Protokol",
         "Sandbox": "Sandbox",
         "Sandbox_Description": "Uji dan berinteraksi dengan smart contract apa pun dalam lingkungan yang aman. Bereksperimen dengan bebas.",
+        "Revoke_Approvals": "Manajer Persetujuan",
+        "Revoke_Approvals_Description": "Pindai dan cabut persetujuan token ERC-20 di Arbitrum. Lindungi dompetmu dari pengeluaran token yang tidak diinginkan.",
         "Prediction_Market": "Pasar Prediksi",
         "Prediction_Market_Description": "Prediksi pergerakan harga aset. Buat taruhan pada pasar NAIK/TURUN. Pemenang mengambil seluruh pot.",
         "EXECUTE_PROTOCOL": "JALANKAN PROTOKOL",

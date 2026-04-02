@@ -9,6 +9,8 @@
         "Games": "Protocoles",
         "Sandbox": "Sandbox",
         "Sandbox_Description": "Testez et interagissez avec n'importe quel contrat intelligent dans un environnement sécurisé. Expérimentez librement.",
+        "Revoke_Approvals": "Gestionnaire d'Approbations",
+        "Revoke_Approvals_Description": "Analysez et révoquez les approbations de tokens ERC-20 sur Arbitrum. Protégez votre portefeuille des dépenses de tokens non désirées.",
         "Prediction_Market": "Marché_de_Prévision",
         "Prediction_Market_Description": "Prédisez les mouvements de prix des actifs. Créez des paris sur des marchés HAUSSE/BAISSE. Le gagnant remporte la cagnotte.",
         "EXECUTE_PROTOCOL": "EXÉCUTER LE PROTOCOLE",
