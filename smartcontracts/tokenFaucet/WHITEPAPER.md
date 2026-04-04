@@ -262,8 +262,8 @@ The deployer account is automatically granted `DEFAULT_ADMIN_ROLE` at constructi
 | Variable | Scope | Purpose |
 |---|---|---|
 | `FAUCET_ALLOCATOR_SECRET_ARN` | Backend Lambda | AWS Secrets Manager ARN for the allocator private key |
-| `TOKEN_FAUCET_CONTRACT_ADDRESS` | Backend Lambda | Deployed faucet contract address |
-| `ARBITRUM_RPC_URL` | Backend Lambda | RPC endpoint for transaction submission |
+| `NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS` | Backend Lambda | Deployed faucet contract address |
+| `NEXT_PUBLIC_SITE_INFURA_API_URL` | Backend Lambda | RPC endpoint for transaction submission |
 | `NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS` | Client | Faucet address for reading `claimableAmount` and calling `claim()` |
 
 ---

@@ -42,8 +42,8 @@ const getChain = () => {
 };
 
 const getRpcUrl = () => {
-  const url = process.env.ARBITRUM_RPC_URL;
-  if (!url) throw new Error("ARBITRUM_RPC_URL env variable not set");
+  const url = process.env.NEXT_PUBLIC_SITE_INFURA_API_URL;
+  if (!url) throw new Error("NEXT_PUBLIC_SITE_INFURA_API_URL env variable not set");
   return url;
 };
 
@@ -57,8 +57,8 @@ export const addClaimAmountOnChain = async (
   tokenAmount: number,
   tokenDecimals = 18,
 ): Promise<`0x${string}`> => {
-  const faucetAddress = process.env.TOKEN_FAUCET_CONTRACT_ADDRESS as `0x${string}`;
-  if (!faucetAddress) throw new Error("TOKEN_FAUCET_CONTRACT_ADDRESS env variable not set");
+  const faucetAddress = process.env.NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS as `0x${string}`;
+  if (!faucetAddress) throw new Error("NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS env variable not set");
 
   const privateKey = await getPrivateKey();
   const account = privateKeyToAccount(privateKey);

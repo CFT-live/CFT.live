@@ -576,8 +576,8 @@ export class ApiCFTStack extends cdk.Stack {
         USER_REWARDS_TABLE_NAME: userRewardsTable.tableName,
         CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
         FAUCET_ALLOCATOR_SECRET_ARN: process.env.FAUCET_ALLOCATOR_SECRET_ARN ?? "",
-        TOKEN_FAUCET_CONTRACT_ADDRESS: process.env.TOKEN_FAUCET_CONTRACT_ADDRESS ?? "",
-        ARBITRUM_RPC_URL: process.env.ARBITRUM_RPC_URL ?? "",
+        NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS ?? "",
+        NEXT_PUBLIC_SITE_INFURA_API_URL: process.env.NEXT_PUBLIC_SITE_INFURA_API_URL ?? "",
       },
       30,
     );
@@ -594,8 +594,8 @@ export class ApiCFTStack extends cdk.Stack {
         USER_REWARDS_TABLE_NAME: userRewardsTable.tableName,
         CONTRIBUTORS_TABLE_NAME: contributorsTable.tableName,
         FAUCET_ALLOCATOR_SECRET_ARN: process.env.FAUCET_ALLOCATOR_SECRET_ARN ?? "",
-        TOKEN_FAUCET_CONTRACT_ADDRESS: process.env.TOKEN_FAUCET_CONTRACT_ADDRESS ?? "",
-        ARBITRUM_RPC_URL: process.env.ARBITRUM_RPC_URL ?? "",
+        NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_TOKEN_FAUCET_CONTRACT_ADDRESS ?? "",
+        NEXT_PUBLIC_SITE_INFURA_API_URL: process.env.NEXT_PUBLIC_SITE_INFURA_API_URL ?? "",
       },
       30,
     );
