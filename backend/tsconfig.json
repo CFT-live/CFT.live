@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "commonjs",
     "lib": [
-      "es2020",
+      "es2022",
       "dom"
     ],
     "esModuleInterop": true,
     "declaration": true,
     "strict": true,
+    "skipLibCheck": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
@@ -24,8 +25,7 @@
     "typeRoots": [
       "./node_modules/@types"
     ],
-    "outDir": "./build",
-    "skipLibCheck": true
+    "outDir": "./build"
   },
   "exclude": [
     "node_modules",

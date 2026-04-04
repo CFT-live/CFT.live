@@ -8,6 +8,7 @@ import {
   SIWE_NONCE_COOKIE,
   SIWE_SESSION_COOKIE,
 } from "@/app/lib/siwe/session";
+import { apiGatewayPost } from "@/app/features/contribute/v1/api/apiGateway";
 
 type VerifyBody = {
   message?: string;
@@ -39,10 +40,24 @@ export async function POST(request: Request) {
       return new Response("Invalid SIWE message", { status: 401 });
     }
 
+    const verifiedAddress = message.address.toLowerCase();
+
+    // Fire-and-forget: grant WALLET_CONNECT reward. The backend enforces one-time
+    // idempotency via a DynamoDB conditional write, so this is safe to call on
+    // every sign-in — subsequent attempts are silently ignored.
+    apiGatewayPost("/rewards/trigger", {
+      wallet_address: verifiedAddress,
+      action_type: "WALLET_CONNECT",
+      action_context: null,
+    }).catch((err) => {
+      // Non-fatal — reward grant failures are logged but don't block sign-in
+      console.error("[SIWE verify] WALLET_CONNECT reward trigger failed:", err);
+    });
+
     const response = NextResponse.json({
       ok: true,
       session: {
-        address: message.address.toLowerCase(),
+        address: verifiedAddress,
         chainId: message.chainId,
       },
     });

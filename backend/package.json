@@ -28,6 +28,7 @@
   "dependencies": {
     "@aws-sdk/client-apigatewaymanagementapi": "3.970.0",
     "@aws-sdk/client-dynamodb": "3.970.0",
+    "@aws-sdk/client-secrets-manager": "^3.1020.0",
     "@aws-sdk/client-sqs": "3.970.0",
     "@aws-sdk/lib-dynamodb": "3.970.0",
     "@types/aws-lambda": "8.10.159",
@@ -35,6 +36,7 @@
     "constructs": "10.4.5",
     "dotenv": "17.2.3",
     "source-map-support": "0.5.21",
+    "viem": "^2.47.6",
     "zod": "3.24.4"
   }
 }

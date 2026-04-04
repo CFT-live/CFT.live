@@ -6,6 +6,9 @@ import {
   TaskStatus,
   TaskType,
   TransactionStatus,
+  RewardActionType,
+  RewardDefinitionStatus,
+  RewardQuestionStatus,
 } from "./schemas";
 
 const IsoDateTime = z.string().datetime();
@@ -364,4 +367,103 @@ export const validateGetDistributionsParams = (params: any) => {
         .optional(),
     })
     .safeParse(params ?? {});
+};
+
+// Rewards
+
+export const validateCreateRewardDefinitionParams = (params: any) => {
+  return z
+    .object({
+      name: z.string().min(1).max(200),
+      description: z.string().max(2000).default(""),
+      action_type: RewardActionType,
+      token_amount: z.number().int().positive(),
+      created_by_id: z.string().min(1),
+    })
+    .safeParse(params);
+};
+
+export const validateUpdateRewardDefinitionParams = (params: any) => {
+  return z
+    .object({
+      id: z.string().min(1),
+      name: z.string().min(1).max(200).optional(),
+      description: z.string().max(2000).optional(),
+      token_amount: z.number().int().positive().optional(),
+      status: RewardDefinitionStatus.optional(),
+    })
+    .safeParse(params);
+};
+
+export const validateGetRewardDefinitionsParams = (params: any) => {
+  return z
+    .object({
+      filter: z
+        .object({
+          status: RewardDefinitionStatus.optional(),
+          action_type: RewardActionType.optional(),
+        })
+        .optional(),
+    })
+    .safeParse(params ?? {});
+};
+
+export const validateTriggerRewardParams = (params: any) => {
+  return z
+    .object({
+      wallet_address: z.string().min(1),
+      action_type: RewardActionType,
+      action_context: z.record(z.unknown()).nullable().optional(),
+    })
+    .transform((data) => ({ ...data, action_context: data.action_context ?? null }))
+    .safeParse(params);
+};
+
+export const validateCreateRewardQuestionParams = (params: any) => {
+  return z
+    .object({
+      question_text: z.string().min(1).max(2000),
+      options: z.array(z.string().min(1).max(500)).nullable().optional(),
+      reward_definition_id: z.string().min(1),
+      created_by_id: z.string().min(1),
+    })
+    .transform((data) => ({
+      ...data,
+      options: data.options ?? null,
+    }))
+    .safeParse(params);
+};
+
+export const validateUpdateRewardQuestionParams = (params: any) => {
+  return z
+    .object({
+      id: z.string().min(1),
+      question_text: z.string().min(1).max(2000).optional(),
+      options: z.array(z.string().min(1).max(500)).nullable().optional(),
+      status: RewardQuestionStatus.optional(),
+    })
+    .safeParse(params);
+};
+
+export const validateGetRewardQuestionsParams = (params: any) => {
+  return z
+    .object({
+      filter: z
+        .object({
+          status: RewardQuestionStatus.optional(),
+          reward_definition_id: z.string().min(1).optional(),
+        })
+        .optional(),
+    })
+    .safeParse(params ?? {});
+};
+
+export const validateAnswerRewardQuestionParams = (params: any) => {
+  return z
+    .object({
+      question_id: z.string().min(1),
+      wallet_address: z.string().min(1),
+      answer: z.string().min(1).max(500),
+    })
+    .safeParse(params);
 };
