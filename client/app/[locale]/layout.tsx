@@ -128,7 +128,7 @@ export default async function RootLayout({
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className="custom-scrollbar">
+    <html lang={locale} dir={dir} className="custom-scrollbar crt-overlay">
       <body className={`${ibmPlexMono.variable} antialiased`}>
         <ContextProvider cookies={cookies}>
           <NextIntlClientProvider locale={locale} messages={messages}>
