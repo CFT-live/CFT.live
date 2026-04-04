@@ -93,6 +93,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
+    text-shadow: 0 0 2px hsl(23 100% 50%), 0 0 6px hsl(23 100% 50% / 0.5);
     font-family: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     line-height: 1.1;
     text-transform: uppercase;
@@ -217,4 +218,63 @@
 
 .animate-chamber-glow {
   animation: chamber-glow-selected 1.5s ease-in-out infinite;
+}
+
+/* Full-page CRT overlay — apply to a wrapper div */
+.crt-overlay {
+  position: relative;
+}
+
+/* Scanlines + vignette — dark bands that dim underlying content */
+.crt-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.18) 1px,
+      rgba(0, 0, 0, 0.18) 2px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
+  pointer-events: none;
+  z-index: 9999;
+  animation:
+    crt-scanlines 8s linear infinite;
+}
+
+/* Phosphor sweep beam — screen blend mode brightens whatever lies beneath */
+.crt-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent                   0%,
+    rgba(255, 255, 255, 0.01)    43%,
+    rgba(255, 255, 255, 0.04)    50%,
+    rgba(255, 255, 255, 0.01)    57%,
+    transparent                  100%
+  );
+  background-size: 100% 300%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 9999;
+  animation: crt-sweep 6s linear infinite;
+}
+
+@keyframes crt-scanlines {
+  from { background-position: 0 0, center; }
+  to   { background-position: 0 4px, center; }
+}
+
+@keyframes crt-sweep {
+  from { background-position: 0 100%; }
+  to   { background-position: 0 0%; }
 }

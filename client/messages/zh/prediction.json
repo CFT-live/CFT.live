@@ -42,6 +42,8 @@
             "title": "合约余额",
             "description": "管理你的资金",
             "available": "可用",
+            "connect_prompt": "连接钱包以管理您的合约余额。",
+            "error_title": "加载合约余额时出错",
             "fetched_contract_balance": "已获取的合约余额：",
             "Amount_to_deposit": "存入金额",
             "Deposit": "存款",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "锁定时间不能超过 {minutes} 分钟。",
                 "amount_required": "必须填写金额。",
                 "amount_must_be_integer": "金额必须为整数（不支持小数）。",
-                "amount_invalid": "无效金额。请使用整数值。"
+                "amount_invalid": "无效金额。请使用整数值。",
+                "amount_below_min": "金额不得少于 {amount} USDC。",
+                "amount_above_max": "金额不得超过 {amount} USDC。"
             },
             "presets_label": "快速预设",
             "preset_5m_eth": "5分钟 ETH",
@@ -176,7 +180,13 @@
                 "processing_title": "交易处理中",
                 "processing_description": "请在钱包中确认交易并等待确认...",
                 "potential_payout": "潜在收益",
-                "quick_amounts": "快速："
+                "quick_amounts": "快速：",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "开放",
@@ -205,14 +215,22 @@
                 "result": "结果",
                 "trend": "趋势",
                 "closing_soon": "即将关闭！",
-                "pool_ratio": "池比例"
+                "pool_ratio": "池比例",
+                "your_bets": "您的投注",
+                "bet_won": "赢了",
+                "bet_lost": "输了",
+                "bet_pending": "待定",
+                "bet_refunded": "已退款",
+                "last_chance": "Last chance!",
+                "just_opened": "NEW"
             },
             "time": {
                 "days_short": "天",
                 "hours_short": "小时",
                 "minutes_short": "分",
                 "seconds_short": "秒"
-            }
+            },
+            "balance_inline": "Balance:  USDC"
         },
         "platform_stats": {
             "title": "平台统计",
@@ -250,6 +268,11 @@
             "won": "盈利",
             "lost": "亏损",
             "connect_prompt": "连接钱包以查看您的统计信息。"
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         }
     }
 }

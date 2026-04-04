@@ -1,14 +1,17 @@
-export type Asset =
-  | "ETH"
-  | "ARB"
-  | "AAVE"
-  | "BTC"
-  | "SOL"
-  | "XRP"
-  | "BNB"
-  | "DOGE"
-  | "PEPE"
-  | "SHIB";
+export const ASSETS = [
+  "ETH",
+  "ARB",
+  "AAVE",
+  "BTC",
+  "SOL",
+  "XRP",
+  "BNB",
+  "DOGE",
+  "PEPE",
+  "SHIB",
+] as const;
+
+export type Asset = (typeof ASSETS)[number];
 
 export type Position = "UNSET" | "UP" | "DOWN";
 

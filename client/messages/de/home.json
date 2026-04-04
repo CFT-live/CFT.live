@@ -9,6 +9,8 @@
         "Games": "Protokolle",
         "Sandbox": "Sandbox",
         "Sandbox_Description": "Teste und interagiere mit Smart Contracts in einer sicheren Umgebung. Experimentiere frei.",
+        "Revoke_Approvals": "Genehmigungsmanager",
+        "Revoke_Approvals_Description": "ERC-20-Token-Genehmigungen auf Arbitrum scannen und widerrufen. Schütze deine Wallet vor unerwünschten Token-Ausgaben.",
         "Prediction_Market": "Vorhersage_Markt",
         "Prediction_Market_Description": "Sage Kursbewegungen von Assets voraus. Erstelle Wetten auf UP oder DOWN Märkte. Der Gewinner erhält den gesamten Pot.",
         "EXECUTE_PROTOCOL": "PROTOKOLL AUSFÜHREN",

@@ -145,207 +145,120 @@ export const OpenTables: React.FC = () => {
       ? t("tables_empty_open")
       : t("tables_empty_playing");
 
-  const renderPlayerDots = (playerCount: number, maxPlayers: number) => {
-    return (
-      <div className="flex items-center gap-1">
-        {Array.from({ length: maxPlayers }, (_, i) => (
-          <div
-            key={i}
+  const gridContent = (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      {activeTables.map((table) => {
+        const isPlayerInTable = table.players.some(
+          (p) => p.user.id.toLowerCase() === address?.toLowerCase()
+        );
+        const createdAt = formatRelativeTimeFromSeconds(t, table.createdAt);
+        const isOpen = selectedList === "open";
+
+        let statusLabel: string;
+        let statusVariant: "default" | "secondary" | "destructive" = "secondary";
+        if (isOpen) {
+          statusLabel = t("table_status_open");
+        } else if (table.status === TableStatus.InProgress) {
+          statusLabel = t("table_status_in_progress");
+          statusVariant = "default";
+        } else if (table.status === TableStatus.WaitingRandom) {
+          statusLabel = t("table_status_waiting_rng");
+          statusVariant = "destructive";
+        } else {
+          statusLabel = table.status;
+        }
+
+        // Open tables: show initial bet + max increment. Playing tables: show pot + initial bet.
+        const leftIcon = isOpen
+          ? <DollarSign className="h-3.5 w-3.5 text-primary shrink-0" />
+          : <DollarSign className="h-3.5 w-3.5 text-green-500 shrink-0" />;
+        const leftLabel = isOpen ? t("table_field_initial_bet") : t("tables_pot_label");
+        const leftValue = isOpen
+          ? `$${weiToUsdc(table.initialBetAmount)}`
+          : <span className="text-green-500">${weiToUsdc(table.totalPool)}</span>;
+
+        const rightLabel = isOpen ? t("table_field_max_incr") : t("table_field_initial_bet");
+        const rightValue = isOpen
+          ? `$${weiToUsdc(table.maxIncrement)}`
+          : `$${weiToUsdc(table.initialBetAmount)}`;
+
+        return (
+          <Card
+            key={table.id}
+            role="button"
+            tabIndex={0}
             className={cn(
-              "w-2.5 h-2.5 rounded-full transition-colors",
-              i < playerCount
-                ? "bg-primary shadow-[0_0_4px_hsl(23_100%_50%/0.5)]"
-                : "bg-zinc-700/50"
+              "relative cursor-pointer transition-all duration-200 group",
+              selectedTableId === table.id
+                ? "ring-2 ring-primary shadow-[0_0_20px_hsl(23_100%_50%/0.15)]"
+                : "hover:shadow-[0_0_16px_hsl(23_100%_50%/0.1)] hover:border-primary/40",
+              isOpen && isPlayerInTable && "border-primary/50",
+              !isOpen && table.status === TableStatus.InProgress && "border-green-500/30",
+              !isOpen && table.status === TableStatus.WaitingRandom && "border-yellow-500/30"
             )}
-          />
-        ))}
-      </div>
-    );
-  };
+            onClick={() => handleTableClick(table.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleTableClick(table.id);
+              }
+            }}
+          >
+            <CardContent className="p-4 sm:pt-5">
+              {/* Header row */}
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
+                  {t("table_label")} #{table.id}
+                </h3>
+                <Badge variant={statusVariant} className={cn(
+                  "text-[10px] sm:text-xs",
+                  !isOpen && table.status === TableStatus.WaitingRandom && "animate-pulse"
+                )}>
+                  {statusLabel}
+                </Badge>
+              </div>
 
-  const gridContent =
-    selectedList === "open" ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {openTables.map((table) => {
-          const isPlayerInTable = table.players.some(
-            (p) => p.user.id.toLowerCase() === address?.toLowerCase()
-          );
-          const readyCount = table.players.filter((p) => p.isReady).length;
-          const createdAt = formatRelativeTimeFromSeconds(t, table.createdAt);
-          const seatsOpen = table.maxPlayers - table.players.length;
+              {/* Bet info */}
+              <div className="flex items-center gap-3 mb-3 p-2 rounded-md bg-muted/30 border border-border/40">
+                <div className="flex items-center gap-1.5 flex-1">
+                  {leftIcon}
+                  <div>
+                    <p className="text-[10px] text-muted-foreground leading-none">{leftLabel}</p>
+                    <p className="text-sm font-bold">{leftValue}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 flex-1">
+                  <TrendingUp className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-muted-foreground leading-none">{rightLabel}</p>
+                    <p className="text-sm font-bold">{rightValue}</p>
+                  </div>
+                </div>
+              </div>
 
-          return (
-            <Card
-              key={table.id}
-              role="button"
-              tabIndex={0}
-              className={cn(
-                "relative cursor-pointer transition-all duration-200 group",
-                selectedTableId === table.id
-                  ? "ring-2 ring-primary shadow-[0_0_20px_hsl(23_100%_50%/0.15)]"
-                  : "hover:shadow-[0_0_16px_hsl(23_100%_50%/0.1)] hover:border-primary/40",
-                isPlayerInTable && "border-primary/50"
-              )}
-              onClick={() => handleTableClick(table.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleTableClick(table.id);
-                }
-              }}
-            >
-              <CardContent className="p-4 sm:pt-5">
-                {/* Header row */}
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
-                    {t("table_label")} #{table.id}
-                  </h3>
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                    {t("table_status_open")}
+              {/* Players + meta */}
+              <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
+                <span>{table.players.length}/{table.maxPlayers} {t("game_header_players").toLowerCase()}</span>
+                {isOpen && (() => {
+                  const readyCount = table.players.filter((p) => "isReady" in p && p.isReady).length;
+                  return <span>{t("table_field_ready")} {readyCount}/{table.players.length}</span>;
+                })()}
+                <span title={createdAt.full}>{createdAt.label}</span>
+              </div>
+
+              {isPlayerInTable && (
+                <div className="mt-2.5 pt-2.5 border-t border-border/40">
+                  <Badge variant="default" className="text-[10px] sm:text-xs w-full justify-center">
+                    {t("table_badge_youre_in")}
                   </Badge>
                 </div>
-
-                {/* Bet info - prominent */}
-                <div className="flex items-center gap-3 mb-3 p-2 rounded-md bg-muted/30 border border-border/40">
-                  <div className="flex items-center gap-1.5 flex-1">
-                    <DollarSign className="h-3.5 w-3.5 text-primary shrink-0" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground leading-none">{t("table_field_initial_bet")}</p>
-                      <p className="text-sm font-bold">${weiToUsdc(table.initialBetAmount)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 flex-1">
-                    <TrendingUp className="h-3.5 w-3.5 text-orange-500 shrink-0" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground leading-none">{t("table_field_max_incr")}</p>
-                      <p className="text-sm font-bold">${weiToUsdc(table.maxIncrement)}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Players visual */}
-                <div className="flex items-center justify-between mb-2">
-                  {renderPlayerDots(table.players.length, table.maxPlayers)}
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">
-                    {t("tables_open_seats", { count: seatsOpen })}
-                  </span>
-                </div>
-
-                {/* Ready status */}
-                <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
-                  <span>{t("table_field_ready")} {readyCount}/{table.players.length}</span>
-                  <span title={createdAt.full}>{createdAt.label}</span>
-                </div>
-
-                {/* You're in badge */}
-                {isPlayerInTable && (
-                  <div className="mt-2.5 pt-2.5 border-t border-border/40">
-                    <Badge variant="default" className="text-[10px] sm:text-xs w-full justify-center">
-                      {t("table_badge_youre_in")}
-                    </Badge>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {playingTables.map((table) => {
-          const isPlayerInTable = table.players.some(
-            (p) => p.user.id.toLowerCase() === address?.toLowerCase()
-          );
-          const createdAt = formatRelativeTimeFromSeconds(t, table.createdAt);
-
-          let statusLabel: string = table.status;
-          let statusVariant: "default" | "secondary" | "destructive" = "secondary";
-          if (table.status === TableStatus.InProgress) {
-            statusLabel = t("table_status_in_progress");
-            statusVariant = "default";
-          }
-          if (table.status === TableStatus.WaitingRandom) {
-            statusLabel = t("table_status_waiting_rng");
-            statusVariant = "destructive";
-          }
-
-          return (
-            <Card
-              key={table.id}
-              role="button"
-              tabIndex={0}
-              className={cn(
-                "relative cursor-pointer transition-all duration-200 group",
-                selectedTableId === table.id
-                  ? "ring-2 ring-primary shadow-[0_0_20px_hsl(23_100%_50%/0.15)]"
-                  : "hover:shadow-[0_0_16px_hsl(23_100%_50%/0.1)] hover:border-primary/40",
-                table.status === TableStatus.InProgress && "border-green-500/30",
-                table.status === TableStatus.WaitingRandom && "border-yellow-500/30"
               )}
-              onClick={() => handleTableClick(table.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleTableClick(table.id);
-                }
-              }}
-            >
-              <CardContent className="p-4 sm:pt-5">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors">
-                    {t("table_label")} #{table.id}
-                  </h3>
-                  <Badge variant={statusVariant} className={cn(
-                    "text-[10px] sm:text-xs",
-                    table.status === TableStatus.WaitingRandom && "animate-pulse"
-                  )}>
-                    {statusLabel}
-                  </Badge>
-                </div>
-
-                {/* Pot + Bet info */}
-                <div className="flex items-center gap-3 mb-3 p-2 rounded-md bg-muted/30 border border-border/40">
-                  <div className="flex items-center gap-1.5 flex-1">
-                    <DollarSign className="h-3.5 w-3.5 text-green-500 shrink-0" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground leading-none">{t("tables_pot_label")}</p>
-                      <p className="text-sm font-bold text-green-500">${weiToUsdc(table.totalPool)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 flex-1">
-                    <TrendingUp className="h-3.5 w-3.5 text-primary shrink-0" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground leading-none">{t("table_field_initial_bet")}</p>
-                      <p className="text-sm font-bold">${weiToUsdc(table.initialBetAmount)}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Players */}
-                <div className="flex items-center justify-between mb-1">
-                  {renderPlayerDots(table.players.length, table.maxPlayers)}
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">
-                    {table.players.length}/{table.maxPlayers}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground mt-1">
-                  <span title={createdAt.full}>{createdAt.label}</span>
-                </div>
-
-                {isPlayerInTable && (
-                  <div className="mt-2.5 pt-2.5 border-t border-border/40">
-                    <Badge variant="default" className="text-[10px] sm:text-xs w-full justify-center">
-                      {t("table_badge_youre_in")}
-                    </Badge>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    );
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
 
   const body = (() => {
     if (isActiveLoading && isActiveEmpty) {

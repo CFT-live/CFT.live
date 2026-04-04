@@ -9,6 +9,8 @@
         "Games": "البروتوكولات",
         "Sandbox": "بيئة الاختبار",
         "Sandbox_Description": "اختبر وتفاعل مع أي عقد ذكي في بيئة آمنة. جرب بحرية.",
+        "Revoke_Approvals": "مدير الموافقات",
+        "Revoke_Approvals_Description": "افحص واسحب موافقات رموز ERC-20 على Arbitrum. احمِ محفظتك من إنفاق الرموز غير المرغوب فيه.",
         "Prediction_Market": "سوق_التوقعات",
         "Prediction_Market_Description": "توقع تحركات أسعار الأصول. أنشئ رهانات على أسواق الصعود أو الهبوط. الفائز يحصل على كامل الرهان.",
         "EXECUTE_PROTOCOL": "تنفيذ البروتوكول",

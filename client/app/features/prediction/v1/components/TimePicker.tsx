@@ -92,7 +92,6 @@ export function TimePicker({
             minute: "2-digit",
           })}
           onChange={(e) => {
-            console.log(e.target.value);
             const [hours, minutes] = e.target.value.split(":").map(Number);
             const newDate = new Date(date);
             newDate.setHours(hours, minutes);

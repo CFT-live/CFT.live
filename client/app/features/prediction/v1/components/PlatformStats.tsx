@@ -55,12 +55,12 @@ export const PlatformStats = () => {
       value: stats ? Number(stats.totalRounds).toLocaleString() : "—",
       color: "text-foreground",
     },
-    {
-      icon: Users,
-      label: t("platform_stats.total_users"),
-      value: stats ? Number(stats.totalUsers).toLocaleString() : "—",
-      color: "text-foreground",
-    },
+    // {
+    //   icon: Users,
+    //   label: t("platform_stats.total_users"),
+    //   value: stats ? Number(stats.totalUsers).toLocaleString() : "—",
+    //   color: "text-foreground",
+    // },
     {
       icon: Zap,
       label: t("platform_stats.live_rounds"),
@@ -77,7 +77,7 @@ export const PlatformStats = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-6">
       {statItems.map((item) => (
         <div
           key={item.label}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { priceToString, numberPriceToBigInt, getPythDecimals } from "../../../../../helpers";
@@ -14,19 +15,24 @@ interface LivePriceDisplayProps {
 export default function LivePriceDisplay({ round }: Readonly<LivePriceDisplayProps>) {
   const t = useTranslations("prediction");
   const priceData = useAssetPrice(round.asset);
-  const currentPrice = numberPriceToBigInt(
-    priceData?.price || 0,
-    getPythDecimals(round.asset)
-  );
-  const lockPriceNum = Number(round.lockPrice);
-  const currentPriceNum = Number(currentPrice || round.closePrice);
 
-  const livePercentChange =
-    lockPriceNum > 0
-      ? ((currentPriceNum - lockPriceNum) / lockPriceNum) * 100
-      : 0;
-
-  const trend = getCurrentTrend(round.lockPrice, currentPrice || round.closePrice);
+  const { currentPrice, livePercentChange, trend } = useMemo(() => {
+    const price = numberPriceToBigInt(
+      priceData?.price || 0,
+      getPythDecimals(round.asset)
+    );
+    const lockPriceNum = Number(round.lockPrice);
+    const currentPriceNum = Number(price || round.closePrice);
+    const percentChange =
+      lockPriceNum > 0
+        ? ((currentPriceNum - lockPriceNum) / lockPriceNum) * 100
+        : 0;
+    return {
+      currentPrice: price,
+      livePercentChange: percentChange,
+      trend: getCurrentTrend(round.lockPrice, price || round.closePrice),
+    };
+  }, [priceData?.price, round.asset, round.lockPrice, round.closePrice]);
 
   const trendColorMap: Record<string, string> = {
     UP: "text-primary",

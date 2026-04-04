@@ -13,16 +13,22 @@ import BettingButtons from "./BettingButtons";
 import LivePriceDisplay from "./LivePriceDisplay";
 import PriceMovementDisplay from "./PriceMovementDisplay";
 import TimeDisplay from "./TimeDisplay";
+import UserRoundBets from "./UserRoundBets";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
 interface RoundRowProps {
   readonly round: Round;
   readonly getStatusVariant: (status: string) => BadgeVariant;
-  readonly openBetDialog?: (position: Position, roundId: string) => void;
+  readonly openBetDialog?: (position: Position, roundId: string, amount?: string) => void;
 }
 
 const CLOSING_SOON_THRESHOLD_MS = 2 * 60 * 1000;
+const CLOSING_WARNING_THRESHOLD_MS = 5 * 60 * 1000;
+const LAST_CHANCE_THRESHOLD_MS = 30 * 1000;
+const JUST_OPENED_THRESHOLD_MS = 5 * 60 * 1000;
+
+type UrgencyLevel = "normal" | "warning" | "urgent" | "critical";
 
 export default function RoundRow({
   round,
@@ -30,22 +36,47 @@ export default function RoundRow({
   openBetDialog,
 }: Readonly<RoundRowProps>) {
   const t = useTranslations("prediction");
-  const [closingSoon, setClosingSoon] = useState(false);
+  const [urgency, setUrgency] = useState<UrgencyLevel>("normal");
+  const [justOpened, setJustOpened] = useState(false);
 
   useEffect(() => {
     if (round.status !== "OPEN") return;
     const check = () => {
       const lockTime = Number.parseInt(round.lockAt) * MILLIS.inSecond;
-      setClosingSoon(lockTime - Date.now() <= CLOSING_SOON_THRESHOLD_MS && lockTime > Date.now());
+      const remaining = lockTime - Date.now();
+      if (remaining <= 0) {
+        setUrgency("normal");
+      } else if (remaining <= LAST_CHANCE_THRESHOLD_MS) {
+        setUrgency("critical");
+      } else if (remaining <= CLOSING_SOON_THRESHOLD_MS) {
+        setUrgency("urgent");
+      } else if (remaining <= CLOSING_WARNING_THRESHOLD_MS) {
+        setUrgency("warning");
+      } else {
+        setUrgency("normal");
+      }
+
+      // Check if just opened
+      if (round.createdAt) {
+        const createdTime = Number.parseInt(round.createdAt) * MILLIS.inSecond;
+        setJustOpened(Date.now() - createdTime <= JUST_OPENED_THRESHOLD_MS);
+      }
     };
     check();
     const interval = setInterval(check, MILLIS.inSecond);
     return () => clearInterval(interval);
-  }, [round.lockAt, round.status]);
+  }, [round.lockAt, round.status, round.createdAt]);
+
+  const getUrgencyClass = () => {
+    if (urgency === "critical") return "ring-2 ring-destructive animate-pulse shadow-destructive/20 shadow-lg";
+    if (urgency === "urgent") return "ring-1 ring-destructive/60 animate-pulse-ring";
+    if (urgency === "warning") return "ring-1 ring-amber-500/50";
+    return "";
+  };
 
   const cardClass = [
     "shrink-0 w-[280px] sm:w-[300px] transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
-    closingSoon ? "ring-1 ring-destructive/60 animate-pulse-ring" : "",
+    getUrgencyClass(),
     round.status === "LIVE" ? "ring-1 ring-primary/30" : "",
     round.status === "CANCELLED" ? "opacity-60" : "",
   ]
@@ -58,7 +89,8 @@ export default function RoundRow({
         <RoundHeader
           t={t}
           round={round}
-          closingSoon={closingSoon}
+          urgency={urgency}
+          justOpened={justOpened}
           getStatusVariant={getStatusVariant}
         />
         <PayoutDisplay round={round} isOpen={round.status === "OPEN"} />
@@ -86,6 +118,8 @@ export default function RoundRow({
             asset={round.asset}
           />
         )}
+
+        <UserRoundBets roundId={round.id} roundStatus={round.status} />
       </CardContent>
     </Card>
   );
@@ -94,23 +128,40 @@ export default function RoundRow({
 function RoundHeader({
   t,
   round,
-  closingSoon,
+  urgency,
+  justOpened,
   getStatusVariant,
 }: Readonly<{
   t: ReturnType<typeof useTranslations>;
   round: Round;
-  closingSoon: boolean;
+  urgency: UrgencyLevel;
+  justOpened: boolean;
   getStatusVariant: (status: string) => BadgeVariant;
 }>) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 flex-wrap">
         <Badge variant={getStatusVariant(round.status)} className="text-xs">
           {getStatusLabel(t, round.status)}
         </Badge>
-        {closingSoon && (
+        {urgency === "critical" && (
+          <Badge variant="destructive" className="text-[9px] animate-pulse font-bold">
+            {t("rounds.round_card.last_chance")}
+          </Badge>
+        )}
+        {urgency === "urgent" && (
           <Badge variant="destructive" className="text-[9px] animate-pulse">
             {t("rounds.round_card.closing_soon")}
+          </Badge>
+        )}
+        {urgency === "warning" && (
+          <Badge className="text-[9px] bg-amber-500/20 text-amber-600 border-amber-500/30">
+            {t("rounds.round_card.closing_soon")}
+          </Badge>
+        )}
+        {justOpened && urgency === "normal" && (
+          <Badge className="text-[9px] bg-primary/20 text-primary border-primary/30">
+            {t("rounds.round_card.just_opened")}
           </Badge>
         )}
       </div>

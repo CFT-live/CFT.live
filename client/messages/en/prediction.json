@@ -42,6 +42,8 @@
             "title": "Contract Balance",
             "description": "Manage your funds",
             "available": "Available",
+            "connect_prompt": "Connect wallet to manage your contract balance.",
+            "error_title": "Error loading contract balance",
             "fetched_contract_balance": "Fetched contract balance:",
             "Amount_to_deposit": "Amount to deposit",
             "Deposit": "Deposit",
@@ -101,7 +103,9 @@
                 "lock_minutes_cannot_exceed": "Lock minutes cannot exceed {minutes} minutes.",
                 "amount_required": "Amount is required.",
                 "amount_must_be_integer": "Amount must be an integer (no decimals).",
-                "amount_invalid": "Invalid amount. Use an integer value."
+                "amount_invalid": "Invalid amount. Use an integer value.",
+                "amount_below_min": "Amount must be at least {amount} USDC.",
+                "amount_above_max": "Amount cannot exceed {amount} USDC."
             },
             "presets_label": "Quick Presets",
             "preset_5m_eth": "5m ETH",
@@ -162,6 +166,7 @@
                 "live_betting_closed": "Betting is closed for live rounds - results pending.",
                 "open_bet_before_lock": "Place your bets before the lock time expires."
             },
+            "balance_inline": "Balance: ${balance} USDC",
             "bet_dialog": {
                 "title": "Place Bet - {position}",
                 "description_up": "You are betting that the price will go UP.",
@@ -176,7 +181,13 @@
                 "processing_title": "Processing Transaction",
                 "processing_description": "Please confirm the transaction in your wallet and wait for confirmation...",
                 "potential_payout": "Potential Payout",
-                "quick_amounts": "Quick:"
+                "quick_amounts": "Quick:",
+                "your_balance": "Your balance",
+                "auto_topup": "Balance will be topped up automatically from your wallet.",
+                "step_progress": "Step {current}/{total}",
+                "step_approving": "Approving USDC...",
+                "step_depositing": "Depositing to contract...",
+                "step_betting": "Placing bet..."
             },
             "status": {
                 "open": "OPEN",
@@ -205,7 +216,14 @@
                 "result": "Result",
                 "trend": "Trend",
                 "closing_soon": "Closing soon!",
-                "pool_ratio": "Pool ratio"
+                "last_chance": "Last chance!",
+                "just_opened": "NEW",
+                "pool_ratio": "Pool ratio",
+                "your_bets": "Your bets",
+                "bet_won": "Won",
+                "bet_lost": "Lost",
+                "bet_pending": "Pending",
+                "bet_refunded": "Refunded"
             },
             "time": {
                 "days_short": "d",
@@ -213,6 +231,11 @@
                 "minutes_short": "m",
                 "seconds_short": "s"
             }
+        },
+        "featured_round": {
+            "hot": "HOT",
+            "locks_in": "Locks in",
+            "live_price": "Live Price"
         },
         "platform_stats": {
             "title": "Platform Stats",
