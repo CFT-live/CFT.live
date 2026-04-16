@@ -50,7 +50,7 @@ ARBITRUM_SEPOLIA_RPC_URL=
 ARBITRUM_SEPOLIA_PRIVATE_KEY=
 
 # ── Arbitrum One mainnet ─────────────────────────────────────────
-NEXT_PUBLIC_SITE_INFURA_API_URL=
+SITE_INFURA_API_URL=
 ARBITRUM_ONE_PRIVATE_KEY=
 
 # ── Contract verification ────────────────────────────────────────

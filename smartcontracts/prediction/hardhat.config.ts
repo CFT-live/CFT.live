@@ -51,7 +51,7 @@ const config: HardhatUserConfig = {
     arbitrumOne: {
       type: "http",
       chainType: "op",
-      url: configVariable("NEXT_PUBLIC_SITE_INFURA_API_URL"),
+      url: configVariable("SITE_INFURA_API_URL"),
       accounts: [configVariable("ARBITRUM_ONE_PRIVATE_KEY")],
     },
     arbitrumSepolia: {
