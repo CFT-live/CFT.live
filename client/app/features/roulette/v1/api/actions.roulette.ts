@@ -1,3 +1,5 @@
+"use server";
+
 import { weiToUsdc } from "@/app/helpers";
 import { ROULETTE_ADDRESS, ROULETTE_ABI } from "@/app/lib/contracts";
 import { createPublicClient, http } from "viem";
@@ -6,7 +8,7 @@ import { arbitrum } from "viem/chains";
 // Create a public client for reading contract data
 const publicClient = createPublicClient({
   chain: arbitrum,
-  transport: http(process.env.NEXT_PUBLIC_SITE_INFURA_API_URL),
+  transport: http(process.env.SITE_INFURA_API_URL),
 });
 
 // Roulette contract metadata interface

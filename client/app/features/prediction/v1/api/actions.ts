@@ -16,7 +16,7 @@ import { ContractMetadata, ContractPriceFeeds } from "@/app/types";
 // Create a public client for reading contract data
 const publicClient = createPublicClient({
   chain: arbitrum,
-  transport: http(process.env.NEXT_PUBLIC_SITE_INFURA_API_URL),
+  transport: http(process.env.SITE_INFURA_API_URL),
 });
 
 // Singleton wallet client to maintain consistent nonce tracking
@@ -35,7 +35,7 @@ const getWalletClient = () => {
   walletClientInstance ??= createWalletClient({
     account: walletAccount,
     chain: arbitrum,
-    transport: http(process.env.NEXT_PUBLIC_SITE_INFURA_API_URL),
+    transport: http(process.env.SITE_INFURA_API_URL),
   });
 
   return walletClientInstance;
