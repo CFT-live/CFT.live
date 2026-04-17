@@ -183,6 +183,94 @@
  }
 }
 
+/* ─── Protocol card glow ─── */
+@keyframes protocol-border-pulse {
+  0%, 100% { border-color: hsl(23 100% 50% / 0.25); box-shadow: 0 0 0 0 transparent; }
+  50% { border-color: hsl(23 100% 50% / 0.6); box-shadow: 0 0 20px -4px hsl(23 100% 50% / 0.2); }
+}
+
+.protocol-card-glow {
+  animation: protocol-border-pulse 3s ease-in-out infinite;
+}
+
+/* Per-protocol accent overrides */
+.protocol-accent-prediction { --protocol-accent: 190 95% 55%; }
+.protocol-accent-roulette   { --protocol-accent: 0 85% 55%; }
+.protocol-accent-lotto      { --protocol-accent: 45 95% 55%; }
+.protocol-accent-sandbox    { --protocol-accent: 270 70% 65%; }
+.protocol-accent-approvals  { --protocol-accent: 155 75% 50%; }
+
+@keyframes protocol-accent-pulse {
+  0%, 100% { border-color: hsl(var(--protocol-accent) / 0.2); box-shadow: 0 0 0 0 transparent; }
+  50% { border-color: hsl(var(--protocol-accent) / 0.55); box-shadow: 0 0 24px -4px hsl(var(--protocol-accent) / 0.18); }
+}
+
+.protocol-card-accent-glow {
+  animation: protocol-accent-pulse 3s ease-in-out infinite;
+}
+
+/* ─── Card shimmer sweep ─── */
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    hsl(23 100% 50% / 0.06) 45%,
+    hsl(23 100% 50% / 0.12) 50%,
+    hsl(23 100% 50% / 0.06) 55%,
+    transparent 60%
+  );
+  animation: shimmer-sweep 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ─── Hero CTA button ─── */
+@keyframes cta-glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px hsl(23 100% 50% / 0.3), 0 0 30px hsl(23 100% 50% / 0.1); }
+  50% { box-shadow: 0 0 20px hsl(23 100% 50% / 0.5), 0 0 50px hsl(23 100% 50% / 0.2); }
+}
+
+.protocol-cta {
+  animation: cta-glow-pulse 2.5s ease-in-out infinite;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.protocol-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px hsl(23 100% 50% / 0.6), 0 0 60px hsl(23 100% 50% / 0.25);
+  animation: none;
+}
+
+/* ─── Floating protocol nav ─── */
+@keyframes float-nav-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.floating-nav {
+  animation: float-nav-in 0.4s ease-out;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+/* ─── Live pulse badge ─── */
+@keyframes live-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.6); }
+}
+
+.live-dot {
+  animation: live-dot 1.5s ease-in-out infinite;
+}
+
 /* Roulette hero animations */
 @keyframes roulette-spin {
   from { transform: rotate(0deg); }
