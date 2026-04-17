@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useRef } from "react";
+import { ReactNode, useRef, useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring, SpringOptions } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,8 @@ const springValues: SpringOptions = {
   mass: 2
 };
 
+const MOBILE_BREAKPOINT = 768;
+
 export function ProtocolCard({
   title,
   description,
@@ -44,6 +46,7 @@ export function ProtocolCard({
   index = 0,
 }: ProtocolCardProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
   
   const rotateX = useSpring(useMotionValue(0), springValues);
   const rotateY = useSpring(useMotionValue(0), springValues);
@@ -63,8 +66,15 @@ export function ProtocolCard({
     useAccentColor: true // Auto-detect accent color from CSS variable
   });
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
-    if (!ref.current) return;
+    if (!ref.current || isMobile) return;
 
     const rect = ref.current.getBoundingClientRect();
     const offsetX = e.clientX - rect.left - rect.width / 2;
@@ -78,10 +88,12 @@ export function ProtocolCard({
   }
 
   function handleMouseEnter() {
+    if (isMobile) return;
     scale.set(1.03);
   }
 
   function handleMouseLeave() {
+    if (isMobile) return;
     scale.set(1);
     rotateX.set(0);
     rotateY.set(0);

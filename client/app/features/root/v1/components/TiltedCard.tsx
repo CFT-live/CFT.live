@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, SpringOptions } from 'framer-motion';
 import './TiltedCard.css';
 
@@ -27,6 +27,8 @@ const springValues: SpringOptions = {
   mass: 2
 };
 
+const MOBILE_BREAKPOINT = 768;
+
 export default function TiltedCard({
   imageSrc,
   altText = 'Tilted card image',
@@ -44,6 +46,7 @@ export default function TiltedCard({
   children
 }: TiltedCardProps) {
   const ref = useRef<HTMLElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -59,8 +62,15 @@ export default function TiltedCard({
 
   const [lastY, setLastY] = useState<number>(0);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   function handleMouse(e: React.MouseEvent<HTMLElement>) {
-    if (!ref.current) return;
+    if (!ref.current || isMobile) return;
 
     const rect = ref.current.getBoundingClientRect();
     const offsetX = e.clientX - rect.left - rect.width / 2;
@@ -81,11 +91,13 @@ export default function TiltedCard({
   }
 
   function handleMouseEnter() {
+    if (isMobile) return;
     scale.set(scaleOnHover);
     opacity.set(1);
   }
 
   function handleMouseLeave() {
+    if (isMobile) return;
     opacity.set(0);
     scale.set(1);
     rotateX.set(0);
