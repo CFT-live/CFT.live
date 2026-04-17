@@ -245,8 +245,8 @@ const getActiveRoundIds = async (): Promise<[bigint[], bigint[]]> => {
     });
     return result as [bigint[], bigint[]];
   } catch (error) {
-    console.error("Error fetching active round IDs:", error);
-    throw error;
+    console.error("Error fetching active round IDs:", (error as Error).message || error);
+    throw new Error("Failed to fetch active round IDs");
   }
 };
 
@@ -263,8 +263,8 @@ const getNextAdvanceDeadline = async (): Promise<unknown> => {
     });
     return result;
   } catch (error) {
-    console.error("Error fetching next advance deadline:", error);
-    throw error;
+    console.error("Error fetching next advance deadline:", (error as Error).message || error);
+    throw new Error("Failed to fetch next advance deadline");
   }
 };
 
@@ -312,79 +312,84 @@ const runAdvance = async (): Promise<`0x${string}` | undefined> => {
       return hash;
     });
   } catch (error) {
-    console.error("Error running advance:", error);
-    throw error;
+    console.error("Error running advance:", (error as Error).message || error);
+    throw new Error("Failed to run advance transaction");
   }
 };
 
 export const runAdvanceCheck = async (): Promise<number | undefined> => {
-  console.log("Running advance check...");
-  const [openRoundIds, liveRoundIds] = await getActiveRoundIds();
+  try {
+    console.log("Running advance check...");
+    const [openRoundIds, liveRoundIds] = await getActiveRoundIds();
 
-  if (openRoundIds.length === 0 && liveRoundIds.length === 0) {
-    console.log("No active rounds to advance.");
-    return undefined;
-  }
-
-  console.log("Open round IDs:", openRoundIds);
-  console.log("Live round IDs:", liveRoundIds);
-
-  const nextAdvanceDeadline = await getNextAdvanceDeadline();
-
-  if (
-    !nextAdvanceDeadline ||
-    typeof nextAdvanceDeadline !== "bigint" ||
-    Number(nextAdvanceDeadline) === Number.MAX_SAFE_INTEGER
-  ) {
-    console.log(
-      "No advance deadline available. Response:",
-      nextAdvanceDeadline
-    );
-    return undefined;
-  }
-
-  const nextAdvanceDeadlineMillis =
-    Number(nextAdvanceDeadline) * MILLIS.inSecond;
-
-  console.log(
-    "Next advance deadline (timestamp):",
-    nextAdvanceDeadlineMillis,
-    "Date:",
-    new Date(nextAdvanceDeadlineMillis).toISOString()
-  );
-
-  const now = Date.now();
-  const timeUntilDeadline = nextAdvanceDeadlineMillis - now;
-
-  if (timeUntilDeadline <= 0) {
-    console.log("Advancing rounds now...");
-    try {
-
-      const priceFeeds = await getContractPriceFeeds();
-      console.log("Current contract price feeds before update:", priceFeeds);
-      if (!priceFeeds) {
-        console.warn("No price feeds available; skipping advance.");
-        return now + 10 * MILLIS.inSecond;
-      }
-
-      const receipt = await updatePriceFeeds(Object.values(priceFeeds));
-      if (receipt?.status !== "success") {
-        console.warn("Price feed update failed; skipping advance.");
-        return now + 10 * MILLIS.inSecond;
-      }
-      await runAdvance();
-      console.log("Advance completed successfully");
-    } catch (error) {
-      console.error("Error during advance:", error);
+    if (openRoundIds.length === 0 && liveRoundIds.length === 0) {
+      console.log("No active rounds to advance.");
+      return undefined;
     }
-    // Check again soon after advancing to get the new deadline
-    return now + 5 * MILLIS.inSecond;
-  }
 
-  console.log(
-    "No rounds need advancing at this time (deadline in",
-    timeUntilDeadline / MILLIS.inSecond,
-    "seconds)"
-  );
-  return nextAdvanceDeadlineMillis;
+    console.log("Open round IDs:", openRoundIds);
+    console.log("Live round IDs:", liveRoundIds);
+
+    const nextAdvanceDeadline = await getNextAdvanceDeadline();
+
+    if (
+      !nextAdvanceDeadline ||
+      typeof nextAdvanceDeadline !== "bigint" ||
+      Number(nextAdvanceDeadline) === Number.MAX_SAFE_INTEGER
+    ) {
+      console.log(
+        "No advance deadline available. Response:",
+        nextAdvanceDeadline
+      );
+      return undefined;
+    }
+
+    const nextAdvanceDeadlineMillis =
+      Number(nextAdvanceDeadline) * MILLIS.inSecond;
+
+    console.log(
+      "Next advance deadline (timestamp):",
+      nextAdvanceDeadlineMillis,
+      "Date:",
+      new Date(nextAdvanceDeadlineMillis).toISOString()
+    );
+
+    const now = Date.now();
+    const timeUntilDeadline = nextAdvanceDeadlineMillis - now;
+
+    if (timeUntilDeadline <= 0) {
+      console.log("Advancing rounds now...");
+      try {
+
+        const priceFeeds = await getContractPriceFeeds();
+        console.log("Current contract price feeds before update:", priceFeeds);
+        if (!priceFeeds) {
+          console.warn("No price feeds available; skipping advance.");
+          return now + 10 * MILLIS.inSecond;
+        }
+
+        const receipt = await updatePriceFeeds(Object.values(priceFeeds));
+        if (receipt?.status !== "success") {
+          console.warn("Price feed update failed; skipping advance.");
+          return now + 10 * MILLIS.inSecond;
+        }
+        await runAdvance();
+        console.log("Advance completed successfully");
+      } catch (error) {
+        console.error("Error during advance:", error);
+      }
+      // Check again soon after advancing to get the new deadline
+      return now + 5 * MILLIS.inSecond;
+    }
+
+    console.log(
+      "No rounds need advancing at this time (deadline in",
+      timeUntilDeadline / MILLIS.inSecond,
+      "seconds)"
+    );
+    return nextAdvanceDeadlineMillis;
+  } catch (error) {
+    console.error("Critical error in runAdvanceCheck:", (error as Error).message || error);
+    return undefined; // Ensures no error propagates from this Server Action
+  }
 };
